@@ -1,0 +1,32 @@
+version: "3"
+
+volumes:
+  database:
+
+services:
+
+  mongo:
+    container_name: mongo
+    image: mvertes/alpine-mongo:3.4.9-0
+    ports:
+      # Expose port to host machine for debugging
+      - 27017
+    volumes:
+      - database:/data/db
+
+  charity:
+    container_name: charity
+    build: .
+    environment:
+      - NODE_CONFIG_DIR=/app/src/config
+    volumes:
+      # Make the following directories available to docker so that changes made on the host
+      # are immediately available inside the docker container.
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+    command: npm run debug
+    ports:
+      # Expose port to host machine for debugging
+      - 80:80
+    links:
+      - mongo
