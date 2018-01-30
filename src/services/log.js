@@ -2,4 +2,4 @@
 
 const bunyan = require('bunyan')
 
-module.exports = bunyan.createLogger({ name: 'concha_user' })
+module.exports = bunyan.createLogger({ name: 'charity' })

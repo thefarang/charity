@@ -45,16 +45,13 @@ const onError = (error) => {
   }
 }
 
-// @todo
-// Add logging
 // Event listener for HTTP server "listening" event.
 const onListening = () => {
-  /*
   const addr = server.address()
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port
-  */
+  log.info({}, `Listening on ${bind}`)
 }
 
 // Start the database

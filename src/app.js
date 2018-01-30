@@ -6,12 +6,13 @@ const bodyParser = require('body-parser')
 
 const log = require('./services/log')
 const helpers = require('./lib/helpers')
+
 const index = require('./routes/index')
+const register = require('./routes/register')
+// const registerAuth = require('./routes/register-auth');
 const login = require('./routes/login')
 // const loginAuth = require('./routes/login-auth')
 const dashboard = require('./routes/dashboard')
-// const register = require('./routes/register')
-// const registerSubmit = require('./routes/register-submit');
 
 module.exports = (dbFacade) => {
   const appInstance = express()
@@ -53,6 +54,8 @@ module.exports = (dbFacade) => {
 
   // Route middlewares
   appInstance.use('/', index)
+  appInstance.use('/register', register)
+  // appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)
   // appInstance.use('/login-auth', loginAuth)
   appInstance.use('/dashboard', dashboard)
@@ -70,7 +73,7 @@ module.exports = (dbFacade) => {
   appInstance.use((err, req, res, next) => {
     log.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
-    res.render('error')
+    res.render('error', { error: err })
   })
 
   return appInstance

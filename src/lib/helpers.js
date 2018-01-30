@@ -1,7 +1,6 @@
 'use strict'
 
 const config = require('config')
-const request = require('request')
 const bearerToken = require('bearer-token')
 const jwt = require('jsonwebtoken')
 
