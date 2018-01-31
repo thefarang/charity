@@ -2,7 +2,8 @@
 
 const bcrypt = require('bcryptjs')
 
-const SALT_WORK_FACTOR = 10 // @todo parameterise this
+// @todo parameterise this
+const SALT_WORK_FACTOR = 10
 
 class Password {
   constructor() {
@@ -27,14 +28,14 @@ class Password {
       // Generate a salt
       bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         if (err) {
-          // @todo add logging
+          log.info({ err: err }, 'An error occurred generating a salt')
           return reject(err)
         }
 
         // Hash the password using our new salt
         bcrypt.hash(userSchema.password, salt, function (err, encPassword) {
           if (err) {
-            // @todo add logging
+            log.info({ err: err }, 'An error occurred hashing a password')
             return reject(err)
           }
           return resolve(encPassword)

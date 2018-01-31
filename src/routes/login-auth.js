@@ -46,8 +46,8 @@ router.post('/', async (req, res, next) => {
     return
   }
 
-  console.log('USER FOUND')
-  console.log(user)
+console.log('USER FOUND')
+console.log(user)
 
   // Test the password is correct
   try {
