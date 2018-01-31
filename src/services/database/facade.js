@@ -25,16 +25,10 @@ const disconnect = () => {
   })
 }
 
-/*
-const getRoleActions = () => roleActions
-*/
 const getUserActions = () => userActions
 
 module.exports = {
   connect,
   disconnect,
   getUserActions
-  /*,
-  getRoleActions,
-  */
 }

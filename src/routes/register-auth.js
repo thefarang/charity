@@ -4,9 +4,10 @@ const express = require('express')
 
 const log = require('../services/log')
 const helpers = require('../lib/helpers')
+const dRoles = require('../data/roles')
+
 const User = require('../models/user')
 const Password = require('../models/password')
-const roles = require('../data/roles')
 
 const router = express.Router()
 
@@ -64,7 +65,7 @@ router.post('/', async (req, res, next) => {
     user = new User()
     user.email = sEmail
     user.password = password
-    user.role = roles.getCauseRole()
+    user.role = dRoles.getCauseRole()
 
     user = await dbFacade.getUserActions().saveUser(user)
     log.info({ user: user.toJSON() }, 'New user registered')

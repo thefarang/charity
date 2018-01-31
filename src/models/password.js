@@ -1,6 +1,7 @@
 'use strict'
 
 const bcrypt = require('bcryptjs')
+
 const log = require('../services/log')
 
 // @todo parameterise this

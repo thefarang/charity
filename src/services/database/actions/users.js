@@ -1,11 +1,13 @@
 'use strict'
 
+const mongoose = require('mongoose')
+
 const log = require('../../log')
 const UserSchema = require('../schema/user-schema')
+
 const User = require('../../../models/user')
 const Role = require('../../../models/role')
 const Password = require('../../../models/password')
-const mongoose = require('mongoose')
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -16,6 +18,9 @@ const findUserById = (id) => {
 }
 */
 
+// @todo
+// Remember that a User object hydrated from the Token will not have a
+// User.Password object. So update to support that.
 const _upsert = (user, userSchema, resolve, reject) => {
   if (user.id) {
     userSchema._id = new ObjectId(user.id)

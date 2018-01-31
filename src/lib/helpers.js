@@ -2,8 +2,13 @@
 
 const bearerToken = require('bearer-token')
 const jwt = require('jsonwebtoken')
-const dbUsers = require('../data/users')
-const acl = require('../data/acl')
+
+const dACL = require('../data/acl')
+const dRoles = require('../data/roles')
+
+const User = require('../models/user')
+const Password = require('../models/password')
+const Role = require('../models/role')
 
 const createToken = (user) => {
   return new Promise((resolve, reject) => {
@@ -11,7 +16,10 @@ const createToken = (user) => {
       {
         id: user.id,
         email: user.email,
-        role: user.role.name
+        role: {
+          id: user.role.id,
+          name: user.role.name
+        }
       },
       'secret', // @todo critical - Replace the 'secret' with a pass phrase stored in the config
       {
@@ -40,54 +48,32 @@ const getToken = async (req) => {
   })
 }
 
+// Note that this method returns a partially-hydrated User object. The
+// User.Password details are omitted, as they are not stored in the Token.
+// Therefore, remember to hydrate the User.Password details later if you
+// intend to update the User record in the database.
 const getUserByToken = async (token) => {
   return new Promise((resolve, reject) => {
     // @todo critial - Parameterise
-    jwt.verify(token, 'secret', (err, decodedUser) => {
+    jwt.verify(token, 'secret', (err, decodedUserData) => {
       if (err) {
         // @todo - add logging
         return reject(err)
       }
-      return resolve(decodedUser)
+
+      const user = new User()
+      user.id = decodedUserData.id
+      user.email = decodedUserData.email
+      user.password = new Password()
+      user.role = new Role(decodedUserData.role.id, decodedUserData.role.name)
+      return resolve(user)
     })
   })
 }
 
-// @todo
-// Why have this, why not just call dbUsers.getGuestUser() directly from the client code?
-const getGuestUser = () => dbUsers.getGuestUser()
-
-// @todo
-// Might no longer be necessary now that we are not using User.acl
-const getUserACLByRole = (role) => {
-  const completeAcl = acl.getAcl()
-  let userAcl = []
-
-  for (const index in completeAcl) {
-    if (completeAcl[index].roles.indexOf(role.name) >= 0) {
-      userAcl.push(completeAcl[index])
-    }
-  }
-  return userAcl
-}
-
-// @todo
-// This must be changed
-/*
-const isUserAuthorised = (resource, permission, acl) => {
-  let isAuthorised = false
-  for (const index in acl) {
-    if ((acl[index].resource === resource) && (acl[index].permission === permission)) {
-      isAuthorised = true
-      break
-    }
-  }
-  return isAuthorised
-}
-*/
 const isUserAuthorised = (resource, permission, role) => {
   let isAuthorised = false
-  const completeAcl = acl.getAcl()
+  const completeAcl = dACL.getAcl()
 
   for (const index in completeAcl) {
     if ((completeAcl[index].resource === resource) && (completeAcl[index].permission === permission)) {
@@ -104,9 +90,7 @@ const isUserAuthorised = (resource, permission, role) => {
 
 module.exports = {
   createToken,
-  getGuestUser,
   getToken,
-  getUserACLByRole,
   getUserByToken,
   isUserAuthorised
 }

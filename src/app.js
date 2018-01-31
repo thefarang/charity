@@ -7,6 +7,7 @@ const expressSanitizer = require('express-sanitizer')
 
 const log = require('./services/log')
 const helpers = require('./lib/helpers')
+const dUsers = require('./data/users')
 
 const index = require('./routes/index')
 const register = require('./routes/register')
@@ -34,14 +35,11 @@ module.exports = (dbFacade) => {
     try {
       const token = await helpers.getToken(req)
       if (token) {
-console.log('TOKEN FOUND')
         req.user = await helpers.getUserByToken(token)
-console.log(req.user)
       } else {
-        req.user = await helpers.getGuestUser()
-        // req.user.acl = await helpers.getUserACLByRole(req.user.role)
+        req.user = await dUsers.getGuestUser()
       }
-  
+
       if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
         const err = new Error()
         err.status = 401

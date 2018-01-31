@@ -17,10 +17,21 @@ const getAdminRole = () => adminRole
 
 const getRoles = () => [ guestRole, causeRole, donatorRole, adminRole ]
 
+const getRoleByName = (name) => {
+  switch (name) {
+    case 'guest': return guestRole
+    case 'cause': return causeRole
+    case 'donator': return donatorRole
+    case 'admin': return adminRole
+    default: throw new Error('Unknown role name provided')
+  }
+}
+
 module.exports = {
   getGuestRole,
   getCauseRole,
   getDonatorRole,
   getAdminRole,
-  getRoles
+  getRoles,
+  getRoleByName
 }
