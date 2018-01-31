@@ -55,9 +55,7 @@ router.post('/', async (req, res, next) => {
     return
   }
 
-console.log('USER NOT FOUND')
-
-  // Store user in the database
+  // Store the new user in the database.
   try {
     const password = new Password()
     password.clrPassword = sClrPassword
@@ -81,25 +79,21 @@ console.log('USER NOT FOUND')
     return
   }
 
-console.log('USER STORED IN DATABASE')
-return
-
-  // @todo
   // Create json web token from the user object and return
   try {
     const token = await helpers.createToken(user)
     log.info({ 
-      email: req.body.email,
+      user: user.toJSON(),
       token: token },
-      'Successfully created token for user')
+      'Successfully created token for newly registered user')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(200)
     res.json({ token: token })
   } catch (err) {
     log.info({ 
-      email: req.body.email }, 
-      'Handling the error that occurred whilst creating a user token')
+      user: user.toJSON() },
+      'Handling the error that occurred whilst creating a newly registered user token')
     
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)

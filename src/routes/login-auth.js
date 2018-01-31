@@ -17,13 +17,24 @@ router.post('/', async (req, res, next) => {
     clear_password: req.body.password,
     sanitized_clear_password: sClrPassword }, 
     'User login attempt')
-return
 
   // Attempt to find the user in the dbase
   const dbFacade = req.app.get('dbFacade')
   let user = null
   try {
     user = await dbFacade.getUserActions().findUserByEmail(sEmail)
+    if (!user) {
+      log.info({ 
+        email: req.body.email }, 
+        'User not found based on email and password search')
+  
+      res.set('Cache-Control', 'private, max-age=0, no-cache')
+      res.status(404)
+      res.json()
+      return
+    }
+
+    log.info({ email: req.body.email }, 'User found in login process')
   } catch (err) {
     log.info({ 
       email: req.body.email }, 
@@ -34,20 +45,6 @@ return
     res.json()
     return
   }
-
-  if (user === null) {
-    log.info({ 
-      email: req.body.email }, 
-      'User not found based on email and password search')
-
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(404)
-    res.json()
-    return
-  }
-
-console.log('USER FOUND')
-console.log(user)
 
   // Test the password is correct
   try {
@@ -61,7 +58,8 @@ console.log(user)
       return
     }
 
-    // Authentication successful. Update the User.Password object.
+    // Authentication successful. Update the User.Password object (we do not store
+    // the clear text password in the database)
     user.password.clrPassword = sClrPassword
   } catch (err) {
     log.info({ 
