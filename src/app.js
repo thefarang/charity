@@ -10,7 +10,7 @@ const helpers = require('./lib/helpers')
 
 const index = require('./routes/index')
 const register = require('./routes/register')
-// const registerAuth = require('./routes/register-auth');
+const registerAuth = require('./routes/register-auth')
 const login = require('./routes/login')
 const loginAuth = require('./routes/login-auth')
 const dashboard = require('./routes/dashboard')
@@ -39,10 +39,10 @@ console.log('TOKEN FOUND')
 console.log(req.user)
       } else {
         req.user = await helpers.getGuestUser()
-        req.user.acl = await helpers.getUserACLByRole(req.user.role)
+        // req.user.acl = await helpers.getUserACLByRole(req.user.role)
       }
   
-      if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), user.role)) {
+      if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
         const err = new Error()
         err.status = 401
         throw err
@@ -57,7 +57,7 @@ console.log(req.user)
   // Route middlewares
   appInstance.use('/', index)
   appInstance.use('/register', register)
-  // appInstance.use('/register-auth', registerAuth)
+  appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)
   appInstance.use('/login-auth', loginAuth)
   appInstance.use('/dashboard', dashboard)

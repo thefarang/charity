@@ -4,9 +4,14 @@ const express = require('express')
 
 const log = require('../services/log')
 const helpers = require('../lib/helpers')
+const User = require('../models/user')
+const Password = require('../models/password')
+const roles = require('../data/roles')
 
 const router = express.Router()
 
+// @todo
+// Capture all incoming data
 router.post('/', async (req, res, next) => {
   // Sanitize the incoming data
   const sEmail = req.sanitize(req.body.email)
@@ -16,8 +21,12 @@ router.post('/', async (req, res, next) => {
     sanitized_email: sEmail,
     clear_password: req.body.password,
     sanitized_clear_password: sClrPassword }, 
-    'User login attempt')
-return
+    'User registration attempt')
+  
+  // @todo
+  // validate the data to ensure:
+  // email format correct, passwords match, email does not exist already in the system
+  // Validate emails using this: https://www.npmjs.com/package/email-validator
 
   // Attempt to find the user in the dbase
   const dbFacade = req.app.get('dbFacade')
@@ -27,7 +36,7 @@ return
   } catch (err) {
     log.info({ 
       email: req.body.email }, 
-      'Handling the error that occurred whilst locating the user')
+      'Handling the error that occurred whilst searching for a matching user')
     
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
@@ -35,10 +44,10 @@ return
     return
   }
 
-  if (user === null) {
+  if (user !== null) {
     log.info({ 
       email: req.body.email }, 
-      'User not found based on email and password search')
+      'User already exists in the dbase. Registration denied.')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(404)
@@ -46,27 +55,25 @@ return
     return
   }
 
-console.log('USER FOUND')
-console.log(user)
+console.log('USER NOT FOUND')
 
-  // Test the password is correct
+  // Store user in the database
   try {
-    const isPasswordCorrect =
-      await user.password.isClearPasswordCorrect(sClrPassword, user.password.encPassword)
-    if (!isPasswordCorrect) {
-      log.info({ email: req.body.email }, 'User password is incorrect')
-      res.set('Cache-Control', 'private, max-age=0, no-cache')
-      res.status(401)
-      res.json()
-      return
-    }
+    const password = new Password()
+    password.clrPassword = sClrPassword
+    password.encPassword = await password.getEncPasswordFromClearPassword(sClrPassword)
 
-    // Authentication successful. Update the User.Password object.
-    user.password.clrPassword = sClrPassword
+    user = new User()
+    user.email = sEmail
+    user.password = password
+    user.role = roles.getCauseRole()
+
+    user = await dbFacade.getUserActions().saveUser(user)
+    log.info({ user: user.toJSON() }, 'New user registered')
   } catch (err) {
     log.info({ 
       email: req.body.email }, 
-      'Handling the error that occurred whilst performing the password check')
+      'Handling the error that occurred whilst creating a new User')
     
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
@@ -74,7 +81,11 @@ console.log(user)
     return
   }
 
-  // Create a json web token from the user object.
+console.log('USER STORED IN DATABASE')
+return
+
+  // @todo
+  // Create json web token from the user object and return
   try {
     const token = await helpers.createToken(user)
     log.info({ 

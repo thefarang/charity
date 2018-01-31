@@ -4,11 +4,18 @@ const log = require('../../log')
 const UserSchema = require('../schema/user-schema')
 const User = require('../../../models/user')
 const Role = require('../../../models/role')
+const Password = require('../../../models/password')
 const mongoose = require('mongoose')
 
 const ObjectId = mongoose.Types.ObjectId
 
 /*
+// @todo
+const findUserById = (id) => {
+  console.log('findUserById() - Not yet implemented')
+}
+*/
+
 const _upsert = (user, userSchema, resolve, reject) => {
   if (user.id) {
     userSchema._id = new ObjectId(user.id)
@@ -26,7 +33,7 @@ const _upsert = (user, userSchema, resolve, reject) => {
 
   userSchema.role.id = user.role.id
   userSchema.role.name = user.role.name
-  
+
   userSchema.save((err) => {
     if (err) {
       log.info({
@@ -58,12 +65,6 @@ const saveUser = (user) => {
   })
 }
 
-// @todo
-const findUserById = (id) => {
-  console.log('findUserById() - Not yet implemented')
-}
-*/
-
 const findUserByEmail = (sanitizedEmail) => {
   return new Promise((resolve, reject) => {
     UserSchema.findOne({ email: sanitizedEmail }, (err, userSchema) => {
@@ -81,14 +82,11 @@ const findUserByEmail = (sanitizedEmail) => {
         const password = new Password()
         password.encPassword = userSchema.encPassword
 
-        const role = new Role(userSchema.role.id, userSchema.role.name)
-        
-        user = new User(
-          userSchema._id,
-          userSchema.email,
-          password,
-          role
-        )
+        user = new User()
+        user.id = userSchema._id
+        user.email = userSchema.email
+        user.password = password
+        user.role = new Role(userSchema.role.id, userSchema.role.name)
       }
       return resolve(user)
     })
@@ -115,10 +113,10 @@ const removeUser = (user) => {
 }
 
 module.exports = {
-  findUserByEmail
+  findUserByEmail,
+  saveUser
   /*
-  saveUser,
-  removeUser,
-  isPasswordCorrect
+  findUserById,
+  removeUser
   */
 }

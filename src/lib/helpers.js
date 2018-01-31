@@ -53,8 +53,12 @@ const getUserByToken = async (token) => {
   })
 }
 
+// @todo
+// Why have this, why not just call dbUsers.getGuestUser() directly from the client code?
 const getGuestUser = () => dbUsers.getGuestUser()
 
+// @todo
+// Might no longer be necessary now that we are not using User.acl
 const getUserACLByRole = (role) => {
   const completeAcl = acl.getAcl()
   let userAcl = []
