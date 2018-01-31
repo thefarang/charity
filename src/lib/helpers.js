@@ -1,39 +1,12 @@
 'use strict'
 
-const config = require('config')
 const bearerToken = require('bearer-token')
 const jwt = require('jsonwebtoken')
+const dbUsers = require('../data/users')
 
-/*
-async function getGuestUser () {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${config.get('conchaUserApi')}/users/guest`,
-      headers: {
-        'Accept': 'application/json'
-      }
-    }
+const getGuestUser = () => dbUsers.getGuestUser()
 
-    request(options, (err, res, user) => {
-      if (err) {
-        // @todo logging 500
-        return reject(err)
-      }
-
-      if (res.statusCode !== 200) {
-        const message = res.body ? JSON.parse(res.body) : res.body
-        const err = new Error(message)
-        err.status = 500
-        return reject(err)
-      }
-
-      // Parse the user string so we can work with it as a JSON object.
-      return resolve(JSON.parse(user))
-    })
-  })
-}
-
-async function getToken (req) {
+const getToken = async (req) => {
   return new Promise((resolve, reject) => {
     bearerToken(req, (err, token) => {
       if (err) {
@@ -46,6 +19,7 @@ async function getToken (req) {
   })
 }
 
+/*
 async function getUserByToken (token) {
   return new Promise((resolve, reject) => {
     // @todo - Parameterise
@@ -102,10 +76,10 @@ function isUserAuthorised (resource, permission, acl) {
 
 module.exports = {
   /*
-  getGuestUser,
-  getToken,
   getUserByToken,
   getUserACLByRole,
   */
+  getToken,
+  getGuestUser,
   isUserAuthorised
 }

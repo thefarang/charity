@@ -28,29 +28,33 @@ module.exports = (dbFacade) => {
   appInstance.use(bodyParser.urlencoded({ extended: false }))
 
   // Json webtoken parsing middleware
-  /*
   appInstance.use(async (req, res, next) => {
     try {
       const token = await helpers.getToken(req)
       if (token) {
         req.user = await helpers.getUserByToken(token)
       } else {
+        console.log('HERE')
         req.user = await helpers.getGuestUser()
+        console.log(req.user)
+        /* UNDO COMMENTING
         req.user.acl = await helpers.getUserACLByRole(req.user.role)
+        */
       }
   
+      /* UNDO COMMENTING
       if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.acl)) {
         const err = new Error(null)
         err.status = 401
         throw err
       }
+      */
       return next()
     } catch (err) {
       // @todo logging
       return next(err)
     }
   })
-  */
 
   // Route middlewares
   appInstance.use('/', index)
