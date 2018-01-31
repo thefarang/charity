@@ -4,7 +4,7 @@ const config = require('config')
 const log = require('../log')
 const mongoose = require('mongoose')
 // const roleActions = require('./actions/roles')
-// const userActions = require('./actions/users')
+const userActions = require('./actions/users')
 
 let isConnected = false
 
@@ -27,15 +27,14 @@ const disconnect = () => {
 
 /*
 const getRoleActions = () => roleActions
-
-const getUserActions = () => userActions
 */
+const getUserActions = () => userActions
 
 module.exports = {
   connect,
-  disconnect
+  disconnect,
+  getUserActions
   /*,
   getRoleActions,
-  getUserActions
   */
 }

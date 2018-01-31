@@ -3,6 +3,7 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
+const expressSanitizer = require('express-sanitizer')
 
 const log = require('./services/log')
 const helpers = require('./lib/helpers')
@@ -11,7 +12,7 @@ const index = require('./routes/index')
 const register = require('./routes/register')
 // const registerAuth = require('./routes/register-auth');
 const login = require('./routes/login')
-// const loginAuth = require('./routes/login-auth')
+const loginAuth = require('./routes/login-auth')
 const dashboard = require('./routes/dashboard')
 
 module.exports = (dbFacade) => {
@@ -23,22 +24,25 @@ module.exports = (dbFacade) => {
   appInstance.set('view engine', 'ejs')
   appInstance.use(express.static(path.join(__dirname, 'public')))
 
-  // Incoming data parsing middleware
+  // Incoming data parsing and sanitizing middleware
   appInstance.use(bodyParser.json())
   appInstance.use(bodyParser.urlencoded({ extended: false }))
+  appInstance.use(expressSanitizer())
 
   // Json webtoken parsing middleware
   appInstance.use(async (req, res, next) => {
     try {
       const token = await helpers.getToken(req)
       if (token) {
+console.log('TOKEN FOUND')
         req.user = await helpers.getUserByToken(token)
+console.log(req.user)
       } else {
         req.user = await helpers.getGuestUser()
         req.user.acl = await helpers.getUserACLByRole(req.user.role)
       }
   
-      if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.acl)) {
+      if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), user.role)) {
         const err = new Error()
         err.status = 401
         throw err
@@ -55,7 +59,7 @@ module.exports = (dbFacade) => {
   appInstance.use('/register', register)
   // appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)
-  // appInstance.use('/login-auth', loginAuth)
+  appInstance.use('/login-auth', loginAuth)
   appInstance.use('/dashboard', dashboard)
   // appInstance.use('/logout', logout); // @reminder - this is not needed with tokens, the client can simply delete the token
 

@@ -1,6 +1,7 @@
 'use strict'
 
 class User {
+  // Pass in a Password object and a Role object
   constructor(id, email, password, role) {
     this.id = id
     this.email = email
