@@ -3,6 +3,7 @@
 const bearerToken = require('bearer-token')
 const jwt = require('jsonwebtoken')
 const dbUsers = require('../data/users')
+const acl = require('../data/acl')
 
 const getGuestUser = () => dbUsers.getGuestUser()
 
@@ -32,38 +33,21 @@ async function getUserByToken (token) {
     })
   })
 }
-
-// Returns User as a JSON object
-async function getUserACLByRole (role) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${config.get('conchaAuthApi')}/access-control/${role}`,
-      headers: {
-        'Accept': 'application/json'
-      }
-    }
-
-    request(options, (err, res, acl) => {
-      if (err) {
-        // @todo logging 500
-        return reject(err)
-      }
-
-      if (res.statusCode !== 200) {
-        // Not authenticated.
-        res.body = res.body ? JSON.parse(res.body) : res.body
-        const err = new Error(res.body)
-        err.status = 500
-        return reject(err)
-      }
-
-      return resolve(JSON.parse(acl))
-    })
-  })
-}
 */
 
-function isUserAuthorised (resource, permission, acl) {
+const getUserACLByRole = (role) => {
+  const completeAcl = acl.getAcl()
+  let userAcl = []
+
+  for (const index in completeAcl) {
+    if (completeAcl[index].roles.indexOf(role.name) >= 0) {
+      userAcl.push(completeAcl[index])
+    }
+  }
+  return userAcl
+}
+
+const isUserAuthorised = (resource, permission, acl) => {
   let isAuthorised = false
   for (const index in acl) {
     if ((acl[index].resource === resource) && (acl[index].permission === permission)) {
@@ -77,9 +61,9 @@ function isUserAuthorised (resource, permission, acl) {
 module.exports = {
   /*
   getUserByToken,
-  getUserACLByRole,
   */
-  getToken,
   getGuestUser,
+  getToken,
+  getUserACLByRole,
   isUserAuthorised
 }

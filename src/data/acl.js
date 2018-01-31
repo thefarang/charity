@@ -1,11 +1,11 @@
 'use strict'
 
-const getAcls = () => {
+const getAcl = () => {
   return [
     {
       resource: '/',
       permission: 'get',
-      roles: ['guest', 'charity', 'donator', 'admin']
+      roles: ['guest', 'cause', 'donator', 'admin']
     },
     {
       resource: '/register',
@@ -28,13 +28,13 @@ const getAcls = () => {
       roles: ['guest']
     },
     {
-      resource: '/dashboard', // @todo, how about charity-dash, donator-dash, admin-dash?
+      resource: '/dashboard', // @todo, how about different dashboards? cause-dash, donator-dash, admin-dash?
       permission: 'get',
-      roles: ['guest', 'charity', 'donator', 'admin']
+      roles: ['cause', 'donator', 'admin']
     }
   ]
 }
 
 module.exports = {
-  getAcls
+  getAcl
 }

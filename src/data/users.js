@@ -6,10 +6,12 @@ const roles = require('./roles')
 const guestUser = new User(
   '507f1f77bcf86cd799439011', 
   'guest@charity',
-  '@todo think about this, not secure!',
+  'NOT USED',
   roles.getGuestRole()
 )
 
+// @todo
+// Use .env config to insert password
 const adminUser = new User(
   '507f1f77bcf86cd799439012', 
   'admin@charity',
@@ -17,16 +19,11 @@ const adminUser = new User(
   roles.getAdminRole()
 )
 
-const getGuestUser = () => {
-  return guestUser
-}
+const getGuestUser = () => guestUser
 
-const getUsers = () => {
-  return [
-    guestUser,
-    adminUser
-  ]
-}
+const getAdminUser = () => adminUser
+
+const getUsers = () => [ guestUser, adminUser ]
 
 module.exports = {
   getGuestUser,
