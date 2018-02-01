@@ -2,6 +2,7 @@
 
 const bearerToken = require('bearer-token')
 const jwt = require('jsonwebtoken')
+const config = require('config')
 
 const dACL = require('../data/acl')
 const dRoles = require('../data/roles')
@@ -12,6 +13,8 @@ const Role = require('../models/role')
 
 const createToken = (user) => {
   return new Promise((resolve, reject) => {
+    // @todo
+    // Better to use the User.toJSON() here in the signing, rather than manual
     jwt.sign(
       {
         id: user.id,
@@ -21,9 +24,9 @@ const createToken = (user) => {
           name: user.role.name
         }
       },
-      'secret', // @todo critical - Replace the 'secret' with a pass phrase stored in the config
+      config.get('token.secret'),
       {
-        expiresIn: '1h' // @todo - put this into config
+        expiresIn: config.get('token.duration')
       },
       (err, token) => {
         if (err) {
@@ -54,8 +57,7 @@ const getToken = async (req) => {
 // intend to update the User record in the database.
 const getUserByToken = async (token) => {
   return new Promise((resolve, reject) => {
-    // @todo critial - Parameterise
-    jwt.verify(token, 'secret', (err, decodedUserData) => {
+    jwt.verify(token, config.get('token.secret'), (err, decodedUserData) => {
       if (err) {
         // @todo - add logging
         return reject(err)

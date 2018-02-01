@@ -1,0 +1,19 @@
+{
+  "token": {
+    "secret": "TOKEN_SECRET"
+  },
+  "database": {
+    "db_conn": "DATABASE_DB_CONN"
+  },
+  "system_users": {
+    "guest": {
+      "id": "SYSTEM_USERS_GUEST_ID",
+      "email": "SYSTEM_USERS_GUEST_EMAIL"
+    },
+    "admin": {
+      "id": "SYSTEM_USERS_ADMIN_ID",
+      "email": "SYSTEM_USERS_ADMIN_EMAIL",
+      "clrPassword": "SYSTEM_USERS_ADMIN_CLRPASS"
+    }
+  }
+}

@@ -1,3 +1,26 @@
 {
-  "dbConn": "mongodb://mongo:27017/local"
+  "app": {
+    "name": "charity"
+  },
+  "token": {
+    "secret": "",
+    "duration": "1h"
+  },
+  "database": {
+    "db_conn": ""
+  },
+  "password": {
+    "salt_work_factor": "10"
+  },
+  "system_users": {
+    "guest": {
+      "id": "",
+      "email": ""
+    },
+    "admin": {
+      "id": "",
+      "email": "",
+      "clrPassword": ""
+    }
+  }
 }

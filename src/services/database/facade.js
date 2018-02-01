@@ -1,9 +1,9 @@
 'use strict'
 
 const config = require('config')
-const log = require('../log')
 const mongoose = require('mongoose')
-// const roleActions = require('./actions/roles')
+
+const log = require('../log')
 const userActions = require('./actions/users')
 
 let isConnected = false
@@ -11,7 +11,7 @@ let isConnected = false
 const connect = () => {
   if (!isConnected) {
     mongoose.Promise = global.Promise
-    mongoose.connect(config.get('dbConn'), {
+    mongoose.connect(config.get('database.db_conn'), {
       useMongoClient: true
     })
     isConnected = true

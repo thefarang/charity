@@ -1,5 +1,6 @@
 'use strict'
 
 const bunyan = require('bunyan')
+const config = require('config')
 
-module.exports = bunyan.createLogger({ name: 'charity' }) // @todo parameterise
+module.exports = bunyan.createLogger({ name: config.get('app.name') })

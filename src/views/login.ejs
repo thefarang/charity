@@ -1,4 +1,23 @@
 <!DOCTYPE html>
+
+<!--
+  We need to correctly create the inputs
+
+  Where should javascript be included?
+
+  We need to incorporate jquery
+    Initially just pull down from internet directly
+    Then incorporate into codebase later
+  We need to disable submit on click
+  We need to capture the submit, and ajax send to login-auth
+  We need to display error message on failure to authenticate
+  We need to hide error message on interaction with form elements
+  We need to store token returned on correct authentication
+  We need to redirect to /dashboard on authentication
+  We need to organise views into pages/ and partials/ and reuse items accordingly
+  We need to add the miner check
+-->
+
 <html>
   <head>
     <title><%= title %></title>
@@ -6,6 +25,17 @@
   </head>
   <body>
     <h1>Login</h1>
-    <p>Welcome to <%= title %></p>
+
+    <div>
+      Error messages go here
+    </div>
+
+    <form>
+      <input type="text" id="email" name="email" maxlength="50">
+      <input type="password" id="password" name="password" maxlength="30">
+      <a href="/forgot-password" target="_blank">Forgot password?</a>
+      <p>Add miner check here</p>
+      <button>Submit</button>
+    </form>
   </body>
 </html>

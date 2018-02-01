@@ -31,9 +31,10 @@ module.exports = (dbFacade) => {
   appInstance.use(expressSanitizer())
 
   // Json webtoken parsing middleware
+  let token = null
   appInstance.use(async (req, res, next) => {
     try {
-      const token = await helpers.getToken(req)
+      token = await helpers.getToken(req)
       if (token) {
         req.user = await helpers.getUserByToken(token)
       } else {
@@ -47,7 +48,7 @@ module.exports = (dbFacade) => {
       }
       return next()
     } catch (err) {
-      // @todo logging
+      log.info({ err: err, token: token }, 'An error ocurred whilst parsing json webtoken')
       return next(err)
     }
   })

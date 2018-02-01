@@ -1,11 +1,11 @@
 'use strict'
 
 const bcrypt = require('bcryptjs')
+const config = require('config')
 
 const log = require('../services/log')
 
-// @todo parameterise this
-const SALT_WORK_FACTOR = 10
+const SALT_WORK_FACTOR = config.get('password.salt_work_factor')
 
 class Password {
   constructor() {

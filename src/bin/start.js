@@ -1,6 +1,11 @@
 'use strict'
 
+// Require and configure dotenv immediately, to pull secure environment variables
+// from the .env file into process.env
+require('dotenv').config()
+
 const http = require('http')
+
 const log = require('../services/log')
 const dbFacade = require('../services/database/facade')
 const app = require('../app')
@@ -32,7 +37,7 @@ const onError = (error) => {
     ? 'Pipe ' + port
     : 'Port ' + port
 
-  // handle specific listen errors with friendly messages
+  // Handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
       log.info({}, bind + ' requires elevated privileges')
@@ -58,14 +63,15 @@ const onListening = () => {
 dbFacade.connect()
 process.on('SIGINT', () => dbFacade.disconnect())
 
-// Inject app dependencies and create an app instance.
+// Create an app instance, injecting dependencies accordingly.
 const appInstance = app(dbFacade)
 
 // Get port from environment and store in Express.
+// @todo How does docker indicate to the app which port to use?
 const port = normalizePort(process.env.PORT || '80')
 appInstance.set('port', port)
 
-// Start the appInstance
+// Wrap the app in a HTTP server and start the server.
 const server = http.createServer(appInstance)
 server.listen(port)
 server.on('error', onError)
