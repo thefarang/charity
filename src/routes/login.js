@@ -8,7 +8,11 @@ const router = express.Router()
 router.get('/', (req, res, next) => {
   // ok, what do we need to do here?
   // We need form elements on the page already
-  res.render('login', { title: 'Login page' })
+  let errorMessage = null
+  res.render('login', {
+    title: 'Login',
+    error_message: errorMessage
+  })
 })
 
 module.exports = router
