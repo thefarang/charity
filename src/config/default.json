@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "charity"
+    "name": "charity",
+    "port": "80"
   },
   "token": {
     "secret": "",

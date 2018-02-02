@@ -5,6 +5,7 @@
 require('dotenv').config()
 
 const http = require('http')
+const config = require('config')
 
 const servLog = require('../services/log')
 const dbFacade = require('../services/database/facade')
@@ -67,8 +68,7 @@ process.on('SIGINT', () => dbFacade.disconnect())
 const appInstance = app(dbFacade)
 
 // Get port from environment and store in Express.
-// @todo How does docker indicate to the app which port to use?
-const port = normalizePort(process.env.PORT || '80')
+const port = normalizePort(config.get('app.port'))
 appInstance.set('port', port)
 
 // Wrap the app in a HTTP server and start the server.
