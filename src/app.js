@@ -53,13 +53,20 @@ module.exports = (dbFacade) => {
         req.user = dataUsers.getGuestUser()
       }
 
+      // Handle 404s
+      if (!libAcl.isResourceExistant(req.path)) {
+        return next()
+      }
+
+      // Handle 401 Unauthorized through 302 Redirect. Not semantically correct but supports the
+      // end user well-enough and minimises work here.
       if (!libAcl.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
-        // @todo
-        // If guest, then redirect to /login
-        // If user, then redirect to /dashboard
-        const err = new Error()
-        err.status = 401
-        throw err
+        if (req.user.role.name === 'guest') {
+          res.redirect(302, '/login')
+        } else {
+          res.redirect(302, '/dashboard')
+        }
+        return
       }
       return next()
     } catch (err) {
@@ -90,7 +97,6 @@ module.exports = (dbFacade) => {
   appInstance.use((err, req, res, next) => {
     servLog.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
-    // if err.status === 401 then include in res.set() WWW-Authenticate: Bearer realm="example"
     res.render('error', { error: err })
   })
 

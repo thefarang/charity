@@ -7,6 +7,7 @@ const setCookie = (res, token) => {
     'token',
     token,
     {
+      /* @todo pull this from config */
       /* domain: '.example.com', */
       httpOnly: true
       /* secure: true */
@@ -21,6 +22,7 @@ const unsetCookie = (res) => {
   res.clearCookie(
     'token',
     {
+      /* @todo pull this from config */
       /* domain: '.example.com' */
       httpOnly: true
       /* secure: true */

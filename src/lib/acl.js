@@ -2,6 +2,18 @@
 
 const dataACL = require('../data/acl')
 
+const isResourceExistant = (resource) => {
+  let isExistant = false
+  const completeAcl = dataACL.getAcl()
+  for (const index in completeAcl) {
+    if (completeAcl[index].resource === resource) {
+      isExistant = true
+      break
+    }
+  }
+  return isExistant
+}
+
 const isUserAuthorised = (resource, permission, role) => {
   let isAuthorised = false
   const completeAcl = dataACL.getAcl()
@@ -20,5 +32,6 @@ const isUserAuthorised = (resource, permission, role) => {
 }
 
 module.exports = {
+  isResourceExistant,
   isUserAuthorised
 }
