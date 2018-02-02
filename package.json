@@ -6,7 +6,8 @@
     "lint": "./node_modules/.bin/standard \"src/**/*.js\"",
     "fix-style": "./node_modules/.bin/standard --fix \"src/**/*.js\"",
     "init-users": "node ./src/scripts/init-users.js",
-    "browserify": "./node_modules/.bin/browserify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\" ",
+    "browserify": "./node_modules/.bin/browserify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\"",
+    "watchify": "./node_modules/.bin/watchify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\"",
     "debug": "./node_modules/.bin/nodemon ./src/bin/start.js"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
   "devDependencies": {
     "nodemon": "1.12.1",
     "standard": "10.0.3",
-    "browserify": "15.2.0"
+    "browserify": "15.2.0",
+    "watchify": "3.10.0"
   }
 }
