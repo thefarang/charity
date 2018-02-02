@@ -12,6 +12,10 @@
   "password": {
     "salt_work_factor": "10"
   },
+  "cookie": {
+    "domain": ".charity.org",
+    "secure": false
+  },
   "system_users": {
     "guest": {
       "id": "",

@@ -1,5 +1,7 @@
 'use strict'
 
+const config = require('config')
+
 // Asks the browser to create a cookie called 'token', responsible
 // for encapsulating the jwt on each request.
 const setCookie = (res, token) => {
@@ -7,10 +9,9 @@ const setCookie = (res, token) => {
     'token',
     token,
     {
-      /* @todo pull this from config */
-      /* domain: '.example.com', */
+      // domain: config.get('cookie.domain')
       httpOnly: true
-      /* secure: true */
+      // secure: config.get('cookie.secure')
     }
   )
 }
@@ -22,10 +23,9 @@ const unsetCookie = (res) => {
   res.clearCookie(
     'token',
     {
-      /* @todo pull this from config */
-      /* domain: '.example.com' */
+      // domain: config.get('cookie.domain')
       httpOnly: true
-      /* secure: true */
+      // secure: config.get('cookie.secure')
     }
   )
 }

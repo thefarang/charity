@@ -55,12 +55,18 @@ module.exports = (dbFacade) => {
 
       // Handle 404s
       if (!libAcl.isResourceExistant(req.path)) {
+        servLog.info({ route: req.path }, 'Unknown route requested. Sending to 404 handler')
         return next()
       }
 
       // Handle 401 Unauthorized through 302 Redirect. Not semantically correct but supports the
       // end user well-enough and minimises work here.
       if (!libAcl.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
+        servLog.info({ 
+          user: req.user.toJSON(),
+          resource: req.path
+        }, 'User attempted to access unauthorised route. Redirecting.')
+
         if (req.user.role.name === 'guest') {
           res.redirect(302, '/login')
         } else {
@@ -68,6 +74,8 @@ module.exports = (dbFacade) => {
         }
         return
       }
+
+      // Delegate to the route handlers below
       return next()
     } catch (err) {
       servLog.info({ err: err, token: token }, 'An error ocurred whilst parsing json webtoken')
