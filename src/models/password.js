@@ -3,7 +3,7 @@
 const bcrypt = require('bcryptjs')
 const config = require('config')
 
-const log = require('../services/log')
+const servLog = require('../services/log')
 
 const SALT_WORK_FACTOR = config.get('password.salt_work_factor')
 
@@ -17,7 +17,7 @@ class Password {
     return new Promise((resolve, reject) => {
       bcrypt.compare(clrPassword, encPassword, (err, isMatch) => {
         if (err) {
-          log.info({ err: err }, 'An error occurred validating a password')
+          servLog.info({ err: err }, 'An error occurred validating a password')
           return reject(err)
         }
         return resolve(isMatch)
@@ -30,14 +30,14 @@ class Password {
       // Generate a salt
       bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
         if (err) {
-          log.info({ err: err }, 'An error occurred generating a salt')
+          servLog.info({ err: err }, 'An error occurred generating a salt')
           return reject(err)
         }
 
         // Hash the password using our new salt
         bcrypt.hash(clrPassword, salt, (err, encPassword) => {
           if (err) {
-            log.info({ err: err }, 'An error occurred hashing a password')
+            servLog.info({ err: err }, 'An error occurred hashing a password')
             return reject(err)
           }
           return resolve(encPassword)

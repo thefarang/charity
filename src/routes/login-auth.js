@@ -2,7 +2,7 @@
 
 const express = require('express')
 
-const log = require('../services/log')
+const servLog = require('../services/log')
 const libCookies = require('../lib/cookies')
 const libTokens = require('../lib/tokens')
 
@@ -12,7 +12,7 @@ router.post('/', async (req, res, next) => {
   // Sanitize the incoming data
   const sEmail = req.sanitize(req.body.email)
   const sClrPassword = req.sanitize(req.body.password)
-  log.info({ 
+  servLog.info({ 
     email: req.body.email, 
     sanitized_email: sEmail,
     clear_password: req.body.password,
@@ -25,7 +25,7 @@ router.post('/', async (req, res, next) => {
   try {
     user = await dbFacade.getUserActions().findUserByEmail(sEmail)
     if (!user) {
-      log.info({ 
+      servLog.info({ 
         email: req.body.email }, 
         'User not found based on email and password search')
   
@@ -35,9 +35,9 @@ router.post('/', async (req, res, next) => {
       return
     }
 
-    log.info({ email: req.body.email }, 'User found in login process')
+    servLog.info({ email: req.body.email }, 'User found in login process')
   } catch (err) {
-    log.info({ 
+    servLog.info({ 
       email: req.body.email }, 
       'Handling the error that occurred whilst locating the user')
     
@@ -52,7 +52,7 @@ router.post('/', async (req, res, next) => {
     const isPasswordCorrect =
       await user.password.isClearPasswordCorrect(sClrPassword, user.password.encPassword)
     if (!isPasswordCorrect) {
-      log.info({ email: req.body.email }, 'User password is incorrect')
+      servLog.info({ email: req.body.email }, 'User password is incorrect')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(401)
       res.json()
@@ -63,7 +63,7 @@ router.post('/', async (req, res, next) => {
     // the clear text password in the database)
     user.password.clrPassword = sClrPassword
   } catch (err) {
-    log.info({ 
+    servLog.info({ 
       email: req.body.email }, 
       'Handling the error that occurred whilst performing the password check')
     
@@ -76,7 +76,7 @@ router.post('/', async (req, res, next) => {
   // Create a json web token from the user object.
   try {
     const token = await libTokens.createToken(user)
-    log.info({ 
+    servLog.info({ 
       email: req.body.email,
       token: token },
       'Successfully created token for user')
@@ -86,7 +86,7 @@ router.post('/', async (req, res, next) => {
     res.status(200)
     res.json()
   } catch (err) {
-    log.info({ 
+    servLog.info({ 
       email: req.body.email }, 
       'Handling the error that occurred whilst creating a user token')
     

@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose')
 
-const log = require('../../log')
+const servLog = require('../../log')
 const UserSchema = require('../schema/user-schema')
 
 const User = require('../../../models/user')
@@ -41,7 +41,7 @@ const _upsert = (user, userSchema, resolve, reject) => {
 
   userSchema.save((err) => {
     if (err) {
-      log.info({
+      servLog.info({
         err: err,
         user: user
       }, 'An error occurred saving the UserSchema')
@@ -57,7 +57,7 @@ const saveUser = (user) => {
   return new Promise((resolve, reject) => {
     UserSchema.findOne({ _id: user.id }, (err, userSchema) => {
       if (err) {
-        log.info({
+        servLog.info({
           err: err,
           user: user
         }, 'An error occurred locating the existing User document')
@@ -74,7 +74,7 @@ const findUserByEmail = (sanitizedEmail) => {
   return new Promise((resolve, reject) => {
     UserSchema.findOne({ email: sanitizedEmail }, (err, userSchema) => {
       if (err) {
-        log.info({
+        servLog.info({
           err: err,
           email: sanitizedEmail
         }, `An error occurred locating UserSchema`)
@@ -105,7 +105,7 @@ const removeUser = (user) => {
   return new Promise((resolve, reject) => {
     UserSchema.remove({ _id: user.id }, (err) => {
       if (err) {
-        log.info({
+        servLog.info({
           err: err,
           user: user
         }, 'An error occurred whilst deleting UserSchema')

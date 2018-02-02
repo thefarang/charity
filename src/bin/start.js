@@ -6,7 +6,7 @@ require('dotenv').config()
 
 const http = require('http')
 
-const log = require('../services/log')
+const servLog = require('../services/log')
 const dbFacade = require('../services/database/facade')
 const app = require('../app')
 
@@ -40,10 +40,10 @@ const onError = (error) => {
   // Handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      log.info({}, bind + ' requires elevated privileges')
+      servLog.info({}, bind + ' requires elevated privileges')
       process.exit(1)
     case 'EADDRINUSE':
-      log.info({}, bind + ' is already in use')
+      servLog.info({}, bind + ' is already in use')
       process.exit(1)
     default:
       throw error
@@ -56,7 +56,7 @@ const onListening = () => {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port
-  log.info({}, `Listening on ${bind}`)
+  servLog.info({}, `Listening on ${bind}`)
 }
 
 // Start the database

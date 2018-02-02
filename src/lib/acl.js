@@ -1,10 +1,10 @@
 'use strict'
 
-const dACL = require('../data/acl')
+const dataACL = require('../data/acl')
 
 const isUserAuthorised = (resource, permission, role) => {
   let isAuthorised = false
-  const completeAcl = dACL.getAcl()
+  const completeAcl = dataACL.getAcl()
 
   for (const index in completeAcl) {
     if ((completeAcl[index].resource === resource) && (completeAcl[index].permission === permission)) {

@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
-const log = require('../services/log')
+const servLog = require('../services/log')
 
 const User = require('../models/user')
 const Password = require('../models/password')
@@ -40,7 +40,7 @@ const getUserByToken = async (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.get('token.secret'), (err, decodedUserData) => {
       if (err) {
-        log.info({ err: err }, 'An error occurred verifying the json web token')
+        servLog.info({ err: err }, 'An error occurred verifying the json web token')
         return resolve(null)
       }
 

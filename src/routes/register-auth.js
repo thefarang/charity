@@ -2,7 +2,7 @@
 
 const express = require('express')
 
-const log = require('../services/log')
+const servLog = require('../services/log')
 const libTokens = require('../lib/tokens')
 const dataRoles = require('../data/roles')
 
@@ -17,7 +17,7 @@ router.post('/', async (req, res, next) => {
   // Sanitize the incoming data
   const sEmail = req.sanitize(req.body.email)
   const sClrPassword = req.sanitize(req.body.password)
-  log.info({ 
+  servLog.info({ 
     email: req.body.email, 
     sanitized_email: sEmail,
     clear_password: req.body.password,
@@ -35,7 +35,7 @@ router.post('/', async (req, res, next) => {
   try {
     user = await dbFacade.getUserActions().findUserByEmail(sEmail)
   } catch (err) {
-    log.info({ 
+    servLog.info({ 
       email: req.body.email }, 
       'Handling the error that occurred whilst searching for a matching user')
     
@@ -46,7 +46,7 @@ router.post('/', async (req, res, next) => {
   }
 
   if (user !== null) {
-    log.info({ 
+    servLog.info({ 
       email: req.body.email }, 
       'User already exists in the dbase. Registration denied.')
 
@@ -68,9 +68,9 @@ router.post('/', async (req, res, next) => {
     user.role = dataRoles.getCauseRole()
 
     user = await dbFacade.getUserActions().saveUser(user)
-    log.info({ user: user.toJSON() }, 'New user registered')
+    servLog.info({ user: user.toJSON() }, 'New user registered')
   } catch (err) {
-    log.info({ 
+    servLog.info({ 
       email: req.body.email }, 
       'Handling the error that occurred whilst creating a new User')
     
@@ -85,7 +85,7 @@ router.post('/', async (req, res, next) => {
     // @todo critical
     // Create the Cookie
     const token = await libTokens.createToken(user)
-    log.info({ 
+    servLog.info({ 
       user: user.toJSON(),
       token: token },
       'Successfully created token for newly registered user')
@@ -94,7 +94,7 @@ router.post('/', async (req, res, next) => {
     res.status(200)
     res.json({ token: token })
   } catch (err) {
-    log.info({ 
+    servLog.info({ 
       user: user.toJSON() },
       'Handling the error that occurred whilst creating a newly registered user token')
     
