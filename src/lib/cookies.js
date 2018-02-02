@@ -10,7 +10,6 @@ const setCookie = (res, token) => {
     token,
     {
       // domain: config.get('cookie.domain')
-      httpOnly: true
       // secure: config.get('cookie.secure')
     }
   )
@@ -24,7 +23,6 @@ const unsetCookie = (res) => {
     'token',
     {
       // domain: config.get('cookie.domain')
-      httpOnly: true
       // secure: config.get('cookie.secure')
     }
   )

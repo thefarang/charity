@@ -91,7 +91,6 @@ module.exports = (dbFacade) => {
   appInstance.use('/login', login)
   appInstance.use('/login-auth', loginAuth)
   appInstance.use('/dashboard', dashboard)
-  // appInstance.use('/logout', logout); // @reminder - this is not needed with tokens, the client can simply delete the token
 
   // 404 middleware, called when no routes match the requested route.
   appInstance.use((req, res, next) => {
