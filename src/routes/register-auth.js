@@ -3,8 +3,8 @@
 const express = require('express')
 
 const log = require('../services/log')
-const helpers = require('../lib/helpers')
-const dRoles = require('../data/roles')
+const libTokens = require('../lib/tokens')
+const dataRoles = require('../data/roles')
 
 const User = require('../models/user')
 const Password = require('../models/password')
@@ -65,7 +65,7 @@ router.post('/', async (req, res, next) => {
     user = new User()
     user.email = sEmail
     user.password = password
-    user.role = dRoles.getCauseRole()
+    user.role = dataRoles.getCauseRole()
 
     user = await dbFacade.getUserActions().saveUser(user)
     log.info({ user: user.toJSON() }, 'New user registered')
@@ -82,7 +82,9 @@ router.post('/', async (req, res, next) => {
 
   // Create json web token from the user object and return
   try {
-    const token = await helpers.createToken(user)
+    // @todo critical
+    // Create the Cookie
+    const token = await libTokens.createToken(user)
     log.info({ 
       user: user.toJSON(),
       token: token },

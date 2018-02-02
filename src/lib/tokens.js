@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const log = require('../services/log')
-const dACL = require('../data/acl')
-const dRoles = require('../data/roles')
 
 const User = require('../models/user')
 const Password = require('../models/password')
@@ -56,26 +54,8 @@ const getUserByToken = async (token) => {
   })
 }
 
-const isUserAuthorised = (resource, permission, role) => {
-  let isAuthorised = false
-  const completeAcl = dACL.getAcl()
-
-  for (const index in completeAcl) {
-    if ((completeAcl[index].resource === resource) && (completeAcl[index].permission === permission)) {
-      // We have found the resource the user wants to access. Now check they are
-      // allowed to access it.
-      if (completeAcl[index].roles.indexOf(role.name) >= 0) {
-        isAuthorised = true
-      }
-      break
-    }
-  }
-  return isAuthorised
-}
-
 module.exports = {
   createToken,
   getToken,
-  getUserByToken,
-  isUserAuthorised
+  getUserByToken
 }

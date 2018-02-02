@@ -6,10 +6,11 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const expressSanitizer = require('express-sanitizer')
 
-const log = require('./services/log')
-const helpers = require('./lib/helpers')
-const cookies = require('./lib/cookies')
-const dUsers = require('./data/users')
+const servLog = require('./services/log')
+const libAcl = require('./lib/acl')
+const libCookies = require('./lib/cookies')
+const libTokens = require('./lib/tokens')
+const dataUsers = require('./data/users')
 
 const index = require('./routes/index')
 const register = require('./routes/register')
@@ -38,21 +39,21 @@ module.exports = (dbFacade) => {
   let token = null
   appInstance.use(async (req, res, next) => {
     try {
-      token = helpers.getToken(req)
+      token = libTokens.getToken(req)
       if (token) {
-        log.info({ token: token }, 'Token found')
-        req.user = await helpers.getUserByToken(token)
+        servLog.info({ token: token }, 'Token found')
+        req.user = await libTokens.getUserByToken(token)
         if (!req.user) {
-          log.info({ token: token }, 'Token has expired.')
-          cookies.unsetCookie(res)
+          servLog.info({ token: token }, 'Token has expired.')
+          libCookies.unsetCookie(res)
           res.redirect(302, '/login')
           return
         }
       } else {
-        req.user = dUsers.getGuestUser()
+        req.user = dataUsers.getGuestUser()
       }
 
-      if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
+      if (!libAcl.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
         // @todo
         // If guest, then redirect to /login
         // If user, then redirect to /dashboard
@@ -62,7 +63,7 @@ module.exports = (dbFacade) => {
       }
       return next()
     } catch (err) {
-      log.info({ err: err, token: token }, 'An error ocurred whilst parsing json webtoken')
+      servLog.info({ err: err, token: token }, 'An error ocurred whilst parsing json webtoken')
       return next(err)
     }
 
@@ -81,13 +82,13 @@ module.exports = (dbFacade) => {
   appInstance.use((req, res, next) => {
     const err = new Error('An unknown route has been requested')
     err.status = 404
-    log.info({}, err.message)
+    servLog.info({}, err.message)
     next(err)
   })
 
   // Error display middleware.
   appInstance.use((err, req, res, next) => {
-    log.info({ err: err }, 'Error handled finally by the error display middleware')
+    servLog.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
     // if err.status === 401 then include in res.set() WWW-Authenticate: Bearer realm="example"
     res.render('error', { error: err })

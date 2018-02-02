@@ -3,8 +3,8 @@
 const express = require('express')
 
 const log = require('../services/log')
-const helpers = require('../lib/helpers')
-const cookies = require('../lib/cookies')
+const libCookies = require('../lib/cookies')
+const libTokens = require('../lib/tokens')
 
 const router = express.Router()
 
@@ -75,14 +75,14 @@ router.post('/', async (req, res, next) => {
 
   // Create a json web token from the user object.
   try {
-    const token = await helpers.createToken(user)
+    const token = await libTokens.createToken(user)
     log.info({ 
       email: req.body.email,
       token: token },
       'Successfully created token for user')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
-    cookies.setCookie(res, token)
+    libCookies.setCookie(res, token)
     res.status(200)
     res.json()
   } catch (err) {
