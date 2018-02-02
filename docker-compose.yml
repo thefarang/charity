@@ -23,6 +23,7 @@ services:
       # Make the following directories available to docker so that changes made on the host
       # are immediately available inside the docker container.
       - ./src:/app/src
+      - ./.env:/app/.env
       - ./package.json:/app/package.json
     command: npm run debug
     ports:

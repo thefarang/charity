@@ -9,5 +9,6 @@ RUN npm cache clean --force --silent
 
 COPY ./src /app/src
 COPY .env /app/
+RUN npm run browserify
 
 EXPOSE 80
