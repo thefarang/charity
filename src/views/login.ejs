@@ -82,7 +82,8 @@
               // $('#wrapper').html(data)
 
               // If the form was good, we should receive a token
-              // Store the token locally and redirect
+              // Store the token and redirect
+              // sessionStorage.setItem("token", data.access_token)
               window.location.replace("/dashboard")
             },
             statusCode: {

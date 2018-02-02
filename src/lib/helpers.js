@@ -1,9 +1,9 @@
 'use strict'
 
-const bearerToken = require('bearer-token')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
+const log = require('../services/log')
 const dACL = require('../data/acl')
 const dRoles = require('../data/roles')
 
@@ -39,16 +39,12 @@ const createToken = (user) => {
   })
 }
 
-const getToken = async (req) => {
-  return new Promise((resolve, reject) => {
-    bearerToken(req, (err, token) => {
-      if (err) {
-        // @todo - add logging
-        return reject(err)
-      }
-      return resolve(token)
-    })
-  })
+const getToken = (req) => {
+  // @todo
+  // Does req.cookies only retrieve cookies from this domain?
+  console.log('HERE0')
+  console.log(req.cookies.token)
+  return req.cookies.token || null
 }
 
 // Note that this method returns a partially-hydrated User object. The
@@ -59,8 +55,8 @@ const getUserByToken = async (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.get('token.secret'), (err, decodedUserData) => {
       if (err) {
-        // @todo - add logging
-        return reject(err)
+        log.info({ err: err }, 'An error occurred verifying the json web token')
+        return resolve(null)
       }
 
       const user = new User()

@@ -4,6 +4,7 @@ const express = require('express')
 
 const log = require('../services/log')
 const helpers = require('../lib/helpers')
+const cookies = require('../lib/cookies')
 
 const router = express.Router()
 
@@ -81,8 +82,9 @@ router.post('/', async (req, res, next) => {
       'Successfully created token for user')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
+    cookies.setCookie(res, token)
     res.status(200)
-    res.json({ token: token })
+    res.json()
   } catch (err) {
     log.info({ 
       email: req.body.email }, 

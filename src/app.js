@@ -3,10 +3,12 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const expressSanitizer = require('express-sanitizer')
 
 const log = require('./services/log')
 const helpers = require('./lib/helpers')
+const cookies = require('./lib/cookies')
 const dUsers = require('./data/users')
 
 const index = require('./routes/index')
@@ -30,18 +32,30 @@ module.exports = (dbFacade) => {
   appInstance.use(bodyParser.urlencoded({ extended: false }))
   appInstance.use(expressSanitizer())
 
-  // Json webtoken parsing middleware
+  // Json webtoken parsing middleware. The jwt, if it exists, will
+  // be stored in the cookie.
+  appInstance.use(cookieParser())
   let token = null
   appInstance.use(async (req, res, next) => {
     try {
-      token = await helpers.getToken(req)
+      token = helpers.getToken(req)
       if (token) {
+        log.info({ token: token }, 'Token found')
         req.user = await helpers.getUserByToken(token)
+        if (!req.user) {
+          log.info({ token: token }, 'Token has expired.')
+          cookies.unsetCookie(res)
+          res.redirect(302, '/login')
+          return
+        }
       } else {
-        req.user = await dUsers.getGuestUser()
+        req.user = dUsers.getGuestUser()
       }
 
       if (!helpers.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
+        // @todo
+        // If guest, then redirect to /login
+        // If user, then redirect to /dashboard
         const err = new Error()
         err.status = 401
         throw err
@@ -51,6 +65,7 @@ module.exports = (dbFacade) => {
       log.info({ err: err, token: token }, 'An error ocurred whilst parsing json webtoken')
       return next(err)
     }
+
   })
 
   // Route middlewares
@@ -74,6 +89,7 @@ module.exports = (dbFacade) => {
   appInstance.use((err, req, res, next) => {
     log.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
+    // if err.status === 401 then include in res.set() WWW-Authenticate: Bearer realm="example"
     res.render('error', { error: err })
   })
 
