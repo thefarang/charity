@@ -5,7 +5,7 @@ const config = require('config')
 
 const servLog = require('../services/log')
 
-const SALT_WORK_FACTOR = config.get('password.salt_work_factor')
+const SALT_WORK_FACTOR = Number(config.get('password.salt_work_factor'))
 
 class Password {
   constructor() {
