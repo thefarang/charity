@@ -4,6 +4,7 @@ const express = require('express')
 
 const servLog = require('../services/log')
 const libTokens = require('../lib/tokens')
+const libCookies = require('../lib/cookies')
 const dataRoles = require('../data/roles')
 
 const User = require('../models/user')
@@ -91,6 +92,7 @@ router.post('/', async (req, res, next) => {
       'Successfully created token for newly registered user')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
+    libCookies.setCookie(res, token)
     res.status(200)
     res.json({ token: token })
   } catch (err) {

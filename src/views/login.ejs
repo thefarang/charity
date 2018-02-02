@@ -76,17 +76,10 @@
             type: "POST",
             url: $("form").attr('action'),
             data: $("form").serialize(),
-            success: function(data) {
-              console.log(data)
-              //console.log(data.token)
-              // $('#wrapper').html(data)
-
-              // If the form was good, we should receive a token
-              // Store the token and redirect
-              // sessionStorage.setItem("token", data.access_token)
-              window.location.replace("/dashboard")
-            },
             statusCode: {
+              200: function(data) {
+                window.location.replace("/dashboard")
+              },
               401: function() {
                 $("#errors").text("The email or password is incorrect.")
                 $("#errors").css("display", "block")
