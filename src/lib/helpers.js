@@ -13,17 +13,8 @@ const Role = require('../models/role')
 
 const createToken = (user) => {
   return new Promise((resolve, reject) => {
-    // @todo
-    // Better to use the User.toJSON() here in the signing, rather than manual
     jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: {
-          id: user.role.id,
-          name: user.role.name
-        }
-      },
+      user.toJSON(),
       config.get('token.secret'),
       {
         expiresIn: config.get('token.duration')
@@ -40,10 +31,6 @@ const createToken = (user) => {
 }
 
 const getToken = (req) => {
-  // @todo
-  // Does req.cookies only retrieve cookies from this domain?
-  console.log('HERE0')
-  console.log(req.cookies.token)
   return req.cookies.token || null
 }
 
