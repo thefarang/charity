@@ -1,6 +1,7 @@
 'use strict'
 
 const express = require('express')
+const { check, validationResult } = require('express-validator/check')
 
 const servLog = require('../services/log')
 const libTokens = require('../lib/tokens')
@@ -12,44 +13,76 @@ const Password = require('../models/password')
 
 const router = express.Router()
 
-// @todo
-// Capture all incoming data
-router.post('/', async (req, res, next) => {
-  // Sanitize the incoming data
-  const sFirstName = req.sanitize(req.body.first_name)
-  const sLastName = req.sanitize(req.body.last_name)
-  const sEmail = req.sanitize(req.body.email)
-  const sConfirmedEmail = req.sanitize(req.body.confirm_email)
-  const sClrPassword = req.sanitize(req.body.password)
-  const sClrConfirmedPassword = req.sanitize(req.body.confirm_password)
+const sanitizeXss = (req) => {
+  req.body.first_name = req.sanitize(req.body.first_name)
+  req.body.last_name = req.sanitize(req.body.last_name)
+  req.body.email = req.sanitize(req.body.email)
+  req.body.confirm_email = req.sanitize(req.body.confirm_email)
+  req.body.password = req.sanitize(req.body.password)
+  req.body.confirm_password = req.sanitize(req.body.confirm_password)
 
   servLog.info({
     first_name: req.body.first_name,
-    sanitized_first_name: sFirstName,
     last_name: req.body.last_name,
-    sanitized_last_name: sLastName,
     email: req.body.email,
-    sanitized_email: sEmail,
-    clear_password: req.body.password,
-    sanitized_clear_password: sClrPassword }, 
-    'User registration attempt')
+    clear_password: req.body.password }, 
+    'Sanitized XSS pre-registration')
+}
+
+const validateForm = () => {
+  check('first_name')
+    .exists().withMessage('First name is required')
+    .isAlpha().withMessage('First name should contain only characters a-zA-Z')
+    .isLength({ max: 20 }).withMessage('First name should be a maximum of 20 characters')
+    .trim()
+  
+  check('last_name')
+    .exists().withMessage('Last name is required')
+    .isAlpha().withMessage('Last name should contain only characters a-zA-Z')
+    .isLength({ max: 25 }).withMessage('Last name should be a maximum of 25 characters')
+    .trim()
+
+  check('email')
+    .exists().withMessage('Email is required')
+    .isEmail().withMessage('Email address is not valid')
+    .matches(req.body.confirm_email).withMessage('Email addresses do not match')
+    .trim()
+    .normalizeEmail()
   
   // @todo
-  // validate the data to ensure:
-  // email format correct, passwords match, email does not exist already in the system
-  // Validate emails using this: https://www.npmjs.com/package/email-validator
+  // Add additional checks for inclusion of numbers etc
+  check('password')
+    .exists().withMessage('Password is required')
+    .isLength({ min: 6 }).withMessage('Password must be minimum 6 characters long')
+    .matches(req.body.confirm_password).withMessage('Passwords do not match')
+  
+  servLog.info({
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    email: req.body.email,
+    clear_password: req.body.password }, 
+    'Validated (and cleaned) form data pre-registration')
+}
 
-  // Check that values exist for each field.
-  // Check that lengths are not exceeded
-  // Check that emails correctly match
-  // Check that emails are correctly formatted
-  // Check that passwords correctly match
+router.post('/', 
+  [ sanitizeXss(req), validateForm() ], // @todo critial - how to pass req to the middleware?
+  async (req, res, next) => {
+
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    servLog.info({ errors: errors.mapped() }, 'Registration attempt failed form validation')
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(422)
+    res.json({ errors: errors.mapped() })
+    return
+  }
+  servLog.info({}, 'Registration attempt passed form validation')
 
   // Attempt to find the user in the dbase
   const dbFacade = req.app.get('dbFacade')
   let user = null
   try {
-    user = await dbFacade.getUserActions().findUserByEmail(sEmail)
+    user = await dbFacade.getUserActions().findUserByEmail(req.body.email)
   } catch (err) {
     servLog.info({ 
       email: req.body.email }, 
@@ -64,7 +97,7 @@ router.post('/', async (req, res, next) => {
   if (user !== null) {
     servLog.info({ 
       email: req.body.email }, 
-      'User already exists in the dbase. Registration denied.')
+      'User already exists in the dbase. Registration attempt denied.')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(404)
@@ -78,8 +111,8 @@ router.post('/', async (req, res, next) => {
     user.email = sEmail
     
     const password = new Password()
-    password.clrPassword = sClrPassword
-    password.encPassword = await password.getEncPasswordFromClearPassword(sClrPassword)
+    password.clrPassword = req.body.password
+    password.encPassword = await password.getEncPasswordFromClearPassword(req.body.password)
     user.password = password
     user.role = dataRoles.getCauseRole()
 

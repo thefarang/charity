@@ -28,7 +28,7 @@ module.exports = (dbFacade) => {
   appInstance.set('view engine', 'ejs')
   appInstance.use(express.static(path.join(__dirname, 'public')))
 
-  // Incoming data parsing and sanitizing middleware
+  // Incoming data parsing, sanitizing and validation middleware
   appInstance.use(bodyParser.json())
   appInstance.use(bodyParser.urlencoded({ extended: false }))
   appInstance.use(expressSanitizer())

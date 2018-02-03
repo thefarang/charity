@@ -7,7 +7,7 @@
     "fix-style": "./node_modules/.bin/standard --fix \"src/**/*.js\"",
     "init-users": "node ./src/scripts/init-users.js",
     "build-assets": "./node_modules/.bin/gulp",
-    "watchify": "./node_modules/.bin/watchify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\"",
+    "watch-assets": "./node_modules/.bin/watchify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\"",
     "debug": "./node_modules/.bin/nodemon ./src/bin/start.js"
   },
   "dependencies": {
@@ -23,7 +23,8 @@
     "jsonwebtoken": "8.0.1",
     "mongoose": "4.11.12",
     "serve-favicon": "2.4.2",
-    "jquery": "3.3.1"
+    "jquery": "3.3.1",
+    "express-validator": "4.3.0"
   },
   "devDependencies": {
     "nodemon": "1.12.1",
