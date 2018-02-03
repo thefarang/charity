@@ -22,10 +22,11 @@ services:
     volumes:
       # Make the following directories available to docker so that changes made on the host
       # are immediately available inside the docker container.
+      - ./package.json:/app/package.json
       - ./src:/app/src
       - ./.env:/app/.env
-      - ./package.json:/app/package.json
-    command: npm run debug
+      - ./gulpfile.js:/app/gulpfile.js
+    command: ./docker-compose-cmd.sh
     ports:
       # Expose port to host machine for debugging
       - 80:80
