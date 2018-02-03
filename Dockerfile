@@ -1,3 +1,9 @@
+# To build:
+# > docker build -t thefarang/charity .
+#
+# To run:
+# > docker run -p 80:80 --env-file .env thefarang/charity
+
 FROM node:8.5.0-alpine
 
 # Build app directory
@@ -16,14 +22,11 @@ RUN npm cache clean --force --silent
 
 # Copy the app files, configuration and build tool to the app directory
 COPY ./src /app/src
-COPY .env /app/
-COPY gulpfile.js /app/
 
 # Execute the task runner to build the assets
+COPY gulpfile.js /app/
 RUN npm run build-assets
 
-# Copy docker-compose startup script to the app directory
-COPY ./docker-compose-cmd.sh /app/
-RUN chmod 755 /app/docker-compose-cmd.sh
+CMD ["npm", "start"]
 
 EXPOSE 80

@@ -8,7 +8,8 @@
     "init-users": "node ./src/scripts/init-users.js",
     "build-assets": "./node_modules/.bin/gulp",
     "watch-assets": "./node_modules/.bin/watchify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\"",
-    "debug": "./node_modules/.bin/nodemon ./src/bin/start.js"
+    "debug": "./node_modules/.bin/nodemon ./src/bin/start.js",
+    "start": "node ./src/bin/start.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",
@@ -16,7 +17,6 @@
     "bunyan": "1.8.12",
     "cookie-parser": "1.4.3",
     "config": "1.26.2",
-    "dotenv": "5.0.0",
     "ejs": "2.5.6",
     "express": "4.15.2",
     "express-sanitizer": "1.0.3",

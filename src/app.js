@@ -19,9 +19,9 @@ const login = require('./routes/login')
 const loginAuth = require('./routes/login-auth')
 const dashboard = require('./routes/dashboard')
 
-module.exports = (dbFacade) => {
+module.exports = (servDb) => {
   const appInstance = express()
-  appInstance.set('dbFacade', dbFacade)
+  appInstance.set('servDb', servDb)
 
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))

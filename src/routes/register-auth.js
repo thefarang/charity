@@ -13,23 +13,23 @@ const Password = require('../models/password')
 
 const router = express.Router()
 
-const sanitizeXss = (req) => {
+router.post('/', async (req, res, next) => {
+
+  // Sanitize against XSS
   req.body.first_name = req.sanitize(req.body.first_name)
   req.body.last_name = req.sanitize(req.body.last_name)
   req.body.email = req.sanitize(req.body.email)
   req.body.confirm_email = req.sanitize(req.body.confirm_email)
   req.body.password = req.sanitize(req.body.password)
   req.body.confirm_password = req.sanitize(req.body.confirm_password)
-
   servLog.info({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     email: req.body.email,
     clear_password: req.body.password }, 
     'Sanitized XSS pre-registration')
-}
 
-const validateForm = () => {
+  // Validate and clean form
   check('first_name')
     .exists().withMessage('First name is required')
     .isAlpha().withMessage('First name should contain only characters a-zA-Z')
@@ -62,11 +62,6 @@ const validateForm = () => {
     email: req.body.email,
     clear_password: req.body.password }, 
     'Validated (and cleaned) form data pre-registration')
-}
-
-router.post('/', 
-  [ sanitizeXss(req), validateForm() ], // @todo critial - how to pass req to the middleware?
-  async (req, res, next) => {
 
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -79,10 +74,10 @@ router.post('/',
   servLog.info({}, 'Registration attempt passed form validation')
 
   // Attempt to find the user in the dbase
-  const dbFacade = req.app.get('dbFacade')
+  const servDb = req.app.get('servDb')
   let user = null
   try {
-    user = await dbFacade.getUserActions().findUserByEmail(req.body.email)
+    user = await servDb.getUserActions().findUserByEmail(req.body.email)
   } catch (err) {
     servLog.info({ 
       email: req.body.email }, 
@@ -116,7 +111,7 @@ router.post('/',
     user.password = password
     user.role = dataRoles.getCauseRole()
 
-    user = await dbFacade.getUserActions().saveUser(user)
+    user = await servDb.getUserActions().saveUser(user)
     servLog.info({ user: user.toJSON() }, 'New user registered')
   } catch (err) {
     servLog.info({

@@ -18,14 +18,21 @@ services:
     container_name: charity
     build: .
     environment:
-      - NODE_CONFIG_DIR=/app/src/config
+      - NODE_CONFIG_DIR=${NODE_CONFIG_DIR}
+      - DATABASE_DB_CONN=${DATABASE_DB_CONN}
+      - TOKEN_SECRET=${TOKEN_SECRET}
+      - SYSTEM_USERS_GUEST_ID=${SYSTEM_USERS_GUEST_ID}
+      - SYSTEM_USERS_GUEST_EMAIL=${SYSTEM_USERS_GUEST_EMAIL}
+      - SYSTEM_USERS_ADMIN_ID=${SYSTEM_USERS_ADMIN_ID}
+      - SYSTEM_USERS_ADMIN_EMAIL=${SYSTEM_USERS_ADMIN_EMAIL}
+      - SYSTEM_USERS_ADMIN_CLRPASS=${SYSTEM_USERS_ADMIN_CLRPASS}
     volumes:
       # Make the following directories available to docker so that changes made on the host
       # are immediately available inside the docker container.
       - ./package.json:/app/package.json
       - ./src:/app/src
-      - ./.env:/app/.env
       - ./gulpfile.js:/app/gulpfile.js
+      - ./docker-compose-cmd.sh:/app/docker-compose-cmd.sh
     command: ./docker-compose-cmd.sh
     ports:
       # Expose port to host machine for debugging

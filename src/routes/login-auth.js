@@ -20,10 +20,10 @@ router.post('/', async (req, res, next) => {
     'User login attempt')
 
   // Attempt to find the user in the dbase
-  const dbFacade = req.app.get('dbFacade')
+  const servDb = req.app.get('servDb')
   let user = null
   try {
-    user = await dbFacade.getUserActions().findUserByEmail(sEmail)
+    user = await servDb.getUserActions().findUserByEmail(sEmail)
     if (!user) {
       servLog.info({ 
         email: req.body.email }, 

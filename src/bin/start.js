@@ -1,14 +1,10 @@
 'use strict'
 
-// Require and configure dotenv immediately, to pull secure environment variables
-// from the .env file into process.env
-require('dotenv').config()
-
 const http = require('http')
 const config = require('config')
 
 const servLog = require('../services/log')
-const dbFacade = require('../services/database/facade')
+const servDb = require('../services/database/facade')
 const app = require('../app')
 
 // Normalize a port into a number, string, or false.
@@ -61,11 +57,11 @@ const onListening = () => {
 }
 
 // Start the database
-dbFacade.connect()
-process.on('SIGINT', () => dbFacade.disconnect())
+servDb.connect()
+process.on('SIGINT', () => servDb.disconnect())
 
 // Create an app instance, injecting dependencies accordingly.
-const appInstance = app(dbFacade)
+const appInstance = app(servDb)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))
