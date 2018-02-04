@@ -1,14 +1,13 @@
 'use strict'
 
 // @todo
-// Test implementation
 // Should this be run once, on system setup, or on each deployment?
 // Each deployment
 // Add to the gulpfile process
 
 const servLog = require('../services/log')
 const servDb = require('../services/database/facade')
-const dataUsers = require('./data/users')
+const dataUsers = require('../data/users')
 
 const init = async () => {
   try {
@@ -17,16 +16,30 @@ const init = async () => {
 
     const userPromises = []
     dataUsers.getUsers().forEach((currentUser) => {
+
       // The guest user is not written to the database
       if (currentUser.role.name === 'guest') {
         servLog.info({}, 'Ignoring the Guest user...')
         return
       }
 
+      // Push the relevant save/update action onto the list of save/update actions.
       userPromises.push(new Promise(async (resolve, reject) => {
         try {
-          servLog.info({}, `Populating the User ${currentUser.id}:${currentUser.email}...`)
-          await servDb.getUserActions().saveUser(currentUser)
+          // In data/users (from which we retrieved the currentUser object) we only store the clrPassword. 
+          // Therefore generate the encPassword from this, as the encPassword is what is stored in the database
+          servLog.info({}, `Generating encrypted password for ${currentUser.id}:${currentUser.email}...`)
+          currentUser.password.encPassword = 
+            await currentUser.password.getEncPasswordFromClearPassword(currentUser.password.clrPassword)
+          
+          const existingUser = await servDb.getUserActions().findUserByEmail(currentUser.email)
+          if (!existingUser) {
+            servLog.info({}, `Creating new User ${currentUser.id}:${currentUser.email}...`)
+            await servDb.getUserActions().saveNewUser(currentUser)
+          } else {
+            servLog.info({}, `Updating existing User ${currentUser.id}:${currentUser.email}...`)
+            await servDb.getUserActions().updateUser(currentUser)
+          }
           return resolve()
         } catch (err) {
           servLog.info(

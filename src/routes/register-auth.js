@@ -112,7 +112,7 @@ router.post('/', async (req, res, next) => {
     user.password = password
     user.role = dataRoles.getCauseRole()
 
-    user = await servDb.getUserActions().saveUser(user)
+    user = await servDb.getUserActions().saveNewUser(user)
     servLog.info({ user: user.toJSON() }, 'New user registered')
   } catch (err) {
     servLog.info({
