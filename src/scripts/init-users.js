@@ -16,7 +16,6 @@ const init = async () => {
 
     const userPromises = []
     dataUsers.getUsers().forEach((currentUser) => {
-
       // The guest user is not written to the database
       if (currentUser.role.name === 'guest') {
         servLog.info({}, 'Ignoring the Guest user...')
@@ -26,12 +25,12 @@ const init = async () => {
       // Push the relevant save/update action onto the list of save/update actions.
       userPromises.push(new Promise(async (resolve, reject) => {
         try {
-          // In data/users (from which we retrieved the currentUser object) we only store the clrPassword. 
+          // In data/users (from which we retrieved the currentUser object) we only store the clrPassword.
           // Therefore generate the encPassword from this, as the encPassword is what is stored in the database
           servLog.info({}, `Generating encrypted password for ${currentUser.id}:${currentUser.email}...`)
-          currentUser.password.encPassword = 
+          currentUser.password.encPassword =
             await currentUser.password.getEncPasswordFromClearPassword(currentUser.password.clrPassword)
-          
+
           const existingUser = await servDb.getUserActions().findUserByEmail(currentUser.email)
           if (!existingUser) {
             servLog.info({}, `Creating new User ${currentUser.id}:${currentUser.email}...`)

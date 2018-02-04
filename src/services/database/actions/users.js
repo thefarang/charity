@@ -40,7 +40,7 @@ const saveNewUser = async (user) => {
   try {
     await _upsert(user, new UserSchema())
   } catch (err) {
-    // @todo add logging here
+    throw err
   }
 }
 
@@ -49,25 +49,27 @@ const updateUser = async (user) => {
     const userSchema = await findOne({ _id: user.id })
     await _upsert(user, userSchema)
   } catch (err) {
-    // @todo add logging here.
+    throw err
   }
 }
 
+// Returns null if not found
 const findUserByEmail = async (sanitizedEmail) => {
   try {
     const userSchema = await findOne({ email: sanitizedEmail })
     return transformSchemaToModel(userSchema)
   } catch (err) {
-    // @todo add logging here.
+    throw err
   }
 }
 
+// Reeturns null if not found
 const findUserById = async (id) => {
   try {
     const userSchema = await findOne({ _id: id })
     return transformSchemaToModel(userSchema)
   } catch (err) {
-    // @todo add logging here.
+    throw err
   }
 }
 
@@ -91,7 +93,7 @@ const findOne = (keyValuePairs) => {
       if (err) {
         servLog.info({
           err: err,
-          user: user
+          keyValuePairs: keyValuePairs
         }, 'An error occurred locating the existing User document')
         return reject(err)
       }
