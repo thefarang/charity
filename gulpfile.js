@@ -1,10 +1,12 @@
 'use strict'
 
-const gulp = require('gulp')
-const rename = require('gulp-rename')
 const browserify = require('browserify')
-const source = require('vinyl-source-stream')
 const exec = require('child_process').exec
+const gulp = require('gulp')
+const less = require('gulp-less')
+const rename = require('gulp-rename')
+const path = require('path')
+const source = require('vinyl-source-stream')
 
 const initUsersTask = (done) => {
   exec('node ./src/scripts/init-users.js', (err, stdout, stderr) => {
@@ -14,10 +16,11 @@ const initUsersTask = (done) => {
   })
 }
 
-const browserifyTask = () => {
+const buildJSTask = () => {
   const files = [
     'src/assets/javascripts/login.js',
-    'src/assets/javascripts/register.js'
+    'src/assets/javascripts/register.js',
+    'src/assets/javascripts/dashboard.js'
   ]
 
   return files.map((fileName) => {
@@ -33,6 +36,15 @@ const browserifyTask = () => {
   })
 }
 
-gulp.task('default', [ 'initUsers', 'browserify' ])
+const buildCSSTask = () => {
+  return gulp.src('./src/assets/stylesheets/index.less')
+    .pipe(less({
+      paths: [ path.join(__dirname, 'node_modules', 'bootstrap-less') ]
+    }))
+    .pipe(gulp.dest('src/public/stylesheets'));
+}
+
+gulp.task('default', [ 'initUsers', 'buildJS', 'buildCSS' ])
 gulp.task('initUsers', initUsersTask)
-gulp.task('browserify', browserifyTask)
+gulp.task('buildJS', buildJSTask)
+gulp.task('buildCSS', buildCSSTask)

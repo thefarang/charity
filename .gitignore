@@ -1,4 +1,5 @@
 node_modules
 .vscode/settings.json
 .env
-src/public/javascripts/*.js
+src/public/javascripts
+src/public/stylesheets
