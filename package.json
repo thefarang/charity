@@ -6,6 +6,8 @@
     "lint": "./node_modules/.bin/standard \"src/**/*.js\"",
     "fix-style": "./node_modules/.bin/standard --fix \"src/**/*.js\"",
     "setup-app": "./node_modules/.bin/gulp",
+    "build-assets": "./node_modules/.bin/gulp browserify",
+    "init-users": "./node_modules/.bin/gulp initUsers",
     "debug": "./node_modules/.bin/nodemon ./src/bin/start.js",
     "start": "node ./src/bin/start.js"
   },

@@ -33,6 +33,6 @@ const browserifyTask = () => {
   })
 }
 
-gulp.task('default', [ 'initUsersTask', 'browserifyTask' ])
-gulp.task('initUsersTask', initUsersTask)
-gulp.task('browserifyTask', browserifyTask)
+gulp.task('default', [ 'initUsers', 'browserify' ])
+gulp.task('initUsers', initUsersTask)
+gulp.task('browserify', browserifyTask)

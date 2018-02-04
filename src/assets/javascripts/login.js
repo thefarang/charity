@@ -2,6 +2,12 @@
 
 var $ = require('jquery')
 
+function handleErrorEvent(message) {
+  $("#errors").text(message)
+  $("#errors").css("display", "block")
+  $("#submit").prop("disabled", false)
+}
+
 $(function() {
   $("form").submit(function(e) {
     e.preventDefault()
@@ -29,9 +35,10 @@ $(function() {
           window.location.replace("/dashboard")
         },
         401: function() {
-          $("#errors").text("The email or password is incorrect.")
-          $("#errors").css("display", "block")
-          $("#submit").prop("disabled", false)
+          handleErrorEvent("The email or password is incorrect.")
+        },
+        404: function() {
+          handleErrorEvent("The email or password is incorrect.")
         }
       }
     })

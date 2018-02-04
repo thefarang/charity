@@ -38,7 +38,7 @@ const _upsert = (user, userSchema) => {
 
 const saveNewUser = async (user) => {
   try {
-    await _upsert(user, new UserSchema())
+    return await _upsert(user, new UserSchema())
   } catch (err) {
     throw err
   }
@@ -47,7 +47,7 @@ const saveNewUser = async (user) => {
 const updateUser = async (user) => {
   try {
     const userSchema = await findOne({ _id: user.id })
-    await _upsert(user, userSchema)
+    return await _upsert(user, userSchema)
   } catch (err) {
     throw err
   }
