@@ -62,7 +62,7 @@ module.exports = (servDb) => {
       // Handle 401 Unauthorized through 302 Redirect. Not semantically correct but supports the
       // end user well-enough and minimises work here.
       if (!libAcl.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
-        servLog.info({ 
+        servLog.info({
           user: req.user.toJSON(),
           resource: req.path
         }, 'User attempted to access unauthorised route. Redirecting.')
@@ -81,7 +81,6 @@ module.exports = (servDb) => {
       servLog.info({ err: err, token: token }, 'An error ocurred whilst parsing json webtoken')
       return next(err)
     }
-
   })
 
   // Route middlewares

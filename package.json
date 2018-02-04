@@ -34,6 +34,10 @@
     "vinyl-source-stream": "2.0.0"
   },
   "standard": {
+    "ignore": [
+      "src/public/javascripts/",
+      "src/assets/javascripts/"
+    ],
     "globals": [
       "describe",
       "before",
@@ -41,9 +45,6 @@
       "after",
       "afterEach",
       "it"
-    ],
-    "ignore": [
-      "./src/assets/javascripts/"
     ]
   }
 }

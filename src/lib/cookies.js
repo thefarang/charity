@@ -1,6 +1,7 @@
 'use strict'
 
-const config = require('config')
+// @todo implement domin in cookies
+// const config = require('config')
 
 // Asks the browser to create a cookie called 'token', responsible
 // for encapsulating the jwt on each request.

@@ -14,7 +14,6 @@ const Password = require('../models/password')
 const router = express.Router()
 
 router.post('/', async (req, res, next) => {
-
   // Sanitize against XSS
   req.body.first_name = req.sanitize(req.body.first_name)
   req.body.last_name = req.sanitize(req.body.last_name)
@@ -26,7 +25,7 @@ router.post('/', async (req, res, next) => {
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     email: req.body.email,
-    clear_password: req.body.password }, 
+    clear_password: req.body.password },
     'Sanitized XSS pre-registration')
 
   // Validate and clean form
@@ -35,7 +34,7 @@ router.post('/', async (req, res, next) => {
     .isAlpha().withMessage('First name should contain only characters a-zA-Z')
     .isLength({ max: 20 }).withMessage('First name should be a maximum of 20 characters')
     .trim()
-  
+
   check('last_name')
     .exists().withMessage('Last name is required')
     .isAlpha().withMessage('Last name should contain only characters a-zA-Z')
@@ -48,21 +47,21 @@ router.post('/', async (req, res, next) => {
     .matches(req.body.confirm_email).withMessage('Email addresses do not match')
     .trim()
     .normalizeEmail()
-  
+
   // @todo
   // Add additional checks for inclusion of numbers etc
   check('password')
     .exists().withMessage('Password is required')
     .isLength({ min: 6 }).withMessage('Password must be minimum 6 characters long')
     .matches(req.body.confirm_password).withMessage('Passwords do not match')
-  
+
   // @todo critical
   // check().trim() is not working
   servLog.info({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     email: req.body.email,
-    clear_password: req.body.password }, 
+    clear_password: req.body.password },
     'Validated and cleaned form data pre-registration')
 
   const errors = validationResult(req)
@@ -81,10 +80,10 @@ router.post('/', async (req, res, next) => {
   try {
     user = await servDb.getUserActions().findUserByEmail(req.body.email)
   } catch (err) {
-    servLog.info({ 
-      email: req.body.email }, 
+    servLog.info({
+      email: req.body.email },
       'Handling the error that occurred whilst searching for a matching user')
-    
+
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred. Please try again.' })
@@ -92,8 +91,8 @@ router.post('/', async (req, res, next) => {
   }
 
   if (user !== null) {
-    servLog.info({ 
-      email: req.body.email }, 
+    servLog.info({
+      email: req.body.email },
       'User already exists in the dbase. Registration attempt denied.')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -105,8 +104,8 @@ router.post('/', async (req, res, next) => {
   // Store the new user in the database.
   try {
     user = new User()
-    user.email = sEmail
-    
+    user.email = req.body.email
+
     const password = new Password()
     password.clrPassword = req.body.password
     password.encPassword = await password.getEncPasswordFromClearPassword(req.body.password)
@@ -120,7 +119,7 @@ router.post('/', async (req, res, next) => {
       err: err,
       email: req.body.email },
       'Handling the error that occurred whilst creating a new User')
-    
+
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new user. Please try again.' })
@@ -130,7 +129,7 @@ router.post('/', async (req, res, next) => {
   // Create json web token from the user object and return
   try {
     const token = await libTokens.createToken(user)
-    servLog.info({ 
+    servLog.info({
       user: user.toJSON(),
       token: token },
       'Successfully created token for newly registered user')
@@ -140,10 +139,10 @@ router.post('/', async (req, res, next) => {
     res.status(200)
     res.json({ token: token })
   } catch (err) {
-    servLog.info({ 
+    servLog.info({
       user: user.toJSON() },
       'Handling the error that occurred whilst creating a newly registered user token')
-    
+
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'Failed to authorise user. Please attempt to login.' })

@@ -1,12 +1,12 @@
 'use strict'
 
 class Role {
-  constructor(id, name) {
+  constructor (id, name) {
     this.id = id
     this.name = name
   }
 
-  toJSON() {
+  toJSON () {
     return {
       id: this.id,
       name: this.name

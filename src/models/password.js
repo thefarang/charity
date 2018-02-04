@@ -8,12 +8,12 @@ const servLog = require('../services/log')
 const SALT_WORK_FACTOR = Number(config.get('password.salt_work_factor'))
 
 class Password {
-  constructor() {
+  constructor () {
     this.clrPassword = null
     this.encPassword = null
   }
 
-  isClearPasswordCorrect(clrPassword, encPassword) {
+  isClearPasswordCorrect (clrPassword, encPassword) {
     return new Promise((resolve, reject) => {
       bcrypt.compare(clrPassword, encPassword, (err, isMatch) => {
         if (err) {
@@ -25,7 +25,7 @@ class Password {
     })
   }
 
-  getEncPasswordFromClearPassword(clrPassword) {
+  getEncPasswordFromClearPassword (clrPassword) {
     return new Promise((resolve, reject) => {
       // Generate a salt
       bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {

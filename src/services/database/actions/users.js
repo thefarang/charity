@@ -98,10 +98,8 @@ const findUserByEmail = (sanitizedEmail) => {
   })
 }
 
-// @todo
+/*
 const removeUser = (user) => {
-  console.log('removeUser() - Not yet implemented')
-  /*
   return new Promise((resolve, reject) => {
     UserSchema.remove({ _id: user.id }, (err) => {
       if (err) {
@@ -114,8 +112,8 @@ const removeUser = (user) => {
       return resolve()
     })
   })
-  */
 }
+*/
 
 module.exports = {
   findUserByEmail,

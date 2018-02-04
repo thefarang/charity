@@ -12,11 +12,11 @@ router.post('/', async (req, res, next) => {
   // Sanitize the incoming data
   const sEmail = req.sanitize(req.body.email)
   const sClrPassword = req.sanitize(req.body.password)
-  servLog.info({ 
-    email: req.body.email, 
+  servLog.info({
+    email: req.body.email,
     sanitized_email: sEmail,
     clear_password: req.body.password,
-    sanitized_clear_password: sClrPassword }, 
+    sanitized_clear_password: sClrPassword },
     'User login attempt')
 
   // Attempt to find the user in the dbase
@@ -25,10 +25,10 @@ router.post('/', async (req, res, next) => {
   try {
     user = await servDb.getUserActions().findUserByEmail(sEmail)
     if (!user) {
-      servLog.info({ 
-        email: req.body.email }, 
+      servLog.info({
+        email: req.body.email },
         'User not found based on email and password search')
-  
+
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(404)
       res.json()
@@ -37,10 +37,10 @@ router.post('/', async (req, res, next) => {
 
     servLog.info({ email: req.body.email }, 'User found in login process')
   } catch (err) {
-    servLog.info({ 
-      email: req.body.email }, 
+    servLog.info({
+      email: req.body.email },
       'Handling the error that occurred whilst locating the user')
-    
+
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()
@@ -63,10 +63,10 @@ router.post('/', async (req, res, next) => {
     // the clear text password in the database)
     user.password.clrPassword = sClrPassword
   } catch (err) {
-    servLog.info({ 
-      email: req.body.email }, 
+    servLog.info({
+      email: req.body.email },
       'Handling the error that occurred whilst performing the password check')
-    
+
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()
@@ -76,7 +76,7 @@ router.post('/', async (req, res, next) => {
   // Create a json web token from the user object.
   try {
     const token = await libTokens.createToken(user)
-    servLog.info({ 
+    servLog.info({
       email: req.body.email,
       token: token },
       'Successfully created token for user')
@@ -86,10 +86,10 @@ router.post('/', async (req, res, next) => {
     res.status(200)
     res.json()
   } catch (err) {
-    servLog.info({ 
-      email: req.body.email }, 
+    servLog.info({
+      email: req.body.email },
       'Handling the error that occurred whilst creating a user token')
-    
+
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()

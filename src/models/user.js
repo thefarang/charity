@@ -1,7 +1,7 @@
 'use strict'
 
 class User {
-  constructor() {
+  constructor () {
     this.id = null
     this.email = null
     // Holds a Password object
@@ -11,7 +11,7 @@ class User {
   }
 
   // Note that the password is omitted for security purposes.
-  toJSON() {
+  toJSON () {
     return {
       id: this.id,
       email: this.email,

@@ -9,7 +9,6 @@
 const servLog = require('../services/log')
 const servDb = require('../services/database/facade')
 const dataUsers = require('./data/users')
-const User = require('../models/user')
 
 const init = async () => {
   try {
@@ -18,7 +17,6 @@ const init = async () => {
 
     const userPromises = []
     dataUsers.getUsers().forEach((currentUser) => {
-
       // The guest user is not written to the database
       if (currentUser.role.name === 'guest') {
         servLog.info({}, 'Ignoring the Guest user...')
@@ -32,7 +30,7 @@ const init = async () => {
           return resolve()
         } catch (err) {
           servLog.info(
-            { err: err }, 
+            { err: err },
             `An error occurred populating User ${currentUser.id}:${currentUser.email}`)
           return reject(err)
         }
@@ -42,10 +40,8 @@ const init = async () => {
 
     servLog.info({}, 'Disconnecting from the dbase...')
     servDb.disconnect()
-
   } catch (err) {
     servLog.info({ err: err }, 'An error occurred during the default Users loading process')
-    return reject(err)
   }
 }
 
