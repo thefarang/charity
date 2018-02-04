@@ -8,13 +8,14 @@
     "duration": "1h"
   },
   "database": {
-    "db_conn": ""
+    "db_conn": "mongodb://mongo:27017",
+    "db_name": ""
   },
   "password": {
     "salt_work_factor": "10"
   },
   "cookie": {
-    "domain": ".charity.org",
+    "domain": "",
     "secure": false
   },
   "system_users": {

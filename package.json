@@ -7,7 +7,6 @@
     "fix-style": "./node_modules/.bin/standard --fix \"src/**/*.js\"",
     "init-users": "node ./src/scripts/init-users.js",
     "build-assets": "./node_modules/.bin/gulp",
-    "watch-assets": "./node_modules/.bin/watchify \"src/assets/javascripts/login.js\" -o \"src/public/javascripts/login.js\"",
     "debug": "./node_modules/.bin/nodemon ./src/bin/start.js",
     "start": "node ./src/bin/start.js"
   },
@@ -30,9 +29,21 @@
     "nodemon": "1.12.1",
     "standard": "10.0.3",
     "browserify": "15.2.0",
-    "watchify": "3.10.0",
     "gulp": "3.9.1",
     "gulp-rename": "1.2.2",
     "vinyl-source-stream": "2.0.0"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it"
+    ],
+    "ignore": [
+      "./src/assets/javascripts/"
+    ]
   }
 }

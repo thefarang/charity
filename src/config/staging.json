@@ -1,0 +1,8 @@
+{
+  "database": {
+    "db_name": "staging"
+  },
+  "cookie": {
+    "domain": ".staging.charity.org"
+  }
+}

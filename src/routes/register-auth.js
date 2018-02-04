@@ -56,12 +56,14 @@ router.post('/', async (req, res, next) => {
     .isLength({ min: 6 }).withMessage('Password must be minimum 6 characters long')
     .matches(req.body.confirm_password).withMessage('Passwords do not match')
   
+  // @todo critical
+  // check().trim() is not working
   servLog.info({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
     email: req.body.email,
     clear_password: req.body.password }, 
-    'Validated (and cleaned) form data pre-registration')
+    'Validated and cleaned form data pre-registration')
 
   const errors = validationResult(req)
   if (!errors.isEmpty()) {

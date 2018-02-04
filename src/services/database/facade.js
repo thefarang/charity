@@ -10,8 +10,9 @@ let isConnected = false
 
 const connect = () => {
   if (!isConnected) {
+    const conn = `${config.get('database.db_conn')}/${config.get('database.db_name')}`
     mongoose.Promise = global.Promise
-    mongoose.connect(config.get('database.db_conn'), {
+    mongoose.connect(conn, {
       useMongoClient: true
     })
     isConnected = true

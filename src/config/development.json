@@ -1,0 +1,8 @@
+{
+  "database": {
+    "db_name": "development"
+  },
+  "cookie": {
+    "domain": "localhost"
+  }
+}

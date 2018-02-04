@@ -18,8 +18,8 @@ services:
     container_name: charity
     build: .
     environment:
+      - NODE_ENV=${NODE_ENV}
       - NODE_CONFIG_DIR=${NODE_CONFIG_DIR}
-      - DATABASE_DB_CONN=${DATABASE_DB_CONN}
       - TOKEN_SECRET=${TOKEN_SECRET}
       - SYSTEM_USERS_GUEST_ID=${SYSTEM_USERS_GUEST_ID}
       - SYSTEM_USERS_GUEST_EMAIL=${SYSTEM_USERS_GUEST_EMAIL}

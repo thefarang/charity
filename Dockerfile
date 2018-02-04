@@ -4,6 +4,9 @@
 # To run:
 # > docker run -p 80:80 --env-file .env thefarang/charity
 
+# @todo
+# IF NODE_ENV === 'production' THEN npm uninstall all dev dependencies after build
+
 FROM node:8.5.0-alpine
 
 # Build app directory
@@ -23,7 +26,7 @@ RUN npm cache clean --force --silent
 # Copy the app files, configuration and build tool to the app directory
 COPY ./src /app/src
 
-# Execute the task runner to build the assets
+# Execute the task runner to setup the app
 COPY gulpfile.js /app/
 RUN npm run build-assets
 
