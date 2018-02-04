@@ -28,7 +28,7 @@ COPY ./src /app/src
 
 # Execute the task runner to setup the app
 COPY gulpfile.js /app/
-RUN npm run build-assets
+RUN npm run setup-app
 
 CMD ["npm", "start"]
 

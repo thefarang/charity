@@ -1,9 +1,6 @@
 'use strict'
 
-// @todo
-// Should this be run once, on system setup, or on each deployment?
-// Each deployment
-// Add to the gulpfile process
+// Run by gulp
 
 const servLog = require('../services/log')
 const servDb = require('../services/database/facade')
