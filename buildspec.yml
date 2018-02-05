@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+  build:
+    commands:
+  post_build:
+    commands:
+      - echo Writing image definitions file...
+      - printf '[{"name":"charity","imageUri":"%s"}]' thefarang/charity:staging > imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json
