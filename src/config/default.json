@@ -11,6 +11,9 @@
     "db_conn": "mongodb://mongo:27017",
     "db_name": ""
   },
+  "search": {
+    "search_conn": "http://search:9200"
+  },
   "password": {
     "salt_work_factor": "10"
   },
