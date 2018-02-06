@@ -48,4 +48,4 @@ services:
       - 80:80
     links:
       - mongo
-      - search
+      #- search
