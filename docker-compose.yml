@@ -2,6 +2,7 @@ version: "3"
 
 volumes:
   database:
+  #search:
 
 services:
 
@@ -13,6 +14,15 @@ services:
       - 27017
     volumes:
       - database:/data/db
+
+  #search:
+    #container_name: search
+    #image: blacktop/elasticsearch:6.1
+    #ports:
+      # Expose port to host machine for debugging
+      #- 9200
+    #volumes:
+      #- search:/data
 
   charity:
     container_name: charity
@@ -32,10 +42,10 @@ services:
       - ./package.json:/app/package.json
       - ./src:/app/src
       - ./gulpfile.js:/app/gulpfile.js
-      - ./docker-compose-cmd.sh:/app/docker-compose-cmd.sh
-    command: ./docker-compose-cmd.sh
+    command: npm run debug
     ports:
       # Expose port to host machine for debugging
       - 80:80
     links:
       - mongo
+      #- search
