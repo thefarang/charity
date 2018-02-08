@@ -2,10 +2,30 @@
 
 const express = require('express')
 
+const servLog = require('../services/log')
+
 const router = express.Router()
 
-router.get('/', (req, res, next) => {
-  res.render('explore', { title: 'Explore' })
+router.get('/', async (req, res, next) => {
+
+  // Load the charity objects
+  const servSearch = req.app.get('servSearch')
+  let charities = null
+  try {
+    charities = await servSearch.search()
+    servLog.info({ noOfCharitiesFound: charities.length }, `Charities found in default search`)
+  } catch (err) {
+
+    servLog.info({
+      userId: req.user.id },
+      "Handling error finding charity list")
+    return next(err)
+  }
+
+  res.render('explore', {
+    title: 'Explore Charities Page',
+    charities: charities
+  })
 })
 
 module.exports = router

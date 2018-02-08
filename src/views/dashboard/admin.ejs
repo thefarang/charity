@@ -5,12 +5,8 @@
     <link rel='stylesheet' href='/stylesheets/index.css' />
   </head>
   <body>
-    <h1>Explore</h1>
     <p>Welcome to <%= title %></p>
-
-    <% charities.forEach((charity) => { %>
-        <%= JSON.stringify(charity) %>
-        <br>
-    <% }) %>
+    <a href="#" id="logout">Logout</a>
+    <script src="/javascripts/dashboard.bundle.js"></script>
   </body>
 </html>

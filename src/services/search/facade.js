@@ -210,6 +210,55 @@ const updateCharity = (charity) => {
   })
 }
 
+const search = async () => {
+  const searchParams = {
+    index: config.get('search.index'),
+    type: 'charity',
+    /* from: (pageNum - 1) * perPage, */
+    size: 20,   // @todo parameterise
+    body: {
+      query: {
+        match_all: {}
+      }
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    client.search(searchParams, (err, response, status) => {
+      if (err) {
+        servLog.info({ 
+          err: err,
+          status: status }, 
+          'Error locating Charity documents')
+        return reject(err)
+      }
+
+      const charities = []
+      let charity = null
+      response.hits.hits.forEach((hit) => {
+        charity = new Charity()
+        charity.id =  hit._id
+        charity.userId = hit._source.userId
+        charity.isVisible = hit._source.isVisible
+        charity.name = hit._source.name
+        charity.country = hit._source.country
+        charity.isRegistered = hit._source.isRegistered
+        charity.website = hit._source.website
+        charity.email = hit._source.email
+        charity.phone = hit._source.phone
+        charity.shortDesc = hit._source.shortDesc
+        charity.longDesc = hit._source.longDesc
+        charity.imageThumb = hit._source.imageThumb
+        charity.imageFull = hit._source.imageFull
+        charity.coinhiveKey = hit._source.coinhiveKey
+        charity.keywords = hit._source.keywords
+        charities.push(charity)
+      })
+      return resolve(charities)
+    })
+  })
+}
+
 const searchKeyword = async (keyword) => {
   /*
   const index = 'keyword'
@@ -245,6 +294,7 @@ module.exports = {
   findCharityByUserId,
   saveNewCharity,
   updateCharity,
+  search,
   searchKeyword,
   searchCharityName
 }

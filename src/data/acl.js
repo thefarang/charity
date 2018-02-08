@@ -33,12 +33,17 @@ const getAcl = () => {
       roles: ['guest']
     },
     {
-      resource: '/dashboard', // @todo, how about different dashboards? cause-dash, donator-dash, admin-dash?
+      resource: '/dashboard/charity',
       permission: 'get',
-      roles: ['cause', 'donator', 'admin']
+      roles: ['cause']
     },
     {
-      resource: '/charity-auth',
+      resource: '/dashboard/admin',
+      permission: 'get',
+      roles: ['admin']
+    },
+    {
+      resource: '/dashboard/charity-auth',
       permission: 'post',
       roles: ['cause']
     }

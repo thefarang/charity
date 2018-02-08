@@ -2,7 +2,7 @@
 
 const express = require('express')
 
-const servLog = require('../services/log')
+const servLog = require('../../services/log')
 
 const router = express.Router()
 
@@ -21,8 +21,8 @@ router.get('/', async (req, res, next) => {
     return next(err)
   }
 
-  res.render('dashboard', {
-    title: 'Dashboard page',
+  res.render('dashboard/charity', {
+    title: 'Charity Dashboard page',
     charity: charity
   })
 })

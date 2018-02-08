@@ -84,7 +84,9 @@ router.post('/', async (req, res, next) => {
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     libCookies.setCookie(res, token)
     res.status(200)
-    res.json()
+
+    // @todo HERE redirect to appropriate dashboard
+    res.json({ loc: '/dashboard/charity' })
   } catch (err) {
     servLog.info({
       email: req.body.email },

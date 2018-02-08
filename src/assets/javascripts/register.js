@@ -45,8 +45,8 @@ $(function() {
       url: $("form").attr('action'),
       data: $("form").serialize(),
       statusCode: {
-        200: function(data) {
-          window.location.replace("/dashboard")
+        200: function(data, textStatus, jqXHR) {
+          window.location.replace(data.loc)
         },
         404: function(jqXHR, textStatus, errorThrown) {
           $("#errors").text(jqXHR.responseJSON.message)

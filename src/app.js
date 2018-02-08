@@ -18,8 +18,10 @@ const register = require('./routes/register')
 const registerAuth = require('./routes/register-auth')
 const login = require('./routes/login')
 const loginAuth = require('./routes/login-auth')
-const dashboard = require('./routes/dashboard')
-const charityAuth = require('./routes/charity-auth')
+
+const charity = require('./routes/dashboard/charity')
+const charityAuth = require('./routes/dashboard/charity-auth')
+const admin = require('./routes/dashboard/admin')
 
 module.exports = (servDb, servSearch) => {
   const appInstance = express()
@@ -73,7 +75,8 @@ module.exports = (servDb, servSearch) => {
         if (req.user.role.name === 'guest') {
           res.redirect(302, '/login')
         } else {
-          res.redirect(302, '/dashboard')
+          // @todo select the correct dashboard
+          res.redirect(302, '/dashboard/charity')
         }
         return
       }
@@ -93,8 +96,9 @@ module.exports = (servDb, servSearch) => {
   appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)
   appInstance.use('/login-auth', loginAuth)
-  appInstance.use('/dashboard', dashboard)
-  appInstance.use('/charity-auth', charityAuth)
+  appInstance.use('/dashboard/charity', charity)
+  appInstance.use('/dashboard/charity-auth', charityAuth)
+  appInstance.use('/dashboard/admin', admin)
 
   // 404 middleware, called when no routes match the requested route.
   appInstance.use((req, res, next) => {

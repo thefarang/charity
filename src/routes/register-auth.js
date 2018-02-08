@@ -162,7 +162,9 @@ router.post('/', async (req, res, next) => {
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     libCookies.setCookie(res, token)
     res.status(200)
-    res.json({ token: token })
+
+    // @todo HERE redirect to appropriate dashboard
+    res.json({ loc: '/dashboard/charity' })
   } catch (err) {
     servLog.info({
       user: user.toJSON() },

@@ -20,7 +20,8 @@ const buildJSTask = () => {
   const files = [
     'src/assets/javascripts/login.js',
     'src/assets/javascripts/register.js',
-    'src/assets/javascripts/dashboard.js'
+    'src/assets/javascripts/dashboard/admin.js',
+    'src/assets/javascripts/dashboard/charity.js'
   ]
 
   return files.map((fileName) => {

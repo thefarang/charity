@@ -32,7 +32,7 @@ $(function() {
       data: $("form").serialize(),
       statusCode: {
         200: function(data) {
-          window.location.replace("/dashboard")
+          window.location.replace(data.loc)
         },
         401: function() {
           handleErrorEvent("The email or password is incorrect.")
