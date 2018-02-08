@@ -2,7 +2,7 @@ version: "3"
 
 volumes:
   database:
-  #search:
+  search:
 
 services:
 
@@ -15,14 +15,14 @@ services:
     volumes:
       - database:/data/db
 
-  #search:
-    #container_name: search
-    #image: blacktop/elasticsearch:6.1
-    #ports:
+  search:
+    container_name: search
+    image: blacktop/elasticsearch:6.1
+    ports:
       # Expose port to host machine for debugging
-      #- 9200
-    #volumes:
-      #- search:/data
+      - 9200:9200
+    volumes:
+      - search:/data
 
   charity:
     container_name: charity
@@ -48,4 +48,4 @@ services:
       - 80:80
     links:
       - mongo
-      #- search
+      - search

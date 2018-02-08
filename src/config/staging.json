@@ -2,6 +2,9 @@
   "database": {
     "db_name": "staging"
   },
+  "search": {
+    "index": "staging"
+  },
   "cookie": {
     "domain": ".staging.charity.org"
   }

@@ -10,11 +10,15 @@ const dataRoles = require('../data/roles')
 
 const User = require('../models/user')
 const Password = require('../models/password')
+const Charity = require('../models/charity')
 
 const router = express.Router()
 
 router.post('/', async (req, res, next) => {
+  // @todo critical - saga pattern for User -> Charity creation
+  // @todo critical - get this lot working
   // Sanitize against XSS
+  /*
   req.body.first_name = req.sanitize(req.body.first_name)
   req.body.last_name = req.sanitize(req.body.last_name)
   req.body.email = req.sanitize(req.body.email)
@@ -73,6 +77,7 @@ router.post('/', async (req, res, next) => {
     return
   }
   servLog.info({}, 'Registration attempt passed form validation')
+  */
 
   // Attempt to find the user in the dbase
   const servDb = req.app.get('servDb')
@@ -123,6 +128,26 @@ router.post('/', async (req, res, next) => {
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new user. Please try again.' })
+    return
+  }
+
+  // Create a Charity object for the user and store in the search engine
+  const servSearch = req.app.get('servSearch')
+  let charity = new Charity()
+  charity.userId = user.id
+  try {
+    charity = await servSearch.saveNewCharity(charity)
+    servLog.info({ userId: charity.userId, charityId: charity.id }, 'New charity added')
+  } catch (err) {
+    // @todo critical
+    // If this fails, the user will not have a charity. What happens?
+    servLog.info({
+      user: user.toJSON() },
+      'Handling the error that occurred whilst creating a new Charity')
+
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(500)
+    res.json({ message: 'An error occurred whilst adding the new charity.' })
     return
   }
 

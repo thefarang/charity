@@ -13,15 +13,18 @@ const libTokens = require('./lib/tokens')
 const dataUsers = require('./data/users')
 
 const index = require('./routes/index')
+const explore = require('./routes/explore')
 const register = require('./routes/register')
 const registerAuth = require('./routes/register-auth')
 const login = require('./routes/login')
 const loginAuth = require('./routes/login-auth')
 const dashboard = require('./routes/dashboard')
+const charityAuth = require('./routes/charity-auth')
 
-module.exports = (servDb) => {
+module.exports = (servDb, servSearch) => {
   const appInstance = express()
   appInstance.set('servDb', servDb)
+  appInstance.set('servSearch', servSearch)
 
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))
@@ -85,11 +88,13 @@ module.exports = (servDb) => {
 
   // Route middlewares
   appInstance.use('/', index)
+  appInstance.use('/explore', explore)
   appInstance.use('/register', register)
   appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)
   appInstance.use('/login-auth', loginAuth)
   appInstance.use('/dashboard', dashboard)
+  appInstance.use('/charity-auth', charityAuth)
 
   // 404 middleware, called when no routes match the requested route.
   appInstance.use((req, res, next) => {

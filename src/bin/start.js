@@ -5,6 +5,7 @@ const config = require('config')
 
 const servLog = require('../services/log')
 const servDb = require('../services/database/facade')
+const servSearch = require('../services/search/facade')
 const app = require('../app')
 
 // Normalize a port into a number, string, or false.
@@ -56,12 +57,17 @@ const onListening = () => {
   servLog.info({}, `Listening on ${bind}`)
 }
 
-// Start the database
+// Connect to the persistance layers
 servDb.connect()
-process.on('SIGINT', () => servDb.disconnect())
+servSearch.connect()
+
+process.on('SIGINT', () => {
+  servDb.disconnect()
+  servSearch.disconnect()
+})
 
 // Create an app instance, injecting dependencies accordingly.
-const appInstance = app(servDb)
+const appInstance = app(servDb, servSearch)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))

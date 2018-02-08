@@ -12,7 +12,8 @@
     "db_name": ""
   },
   "search": {
-    "search_conn": "http://search:9200"
+    "search_conn": "http://search:9200",
+    "index": ""
   },
   "password": {
     "salt_work_factor": "10"

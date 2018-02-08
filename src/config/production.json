@@ -2,6 +2,9 @@
   "database": {
     "db_name": "production"
   },
+  "search": {
+    "index": "production"
+  },
   "cookie": {
     "domain": ".charity.org"
   }

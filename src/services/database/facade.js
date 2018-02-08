@@ -8,6 +8,7 @@ const userActions = require('./actions/users')
 
 let isConnected = false
 
+// @todo critical - reconnect if connection drops
 const connect = () => {
   if (!isConnected) {
     const conn = `${config.get('database.db_conn')}/${config.get('database.db_name')}`
