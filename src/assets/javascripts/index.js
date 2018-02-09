@@ -6,10 +6,10 @@ var Popper = require('popper.js')
 require('bootstrap')
 var Cookies = require('js-cookie')
 
-function handleErrorEvent(message) {
+function handleErrorEvent(message, submitId) {
   $("#errors").text(message)
   $("#errors").css("display", "block")
-  $("#submit").prop("disabled", false)
+  $(submitId).prop("disabled", false)
 }
 
 $(function() {
@@ -46,10 +46,10 @@ $(function() {
           window.location.replace(data.loc)
         },
         401: function() {
-          handleErrorEvent("The email or password is incorrect.")
+          handleErrorEvent("The email or password is incorrect.", "#login_submit")
         },
         404: function() {
-          handleErrorEvent("The email or password is incorrect.")
+          handleErrorEvent("The email or password is incorrect.", "#login_submit")
         }
       }
     })
@@ -98,14 +98,10 @@ $(function() {
           window.location.replace(data.loc)
         },
         404: function(jqXHR, textStatus, errorThrown) {
-          $("#errors").text(jqXHR.responseJSON.message)
-          $("#errors").css("display", "block")
-          $("#register_submit").prop("disabled", false)
+          handleErrorEvent(jqXHR.responseJSON.message, "#register_submit")
         },
         500: function(jqXHR, textStatus, errorThrown) {
-          $("#errors").text(jqXHR.responseJSON.message)
-          $("#errors").css("display", "block")
-          $("#register_submit").prop("disabled", false)
+          handleErrorEvent(jqXHR.responseJSON.message, "#register_submit")
         }
       }
     })
@@ -128,14 +124,10 @@ $(function() {
           window.location.replace("/dashboard/charity")
         },
         404: function(jqXHR, textStatus, errorThrown) {
-          $("#errors").text(jqXHR.responseJSON.message)
-          $("#errors").css("display", "block")
-          $("#charity_submit").prop("disabled", false)
+          handleErrorEvent(jqXHR.responseJSON.message, "#charity_submit")
         },
         500: function(jqXHR, textStatus, errorThrown) {
-          $("#errors").text(jqXHR.responseJSON.message)
-          $("#errors").css("display", "block")
-          $("#charity_submit").prop("disabled", false)
+          handleErrorEvent(jqXHR.responseJSON.message, "#charity_submit")
         }
       }
     })

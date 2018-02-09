@@ -10,6 +10,7 @@ const servLog = require('./services/log')
 const libAcl = require('./lib/acl')
 const libCookies = require('./lib/cookies')
 const libTokens = require('./lib/tokens')
+const libSeo = require('./lib/seo')
 const dataUsers = require('./data/users')
 
 const index = require('./routes/index')
@@ -38,6 +39,13 @@ module.exports = (servDb, servSearch) => {
   appInstance.use(bodyParser.json())
   appInstance.use(bodyParser.urlencoded({ extended: false }))
   appInstance.use(expressSanitizer())
+
+  // @todo - add libTokens, libCookies and libACL here too
+  // Middleware to assign helpers to the request object
+  appInstance.use((req, res, next) => {
+    req.seo = libSeo
+    return next()
+  })
 
   // Json webtoken parsing middleware. The jwt, if it exists, will
   // be stored in the cookie.
@@ -76,8 +84,9 @@ module.exports = (servDb, servSearch) => {
         if (req.user.role.name === 'guest') {
           res.redirect(302, '/login')
         } else {
-          // @todo select the correct dashboard
-          res.redirect(302, '/dashboard/charity')
+          // Route to the correct dashboard
+          const route = req.user.role.name === 'admin' ? 'admin' : 'charity'
+          res.redirect(302, `/dashboard/${route}`)
         }
         return
       }
@@ -110,11 +119,16 @@ module.exports = (servDb, servSearch) => {
     next(err)
   })
 
+  // @todo here - organise the display. Possibly created dedicated 404 page.
   // Error display middleware.
   appInstance.use((err, req, res, next) => {
     servLog.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
-    res.render('error', { error: err })
+    res.render('error', {
+      title: req.seo.getTitle('error'),
+      user: req.user || null,
+      error: err
+    })
   })
 
   return appInstance

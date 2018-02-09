@@ -22,7 +22,8 @@ router.get('/', async (req, res, next) => {
   }
 
   res.render('dashboard/charity', {
-    title: 'Charity Dashboard page',
+    title: req.seo.getTitle('dashboard/charity'),
+    user: req.user,
     charity: charity
   })
 })

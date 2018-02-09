@@ -1,6 +1,7 @@
 {
   "app": {
     "name": "charity",
+    "brand": "Brand",
     "port": "80"
   },
   "token": {

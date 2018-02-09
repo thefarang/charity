@@ -4,9 +4,11 @@ const express = require('express')
 
 const router = express.Router()
 
-// GET home page
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Index page' })
+  res.render('index', {
+    title: req.seo.getTitle('index'),
+    user: req.user
+  })
 })
 
 module.exports = router
