@@ -16,6 +16,8 @@ const dataUsers = require('./data/users')
 const index = require('./routes/index')
 const explore = require('./routes/explore')
 const faq = require('./routes/faq')
+const terms = require('./routes/terms')
+const resetPassword = require('./routes/reset-password')
 const register = require('./routes/register')
 const registerAuth = require('./routes/register-auth')
 const login = require('./routes/login')
@@ -103,6 +105,8 @@ module.exports = (servDb, servSearch) => {
   appInstance.use('/', index)
   appInstance.use('/explore', explore)
   appInstance.use('/faq', faq)
+  appInstance.use('/terms', terms)
+  appInstance.use('/reset-password', resetPassword)
   appInstance.use('/register', register)
   appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)
@@ -126,6 +130,7 @@ module.exports = (servDb, servSearch) => {
     res.status(err.status || 500)
     res.render('error', {
       title: req.seo.getTitle('error'),
+      route: null,
       user: req.user || null,
       error: err
     })

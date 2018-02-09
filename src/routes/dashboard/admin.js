@@ -6,7 +6,8 @@ const router = express.Router()
 
 router.get('/', async (req, res, next) => {
   res.render('dashboard/admin', {
-    title: req.seo.getTitle('dashboard/admin'),
+    title: req.seo.getTitle('/dashboard/admin'),
+    route: '/dashboard/admin',
     user: req.user
   })
 })

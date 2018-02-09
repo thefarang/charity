@@ -6,18 +6,19 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
+
       <ul class="navbar-nav mr-auto">
 
-        <li class="nav-item active">
-          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        <li class="nav-item<% if ((route) && (route == '/')) { %> active<% } %>">
+          <a class="nav-link" href="/">Home<% if ((route) && (route == '/')) { %> <span class="sr-only">(current)</span><% } %></a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item<% if ((route) && (route == '/explore')) { %> active<% } %>">
           <a class="nav-link" href="/explore">Explore</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item<% if ((route) && (route == '/faq')) { %> active<% } %>">
           <a class="nav-link" href="/faq">Faq</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item<% if ((route) && (route == '/blog')) { %> active<% } %>">
           <a class="nav-link" href="/blog">Blog</a>
         </li>
 
@@ -27,18 +28,24 @@
         <ul class="navbar-nav mt-2 mt-md-0">
           <% if (user.role.name === 'guest') { %>
 
-            <li class="nav-item">
+            <li class="nav-item<% if ((route) && (route == '/login')) { %> active<% } %>">
               <a class="nav-link" href="/login">Login</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item<% if ((route) && (route == '/register')) { %> active<% } %>">
               <a class="nav-link" href="/register">Register</a>
             </li>
           
           <% } else { %>
 
-            <li class="nav-item">
-              <a class="nav-link" href="/dashboard/<%= (user.role.name == 'cause') ? 'charity' : 'admin' %>">Dashboard</a>
-            </li>
+            <% if (user.role.name === 'cause') { %>
+              <li class="nav-item<% if ((route) && (route == '/dashboard/charity')) { %> active<% } %>">
+                <a class="nav-link" href="/dashboard/charity">Dashboard</a>
+              </li>
+            <% } else if (user.role.name === 'admin') { %>
+              <li class="nav-item<% if ((route) && (route == '/dashboard/admin')) { %> active<% } %>">
+                  <a class="nav-link" href="/dashboard/admin">Dashboard</a>
+                </li>
+            <% } %>
 
             <li class="nav-item">
               <a class="nav-link" id="logout" href="#">Logout</a>

@@ -18,6 +18,16 @@ const getAcl = () => {
       roles: ['guest', 'cause', 'donator', 'admin']
     },
     {
+      resource: '/terms',
+      permission: 'get',
+      roles: ['guest', 'cause', 'donator', 'admin']
+    },
+    {
+      resource: '/reset-password',
+      permission: 'get',
+      roles: ['guest']
+    },
+    {
       resource: '/register',
       permission: 'get',
       roles: ['guest']
