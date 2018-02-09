@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get('/', (req, res, next) => {
   res.render('faq', { 
-    title: req.seo.getTitle('/faq'),
+    seo: req.seo('/faq'),
     route: '/faq',
     user: req.user
   })

@@ -2,27 +2,49 @@
 
 const config = require('config')
 
-// @todo
-// Update this to return more information, e.g:
-// { pageTitle: "Brand | Login", title: "Login" }
-const getTitle = (title) => {
-  let seoTitle = `${config.get('app.brand')}`
+const getSEO = (title) => {
+  let pageTitle = `${config.get('app.brand')}`
+  let routeTitle = null
   switch (title) {
-    case '/': seoTitle += ' | Home'; break
-    case '/explore': seoTitle += ' | Explore Charities'; break
-    case '/faq': seoTitle += ' | Faq'; break
-    case '/login': seoTitle += ' | Login'; break
-    case '/register': seoTitle += ' | Register'; break
+    case '/':
+      pageTitle += ' | Home'
+      routeTitle = 'Home'
+      break
+    case '/explore':
+      pageTitle += ' | Explore Charities'
+      routeTitle = 'Explore'
+      break
+    case '/faq':
+      pageTitle += ' | Faq'
+      routeTitle = 'Frequently Asked Questions'
+      break
+    case '/login':
+      pageTitle += ' | Login'
+      routeTitle = 'Login'
+      break
+    case '/register':
+      pageTitle += ' | Register'
+      routeTitle = 'Register'
+      break
     case '/dashboard/charity':
     case '/dashboard/admin':
-      seoTitle += ' | Dashboard'
+      pageTitle += ' | Dashboard'
+      routeTitle = 'Dashboard'
       break
-    case '/terms': seoTitle += ' | Terms of Service'; break
-    case '/reset-password': seoTitle += ' | Reset Password'; break
+    case '/terms':
+      pageTitle += ' | Terms of Service'
+      routeTitle = 'Terms of Service'
+      break
+    case '/reset-password':
+      pageTitle += ' | Reset Password'
+      routeTitle = 'Reset Password'
+      break
+    case '/error':
+      pageTitle += ' | Error'
+      routeTitle = 'Error'
+      break
   }
-  return seoTitle
+  return { pageTitle: pageTitle, routeTitle: routeTitle }
 }
 
-module.exports = {
-  getTitle
-}
+module.exports = getSEO

@@ -129,8 +129,8 @@ module.exports = (servDb, servSearch) => {
     servLog.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
     res.render('error', {
-      title: req.seo.getTitle('error'),
-      route: null,
+      seo: req.seo('/error'),
+      route: '/error',
       user: req.user || null,
       error: err
     })
