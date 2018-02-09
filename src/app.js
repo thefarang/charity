@@ -14,6 +14,7 @@ const dataUsers = require('./data/users')
 
 const index = require('./routes/index')
 const explore = require('./routes/explore')
+const faq = require('./routes/faq')
 const register = require('./routes/register')
 const registerAuth = require('./routes/register-auth')
 const login = require('./routes/login')
@@ -92,6 +93,7 @@ module.exports = (servDb, servSearch) => {
   // Route middlewares
   appInstance.use('/', index)
   appInstance.use('/explore', explore)
+  appInstance.use('/faq', faq)
   appInstance.use('/register', register)
   appInstance.use('/register-auth', registerAuth)
   appInstance.use('/login', login)

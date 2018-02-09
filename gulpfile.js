@@ -18,10 +18,7 @@ const initUsersTask = (done) => {
 
 const buildJSTask = () => {
   const files = [
-    'src/assets/javascripts/index.js',
-    'src/assets/javascripts/explore.js',
-    'src/assets/javascripts/dashboard/admin.js',
-    'src/assets/javascripts/dashboard/charity.js'
+    'src/assets/javascripts/index.js'
   ]
 
   return files.map((fileName) => {

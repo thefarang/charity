@@ -13,6 +13,11 @@ const getAcl = () => {
       roles: ['guest', 'cause', 'donator', 'admin']
     },
     {
+      resource: '/faq',
+      permission: 'get',
+      roles: ['guest', 'cause', 'donator', 'admin']
+    },
+    {
       resource: '/register',
       permission: 'get',
       roles: ['guest']

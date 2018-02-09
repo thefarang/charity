@@ -4,6 +4,7 @@ var $ = require('jquery')
 // window.Popper = require('popper.js')  // popper.js provides the Bootstrap tooltips
 var Popper = require('popper.js')
 require('bootstrap')
+var Cookies = require('js-cookie')
 
 function handleErrorEvent(message) {
   $("#errors").text(message)
@@ -12,6 +13,12 @@ function handleErrorEvent(message) {
 }
 
 $(function() {
+  // ALL LOGOUTS
+  $("#logout").on("click", function() {
+    Cookies.remove('token', { path: '/' })
+    window.location.replace("/login")
+  })
+
   // LOGIN
   $("form").submit(function(e) {
     e.preventDefault()
@@ -27,13 +34,13 @@ $(function() {
     // Reset error message and prevent multiple form submissions
     $("#errors").text("")
     $("#errors").css("display", "none")
-    $("#submit").prop("disabled", true)
+    $("#login_submit").prop("disabled", true)
 
     // Post the form data to the server
     $.ajax({
       type: "POST",
-      url: $("form").attr('action'),
-      data: $("form").serialize(),
+      url: $("form[name='login']").attr('action'),
+      data: $("form[name='login']").serialize(),
       statusCode: {
         200: function(data) {
           window.location.replace(data.loc)
@@ -79,13 +86,13 @@ $(function() {
     // Reset error message and prevent multiple form submissions
     $("#errors").text("")
     $("#errors").css("display", "none")
-    $("#submit").prop("disabled", true)
+    $("#register_submit").prop("disabled", true)
 
     // Post the form data to the server
     $.ajax({
       type: "POST",
-      url: $("form").attr('action'),
-      data: $("form").serialize(),
+      url: $("form[name='register']").attr('action'),
+      data: $("form[name='register']").serialize(),
       statusCode: {
         200: function(data, textStatus, jqXHR) {
           window.location.replace(data.loc)
@@ -93,12 +100,42 @@ $(function() {
         404: function(jqXHR, textStatus, errorThrown) {
           $("#errors").text(jqXHR.responseJSON.message)
           $("#errors").css("display", "block")
-          $("#submit").prop("disabled", false)
+          $("#register_submit").prop("disabled", false)
         },
         500: function(jqXHR, textStatus, errorThrown) {
           $("#errors").text(jqXHR.responseJSON.message)
           $("#errors").css("display", "block")
-          $("#submit").prop("disabled", false)
+          $("#register_submit").prop("disabled", false)
+        }
+      }
+    })
+  })
+
+  // CHARITY DETAILS
+  $("#charity_submit").on('click', function() {
+    // Reset error message and prevent multiple form submissions
+    $("#errors").text("")
+    $("#errors").css("display", "none")
+    $("#charity_submit").prop("disabled", true)
+
+    // Post the form data to the server
+    $.ajax({
+      type: "POST",
+      url: $("form[name='charity']").attr('action'),
+      data: $("form[name='charity']").serialize(),
+      statusCode: {
+        200: function(data) {
+          window.location.replace("/dashboard/charity")
+        },
+        404: function(jqXHR, textStatus, errorThrown) {
+          $("#errors").text(jqXHR.responseJSON.message)
+          $("#errors").css("display", "block")
+          $("#charity_submit").prop("disabled", false)
+        },
+        500: function(jqXHR, textStatus, errorThrown) {
+          $("#errors").text(jqXHR.responseJSON.message)
+          $("#errors").css("display", "block")
+          $("#charity_submit").prop("disabled", false)
         }
       }
     })

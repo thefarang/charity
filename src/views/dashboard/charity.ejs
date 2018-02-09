@@ -1,19 +1,17 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/index.css' />
-  </head>
-  <body>
-    <h1>Dashboard</h1>
-    <a href="#" id="logout">Logout</a>
+<%- include ../partials/top.ejs %>
+<%- include ../partials/nav.ejs %>
+
+<!-- Begin page content -->
+<main role="main" class="container">
+  <h1 class="mt-5">Dashboard</h1>
+  <a href="#" id="logout">Logout</a>
     
     <div id="errors"></div>
 
     <p>Details status: Complete | Incomplete (affects is_visible)</p>
     <p>Registration status (For UK registered charities): Found | Not found</p>
 
-    <form action="/charity-auth">
+    <form name="charity" action="/dashboard/charity-auth">
       <input type="hidden" id="charity_id" name="charity_id" value="<%= charity.id %>" />
       <fieldset>
         <label for="is_visible">*Visible in search:</label>
@@ -91,8 +89,8 @@
           <% } %>>
       </fieldset>
 
-      <input id="submit" type="submit" value="Update">
+      <input type="submit" id="charity_submit" value="Update">
     </form>
+</main>
 
-    <script src="/javascripts/charity.bundle.js"></script>
-</html>
+<%- include ../partials/footer.ejs %>
