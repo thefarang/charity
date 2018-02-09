@@ -43,6 +43,10 @@ const getSEO = (title) => {
       pageTitle += ' | Error'
       routeTitle = 'Error'
       break
+    case '/404':
+      pageTitle += ' | Unknown'
+      routeTitle = 'Unknown Route'
+      break
   }
   return { pageTitle: pageTitle, routeTitle: routeTitle }
 }

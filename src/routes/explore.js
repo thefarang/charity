@@ -23,7 +23,7 @@ router.get('/', async (req, res, next) => {
   }
 
   res.render('explore', {
-    seo: req.seo('/explore'),
+    seo: req.libSeo('/explore'),
     route: '/explore',
     user: req.user,
     charities: charities

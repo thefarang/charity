@@ -45,7 +45,10 @@ module.exports = (servDb, servSearch) => {
   // @todo - add libTokens, libCookies and libACL here too
   // Middleware to assign helpers to the request object
   appInstance.use((req, res, next) => {
-    req.seo = libSeo
+    req.libAcl = libAcl
+    req.libSeo = libSeo
+    req.libTokens = libTokens
+    req.libCookies = libCookies
     return next()
   })
 
@@ -117,10 +120,12 @@ module.exports = (servDb, servSearch) => {
 
   // 404 middleware, called when no routes match the requested route.
   appInstance.use((req, res, next) => {
-    const err = new Error('An unknown route has been requested')
-    err.status = 404
-    servLog.info({}, err.message)
-    next(err)
+    servLog.info({ path: req.path }, 'An unknown route has been requested')
+    res.render('404', {
+      seo: req.libSeo('/404'),
+      route: '/404',
+      user: req.user
+    })
   })
 
   // @todo here - organise the display. Possibly created dedicated 404 page.
@@ -129,7 +134,7 @@ module.exports = (servDb, servSearch) => {
     servLog.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(err.status || 500)
     res.render('error', {
-      seo: req.seo('/error'),
+      seo: req.libSeo('/error'),
       route: '/error',
       user: req.user || null,
       error: err
