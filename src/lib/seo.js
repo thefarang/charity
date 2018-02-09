@@ -40,12 +40,12 @@ const getSEO = (title) => {
       routeTitle = 'Reset Password'
       break
     case '/error':
-      pageTitle += ' | Error'
-      routeTitle = 'Error'
+      pageTitle += ' | System Failure'
+      routeTitle = 'System Failure'
       break
     case '/404':
-      pageTitle += ' | Unknown'
-      routeTitle = 'Unknown Route'
+      pageTitle += ' | Page Unavailable'
+      routeTitle = 'Page Unavailable'
       break
   }
   return { pageTitle: pageTitle, routeTitle: routeTitle }

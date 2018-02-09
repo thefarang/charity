@@ -42,7 +42,6 @@ module.exports = (servDb, servSearch) => {
   appInstance.use(bodyParser.urlencoded({ extended: false }))
   appInstance.use(expressSanitizer())
 
-  // @todo - add libTokens, libCookies and libACL here too
   // Middleware to assign helpers to the request object
   appInstance.use((req, res, next) => {
     req.libAcl = libAcl
@@ -118,26 +117,26 @@ module.exports = (servDb, servSearch) => {
   appInstance.use('/dashboard/charity-auth', charityAuth)
   appInstance.use('/dashboard/admin', admin)
 
-  // 404 middleware, called when no routes match the requested route.
+  // 404 middleware
   appInstance.use((req, res, next) => {
     servLog.info({ path: req.path }, 'An unknown route has been requested')
     res.render('404', {
       seo: req.libSeo('/404'),
       route: '/404',
-      user: req.user
+      user: req.user,
+      message: `This page isn't available`
     })
   })
 
-  // @todo here - organise the display. Possibly created dedicated 404 page.
-  // Error display middleware.
+  // 500 middleware
   appInstance.use((err, req, res, next) => {
     servLog.info({ err: err }, 'Error handled finally by the error display middleware')
-    res.status(err.status || 500)
-    res.render('error', {
+    res.status(500)
+    res.render('500', {
       seo: req.libSeo('/error'),
       route: '/error',
       user: req.user || null,
-      error: err
+      message: `Something went wrong, sorry. Please wait a few moments then refresh this page`
     })
   })
 
