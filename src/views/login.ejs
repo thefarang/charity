@@ -1,39 +1,29 @@
-<!DOCTYPE html>
+<%- include partials/top.ejs %>
+<%- include partials/nav.ejs %>
 
-<!--
-  We need to hide error message on interaction with form elements
-  We need to organise views into pages/ and partials/ and reuse items accordingly
-  We need to add the miner check
--->
+<!-- Begin page content -->
+<main role="main" class="container">
 
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/index.css' />
-  </head>
-  <body>
-    <h1>Login</h1>
+  <h1 class="mt-5">Login</h1>
+  <div id="errors"></div>
 
-    <div id="errors"></div>
+  <form name="login" action="/login-auth">
+    <fieldset>
+      <label for="email">Email</label>
+      <input type="text" id="email" name="email" maxlength="50">
+    </fieldset>
 
-    <form action="/login-auth">
-      <fieldset>
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" maxlength="50">
-      </fieldset>
+    <fieldset>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" maxlength="30">
+    </fieldset>
 
-      <fieldset>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" maxlength="30">
-      </fieldset>
+    <a href="/forgot-password" target="_blank">Forgot password?</a>
+    
+    <p>Add miner check here</p>
 
-      <a href="/forgot-password" target="_blank">Forgot password?</a>
-      
-      <p>Add miner check here</p>
+    <input type="submit" id="login_submit" value="Login">
+  </form>
+</main>
 
-      <input id="submit" type="submit" value="Login">
-    </form>
-
-    <script src="/javascripts/login.bundle.js"></script>
-  </body>
-</html>
+<%- include partials/footer.ejs %>

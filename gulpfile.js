@@ -18,8 +18,8 @@ const initUsersTask = (done) => {
 
 const buildJSTask = () => {
   const files = [
-    'src/assets/javascripts/login.js',
-    'src/assets/javascripts/register.js',
+    'src/assets/javascripts/index.js',
+    'src/assets/javascripts/explore.js',
     'src/assets/javascripts/dashboard/admin.js',
     'src/assets/javascripts/dashboard/charity.js'
   ]
@@ -42,7 +42,18 @@ const buildCSSTask = () => {
     .pipe(less({
       paths: [ path.join(__dirname, 'node_modules', 'bootstrap-less') ]
     }))
-    .pipe(gulp.dest('src/public/stylesheets'));
+    .pipe(gulp.dest('src/public/stylesheets'))
+
+  // @todo - use this
+  /*
+  return gulp.pipe(less({
+      paths: [ 
+        './src/assets/stylesheets/',
+        path.join(__dirname, 'node_modules', 'bootstrap-less')
+      ]
+    }))
+    .pipe(gulp.dest('src/public/stylesheets'))
+  */
 }
 
 gulp.task('default', [ 'initUsers', 'buildJS', 'buildCSS' ])

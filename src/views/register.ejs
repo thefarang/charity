@@ -1,57 +1,47 @@
-<!DOCTYPE html>
+<%- include partials/top.ejs %>
+<%- include partials/nav.ejs %>
 
-<!--
-  We need to hide error message on interaction with form elements
-  We need to organise views into pages/ and partials/ and reuse items accordingly
-  We need to add the miner check
--->
+<!-- Begin page content -->
+<main role="main" class="container">
 
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/index.css' />
-  </head>
-  <body>
-    <h1>Register</h1>
-    
-    <div id="errors"></div>
+  <h1 class="mt-5">Register</h1>
+  <div id="errors"></div>
 
-    <form action="/register-auth">
-      <fieldset>
-        <label for="first_name">First name</label>
-        <input type="text" id="first_name" name="first_name" maxlength="20">
-      </fieldset>
+  <form name="register" action="/register-auth">
+    <fieldset>
+      <label for="first_name">First name</label>
+      <input type="text" id="first_name" name="first_name" maxlength="20">
+    </fieldset>
 
-      <fieldset>
-        <label for="last_name">Last name</label>
-        <input type="text" id="last_name" name="last_name" maxlength="25">
-      </fieldset>
+    <fieldset>
+      <label for="last_name">Last name</label>
+      <input type="text" id="last_name" name="last_name" maxlength="25">
+    </fieldset>
 
-      <fieldset>
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" maxlength="50">
-      </fieldset>
+    <fieldset>
+      <label for="email">Email</label>
+      <input type="text" id="email" name="email" maxlength="50">
+    </fieldset>
 
-      <fieldset>
-        <label for="confirm_email">Confirm email</label>
-        <input type="text" id="confirm_email" name="confirm_email" maxlength="50">
-      </fieldset>
+    <fieldset>
+      <label for="confirm_email">Confirm email</label>
+      <input type="text" id="confirm_email" name="confirm_email" maxlength="50">
+    </fieldset>
 
-      <fieldset>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" maxlength="30">
-      </fieldset>
+    <fieldset>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" maxlength="30">
+    </fieldset>
 
-      <fieldset>
-        <label for="confirm_password">Confirm password</label>
-        <input type="password" id="confirm_password" name="confirm_password" maxlength="30">
-      </fieldset>
+    <fieldset>
+      <label for="confirm_password">Confirm password</label>
+      <input type="password" id="confirm_password" name="confirm_password" maxlength="30">
+    </fieldset>
 
-      <p>Add miner check here</p>
+    <p>Add miner check here</p>
 
-      <input id="submit" type="submit" value="Register">
-    </form>
+    <input type="submit"  id="register_submit" value="Register">
+  </form>
+</main>
 
-    <script src="/javascripts/register.bundle.js"></script>
-  </body>
-</html>
+<%- include partials/footer.ejs %>
