@@ -29,8 +29,14 @@ const admin = require('./routes/dashboard/admin')
 
 module.exports = (servDb, servSearch) => {
   const appInstance = express()
+
+  // Add services and library helpers to the app, for later use elsewhere
   appInstance.set('servDb', servDb)
   appInstance.set('servSearch', servSearch)
+  appInstance.set('libAcl', libAcl)
+  appInstance.set('libSeo',libSeo)
+  appInstance.set('libTokens', libTokens)
+  appInstance.set('libCookies', libCookies)
 
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))
@@ -42,33 +48,27 @@ module.exports = (servDb, servSearch) => {
   appInstance.use(bodyParser.urlencoded({ extended: false }))
   appInstance.use(expressSanitizer())
 
-  // Middleware to assign helpers to the request object
-  appInstance.use((req, res, next) => {
-    req.libAcl = libAcl
-    req.libSeo = libSeo
-    req.libTokens = libTokens
-    req.libCookies = libCookies
-    return next()
-  })
-
   // Json webtoken parsing middleware. The jwt, if it exists, will
   // be stored in the cookie.
   appInstance.use(cookieParser())
-  let token = null
+
+  // @todo
+  // Extract this into it's own middleware file
   appInstance.use(async (req, res, next) => {
+    let token = null
     try {
       token = libTokens.getToken(req)
       if (token) {
         servLog.info({ token: token }, 'Token found')
-        req.user = await libTokens.getUserByToken(token)
-        if (!req.user) {
+        res.locals.user = await libTokens.getUserByToken(token)
+        if (!res.locals.user) {
           servLog.info({ token: token }, 'Token has expired.')
           libCookies.unsetCookie(res)
           res.redirect(302, '/login')
           return
         }
       } else {
-        req.user = dataUsers.getGuestUser()
+        res.locals.user = dataUsers.getGuestUser()
       }
 
       // Handle 404s
@@ -79,17 +79,17 @@ module.exports = (servDb, servSearch) => {
 
       // Handle 401 Unauthorized through 302 Redirect. Not semantically correct but supports the
       // end user well-enough and minimises work here.
-      if (!libAcl.isUserAuthorised(req.path, req.method.toLowerCase(), req.user.role)) {
+      if (!libAcl.isUserAuthorised(req.path, req.method.toLowerCase(), res.locals.user.role)) {
         servLog.info({
-          user: req.user.toJSON(),
+          user: res.locals.user.toJSON(),
           resource: req.path
         }, 'User attempted to access unauthorised route. Redirecting.')
 
-        if (req.user.role.name === 'guest') {
+        if (res.locals.user.role.name === 'guest') {
           res.redirect(302, '/login')
         } else {
           // Route to the correct dashboard
-          const route = req.user.role.name === 'admin' ? 'admin' : 'charity'
+          const route = res.locals.user.role.name === 'admin' ? 'admin' : 'charity'
           res.redirect(302, `/dashboard/${route}`)
         }
         return
@@ -121,9 +121,9 @@ module.exports = (servDb, servSearch) => {
   appInstance.use((req, res, next) => {
     servLog.info({ path: req.path }, 'An unknown route has been requested')
     res.render('404', {
-      seo: req.libSeo('/404'),
+      seo: libSeo('/404'),
       route: '/404',
-      user: req.user,
+      user: res.locals.user,
       message: `This page isn't available`
     })
   })
@@ -133,9 +133,9 @@ module.exports = (servDb, servSearch) => {
     servLog.info({ err: err }, 'Error handled finally by the error display middleware')
     res.status(500)
     res.render('500', {
-      seo: req.libSeo('/error'),
+      seo: libSeo('/error'),
       route: '/error',
-      user: req.user || null,
+      user: res.locals.user || null,
       message: `Something went wrong, sorry. Please wait a few moments then refresh this page`
     })
   })

@@ -73,14 +73,14 @@ router.post('/', async (req, res, next) => {
 
   // Create a json web token from the user object.
   try {
-    const token = await req.libTokens.createToken(user)
+    const token = await req.app.get('libTokens').createToken(user)
     servLog.info({
       email: req.body.email,
       token: token },
       'Successfully created token for user')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
-    req.libCookies.setCookie(res, token)
+    req.app.get('libCookies').setCookie(res, token)
     res.status(200)
 
     // @todo HERE redirect to appropriate dashboard

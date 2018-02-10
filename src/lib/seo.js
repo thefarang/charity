@@ -48,7 +48,11 @@ const getSEO = (title) => {
       routeTitle = 'Page Unavailable'
       break
   }
-  return { pageTitle: pageTitle, routeTitle: routeTitle }
+  return {
+    brandTitle: config.get('app.brand'),
+    pageTitle: pageTitle,
+    routeTitle: routeTitle
+  }
 }
 
 module.exports = getSEO

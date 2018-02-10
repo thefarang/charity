@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "charity",
-    "brand": "Brand",
+    "brand": "MiningForChange",
     "port": "80"
   },
   "token": {

@@ -17,15 +17,15 @@ router.get('/', async (req, res, next) => {
   } catch (err) {
 
     servLog.info({
-      userId: req.user.id },
+      userId: res.locals.user.id },
       "Handling error finding charity list")
     return next(err)
   }
 
   res.render('explore', {
-    seo: req.libSeo('/explore'),
+    seo: req.app.get('libSeo')('/explore'),
     route: '/explore',
-    user: req.user,
+    user: res.locals.user,
     charities: charities
   })
 })

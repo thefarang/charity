@@ -6,9 +6,9 @@ const router = express.Router()
 
 router.get('/', (req, res, next) => {
   res.render('register', {
-    seo: req.libSeo('/register'),
+    seo: req.app.get('libSeo')('/register'),
     route: '/register',
-    user: req.user
+    user: res.locals.user
   })
 })
 
