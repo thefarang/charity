@@ -2,11 +2,9 @@
 
 const express = require('express')
 const validate = require('validate.js')
-
 const servLog = require('../../services/log')
 const charityAuthSchema = require('../../validate/schema/charity-auth')
 const charityAuthConstraints = require('../../validate/constraints/charity-auth')
-
 const Charity = require('../../models/charity')
 
 const router = express.Router()

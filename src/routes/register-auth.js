@@ -2,12 +2,10 @@
 
 const express = require('express')
 const validate = require('validate.js')
-
 const servLog = require('../services/log')
 const dataRoles = require('../data/roles')
 const registerAuthSchema = require('../validate/schema/register-auth')
 const registerAuthConstraints = require('../validate/constraints/register-auth')
-
 const User = require('../models/user')
 const Password = require('../models/password')
 const Charity = require('../models/charity')
