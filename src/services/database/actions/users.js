@@ -4,100 +4,62 @@ const mongoose = require('mongoose')
 
 const servLog = require('../../log')
 const UserSchema = require('../schema/user-schema')
-
-const User = require('../../../models/user')
-const Role = require('../../../models/role')
-const Password = require('../../../models/password')
+const UserFactory = require('../../../models/user-factory')
+const PasswordFactory = require('../../../models/password-factory')
 
 const ObjectId = mongoose.Types.ObjectId
 
-const _upsert = (user, userSchema) => {
-  return new Promise((resolve, reject) => {
-    if (user.id) {
-      userSchema._id = new ObjectId(user.id)
-    }
+const find = async (user) => {
+  const userSchema = await findOne({ user_email: user.email })
+  if (!userSchema) {
+    return null
+  }
 
-    userSchema.email = user.email
-    userSchema.encPassword = user.password.encPassword
-    userSchema.role.id = user.role.id
-    userSchema.role.name = user.role.name
-    userSchema.save((err) => {
+  const newUser = UserFactory.createFromSchema(userSchema)
+  newUser.update({
+    user_id: userSchema._id,
+    user_password: user.password.clearPassword
+  })
+  return newUser
+}
+
+const findOne = (searchSchema) => {
+  return new Promise((resolve, reject) => {
+    UserSchema.findOne(searchSchema, (err, userSchema) => {
       if (err) {
-        servLog.info({
-          err: err,
-          user: user
-        }, 'An error occurred saving the UserSchema')
+        servLog.info({ err: err, searchSchema: searchSchema }, 'Error locating existing User document')
         return reject(err)
       }
-
-      user.id = userSchema._id.valueOf()
-      return resolve(user)
+      return resolve(userSchema)
     })
   })
 }
 
-const saveNewUser = async (user) => {
-  try {
-    return await _upsert(user, new UserSchema())
-  } catch (err) {
-    throw err
-  }
-}
-
-const updateUser = async (user) => {
-  try {
-    const userSchema = await findOne({ _id: user.id })
-    return await _upsert(user, userSchema)
-  } catch (err) {
-    throw err
-  }
-}
-
-// Returns null if not found
-const findUserByEmail = async (sanitizedEmail) => {
-  try {
-    const userSchema = await findOne({ email: sanitizedEmail })
-    return transformSchemaToModel(userSchema)
-  } catch (err) {
-    throw err
-  }
-}
-
-// Reeturns null if not found
-const findUserById = async (id) => {
-  try {
-    const userSchema = await findOne({ _id: id })
-    return transformSchemaToModel(userSchema)
-  } catch (err) {
-    throw err
-  }
-}
-
-const transformSchemaToModel = (userSchema) => {
-  let user = null
-  if (userSchema !== null) {
-    user = new User()
-    user.id = userSchema._id
-    user.email = userSchema.email
-    const password = new Password()
-    password.encPassword = userSchema.encPassword
-    user.password = password
-    user.role = new Role(userSchema.role.id, userSchema.role.name)
-  }
-  return user
-}
-
-const findOne = (keyValuePairs) => {
-  return new Promise((resolve, reject) => {
-    UserSchema.findOne(keyValuePairs, (err, userSchema) => {
+const upsert = (user) => {
+  return new Promise(async (resolve, reject) => {
+    const userSchema = new UserSchema()
+    if (user.id) {
+      userSchema._id = new ObjectId(user.id)
+    }
+    userSchema.user_email = user.email
+    userSchema.user_encrypted_password = 
+      await user.password.getEncPasswordFromClearPassword(user.password.clearPassword)
+    userSchema.user_role_id = user.role.id
+    userSchema.user_role_name = user.role.name
+    userSchema.save((err) => {
       if (err) {
-        servLog.info({
-          err: err,
-          keyValuePairs: keyValuePairs
-        }, 'An error occurred locating the existing User document')
+        servLog.info({ err: err, user: user.toSecureSchema() }, 'Error saving the UserSchema')
         return reject(err)
       }
-      return resolve(userSchema)
+
+      // Add the values that would be missing from a new User
+      // prior to persistence. Add the (possibly updated)
+      // user_encrypted_password.
+      user.update({
+        user_id: userSchema._id.valueOf(),
+        user_encrypted_password: userSchema.user_encrypted_password
+      })
+      return resolve(user)
     })
   })
 }
@@ -120,8 +82,6 @@ const removeUser = (user) => {
 */
 
 module.exports = {
-  findUserByEmail,
-  findUserById,
-  saveNewUser,
-  updateUser
+  find,
+  upsert
 }

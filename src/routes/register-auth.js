@@ -3,12 +3,11 @@
 const express = require('express')
 const validate = require('validate.js')
 const servLog = require('../services/log')
-const dataRoles = require('../data/roles')
+const dataRoles = require('../data/roles')  // @todo -revisit this
 const registerAuthSchema = require('../validate/schema/register-auth')
 const registerAuthConstraints = require('../validate/constraints/register-auth')
-const User = require('../models/user')
-const Password = require('../models/password')
-const Charity = require('../models/charity')
+const Charity = require('../models/charity')  // @todo - factory
+const UserFactory = require('../models/user-factory')
 
 const router = express.Router()
 
@@ -37,86 +36,62 @@ router.use((req, res, next) => {
 
 router.post('/', async (req, res, next) => {
 
-  // Attempt to find the user in the dbase
-  const servDb = req.app.get('servDb')
-  let user = null
-  try {
-    user = await servDb.getUserActions().findUserByEmail(req.body.email)
-  } catch (err) {
-    servLog.info({
-      email: req.body.email },
-      'Handling the error that occurred whilst searching for a matching user')
+  // Partially hydrate a User object from the schema
+  const userSchema = res.locals.schema
+  let user = UserFactory.createFromSchema(userSchema)
 
+  try {
+    // Attempt to find the user in the dbase
+    user = await req.app.get('servDb').getUserActions().find(user)
+    if (user !== null) {
+      servLog.info({ user: user.toSecureSchema() }, 'Existing user attempting registration')
+      res.set('Cache-Control', 'private, max-age=0, no-cache')
+      res.status(404)
+      res.json({ message: 'Email already exists in the system' })
+      return
+    }
+  } catch (err) {
+    servLog.info({ user: user.toSecureSchema() }, 'Handling error searching for a matching user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred. Please try again.' })
     return
   }
 
-  if (user !== null) {
-    servLog.info({
-      email: req.body.email },
-      'User already exists in the dbase. Registration attempt denied.')
-
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(404)
-    res.json({ message: 'Email already exists in the system' })
-    return
-  }
-
-  // Store the new user in the database.
   try {
-    user = new User()
-    user.email = req.body.email
-
-    const password = new Password()
-    password.clrPassword = req.body.password
-    password.encPassword = await password.getEncPasswordFromClearPassword(req.body.password)
-    user.password = password
-    user.role = dataRoles.getCauseRole()
-
-    user = await servDb.getUserActions().saveNewUser(user)
-    servLog.info({ user: user.toJSON() }, 'New user registered')
+    // Store the new user in the database.
+    await req.app.get('servDb').getUserActions().upsert(user)
+    servLog.info({ user: user.toSecureSchema() }, 'New user registered')
   } catch (err) {
-    servLog.info({
-      err: err,
-      email: req.body.email },
-      'Handling the error that occurred whilst creating a new User')
-
+    servLog.info({ err: err, user: user.toSecureSchema() }, 'Handling error creating a new User')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new user. Please try again.' })
     return
   }
 
+  // @todo - create factory
   // Create a Charity object for the user and store in the search engine
   const servSearch = req.app.get('servSearch')
   let charity = new Charity()
   charity.userId = user.id
   try {
     charity = await servSearch.saveNewCharity(charity)
-    servLog.info({ userId: charity.userId, charityId: charity.id }, 'New charity added')
+    servLog.info({ charityId: charity.id }, 'New charity added')
   } catch (err) {
     // @todo critical
     // If this fails, the user will not have a charity. What happens?
-    servLog.info({
-      user: user.toJSON() },
-      'Handling the error that occurred whilst creating a new Charity')
-
+    servLog.info({ user: user.toJSON() }, 'Handling error creating a new Charity')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new charity.' })
     return
   }
 
-  // Create json web token from the user object and return
   try {
+    // Create json web token from the user object and return
     const token = await req.app.get('libTokens').createToken(user)
-    servLog.info({
-      user: user.toJSON(),
-      token: token },
-      'Successfully created token for newly registered user')
-
+    servLog.info({ user: user.toJSON(), token: token }, 'Created token for new user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     req.app.get('libCookies').setCookie(res, token)
     res.status(200)

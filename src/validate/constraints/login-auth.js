@@ -3,7 +3,7 @@
 // @todo
 // Inherit
 const constraints = {
-  email: {
+  user_email: {
     presence: true,
     length: {
       maximum: 50,
@@ -13,7 +13,7 @@ const constraints = {
       message: "The email address is invalid"
     }
   },
-  password: {
+  user_password: {
     presence: true,
     length: {
       minimum: 6,

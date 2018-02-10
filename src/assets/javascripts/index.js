@@ -25,7 +25,7 @@ $(function() {
   })
 
   $("#login_submit").on('click', function() {
-    if ((!$("#email").val()) || (!$("#password").val())) {
+    if ((!$("#user_email").val()) || (!$("#user_password").val())) {
       $("#errors").text("Please populate all fields")
       $("#errors").css("display", "block")
       return
@@ -60,10 +60,10 @@ $(function() {
     // Ensure all fields are populated.
     if ((!$("#first_name").val()) || 
         (!$("#last_name").val()) ||
-        (!$("#email").val()) ||
-        (!$("#confirm_email").val()) ||
-        (!$("#password").val()) ||
-        (!$("#confirm_password").val())) {
+        (!$("#user_email").val()) ||
+        (!$("#user_confirm_email").val()) ||
+        (!$("#user_password").val()) ||
+        (!$("#user_confirm_password").val())) {
       $("#errors").text("Please populate all fields")
       $("#errors").css("display", "block")
       return
@@ -77,7 +77,7 @@ $(function() {
     }
 
     // Ensure the password fields match
-    if ($("#password").val() !== $("#confirm_password").val()) {
+    if ($("#user_password").val() !== $("#user_confirm_password").val()) {
       $("#errors").text("The passwords do not match")
       $("#errors").css("display", "block")
       return

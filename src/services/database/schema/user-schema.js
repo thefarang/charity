@@ -4,32 +4,26 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
-// @todo
-// Create a counter collection separately which is incremented when a new user is added.
-// Look online for the pattern for this.
-
 const UserSchema = new Schema({
-  email: {
+  user_email: {
     type: String,
     trim: true,
     required: true,
     index: { unique: true }
   },
-  encPassword: {
+  user_encrypted_password: {
     type: String,
     trim: true,
     required: true
   },
-  role: {
-    id: {
-      type: Number,
-      required: true
-    },
-    name: {
-      type: String,
-      trim: true,
-      required: true
-    }
+  user_role_id: {
+    type: Number,
+    required: true
+  },
+  user_role_name: {
+    type: String,
+    trim: true,
+    required: true
   }
 }, {
   collection: 'user'

@@ -3,10 +3,12 @@
 const schemaProperties = [
   'first_name',
   'last_name',
-  'email',
-  'confirm_email',
-  'password',
-  'confirm_password'
+  'user_email',
+  'confirm_user_email',
+  'user_password',
+  'confirm_user_password',
+  'user_role_id',
+  'user_role_name'
 ]
 
 const buildSchema = (body) => {
