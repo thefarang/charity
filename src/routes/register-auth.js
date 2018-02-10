@@ -1,7 +1,6 @@
 'use strict'
 
 const express = require('express')
-const { check, validationResult } = require('express-validator/check')
 
 const servLog = require('../services/log')
 const dataRoles = require('../data/roles')

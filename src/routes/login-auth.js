@@ -1,27 +1,45 @@
 'use strict'
 
 const express = require('express')
+const validate = require('validate.js')
 
 const servLog = require('../services/log')
 
+const loginAuthSchema = require('../validate/schema/login-auth')
+const loginAuthConstraints = require('../validate/constraints/login-auth')
+
 const router = express.Router()
 
+// This middleware is executed for every request to the router.
+router.use((req, res, next) => {
+
+  const schema = loginAuthSchema.buildSchema(req.body)
+  const validationResult = validate(schema, loginAuthConstraints)
+
+  if (validationResult) {
+    servLog.info({ 
+      schema: schema,
+      validationResult: validationResult },
+      'Login details failed data validation')
+
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(400)
+    res.json()
+    return
+  }
+
+  servLog.info({ schema: schema }, 'Login details passed data validation')
+  res.locals.schema = schema
+  return next()
+})
+
 router.post('/', async (req, res, next) => {
-  // Sanitize the incoming data
-  const sEmail = req.sanitize(req.body.email)
-  const sClrPassword = req.sanitize(req.body.password)
-  servLog.info({
-    email: req.body.email,
-    sanitized_email: sEmail,
-    clear_password: req.body.password,
-    sanitized_clear_password: sClrPassword },
-    'User login attempt')
 
   // Attempt to find the user in the dbase
   const servDb = req.app.get('servDb')
   let user = null
   try {
-    user = await servDb.getUserActions().findUserByEmail(sEmail)
+    user = await servDb.getUserActions().findUserByEmail(req.body.email)
     if (!user) {
       servLog.info({
         email: req.body.email },
@@ -48,7 +66,7 @@ router.post('/', async (req, res, next) => {
   // Test the password is correct
   try {
     const isPasswordCorrect =
-      await user.password.isClearPasswordCorrect(sClrPassword, user.password.encPassword)
+      await user.password.isClearPasswordCorrect(req.body.password, user.password.encPassword)
     if (!isPasswordCorrect) {
       servLog.info({ email: req.body.email }, 'User password is incorrect')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -59,7 +77,7 @@ router.post('/', async (req, res, next) => {
 
     // Authentication successful. Update the User.Password object (we do not store
     // the clear text password in the database)
-    user.password.clrPassword = sClrPassword
+    user.password.clrPassword = req.body.password
   } catch (err) {
     servLog.info({
       email: req.body.email },
