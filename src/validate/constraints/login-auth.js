@@ -17,7 +17,7 @@ const constraints = {
     presence: true,
     length: {
       minimum: 6,
-      message: "must be at least 6 characters"
+      message: "The password must be at least 6 characters long"
     }
   }
 }

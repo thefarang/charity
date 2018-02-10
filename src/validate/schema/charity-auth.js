@@ -1,6 +1,19 @@
 'use strict'
 
-const schemaProperties = ['email', 'password']
+const schemaProperties = [
+  'charity_id',
+  'is_visible',
+  'name',
+  'country',
+  'is_registered',
+  'website',
+  'email',
+  'phone',
+  'short_desc',
+  'long_desc',
+  'keyword_1',
+  'keyword_2'
+]
 
 const buildSchema = (body) => {
   const schema = {}

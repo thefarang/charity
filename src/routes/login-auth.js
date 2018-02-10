@@ -4,7 +4,6 @@ const express = require('express')
 const validate = require('validate.js')
 
 const servLog = require('../services/log')
-
 const loginAuthSchema = require('../validate/schema/login-auth')
 const loginAuthConstraints = require('../validate/constraints/login-auth')
 

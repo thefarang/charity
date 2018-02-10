@@ -19,7 +19,6 @@ class Charity {
     this.longDesc = null
     this.imageThumb = null
     this.imageFull = null
-    this.coinhiveKey = null
     this.keywords = []
   }
 
@@ -71,7 +70,6 @@ class Charity {
       longDesc: this.longDesc,
       imageThumb: this.imageThumb,
       imageFull: this.imageFull,
-      coinhiveKey: this.coinhiveKey,
       keywords: this.keywords
     }
   }
