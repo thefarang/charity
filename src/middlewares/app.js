@@ -1,13 +1,14 @@
 'use strict'
 
+const UserFactory = require('../models/user-factory')
+
 const handleIdentifyUser = async (req, res, next) => {
   const libTokens = req.app.get('libTokens')
   const libCookies = req.app.get('libCookies')
   const servLog = req.app.get('servLog')
-  const dataUsers = req.app.get('dataUsers')
 
   // Set the user as guest by default
-  res.locals.user = dataUsers.getGuestUser()
+  res.locals.user = UserFactory.createGuestUser()
   let token = null
   try {
     token = libTokens.getToken(req)
@@ -47,7 +48,7 @@ const handleCheckRouteAuthorisation = async (req, res, next) => {
   }
 
   servLog.info({
-    user: res.locals.user.toJSON(),
+    user: res.locals.user.toSecureSchema(),
     resource: req.path
   }, 'User attempted to access unauthorised route. Redirecting.')
 

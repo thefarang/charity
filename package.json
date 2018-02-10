@@ -9,7 +9,6 @@
     "build-assets": "npm run build-js && npm run build-css",
     "build-js": "./node_modules/.bin/gulp buildJS",
     "build-css": "./node_modules/.bin/gulp buildCSS",
-    "init-users": "./node_modules/.bin/gulp initUsers",
     "debug": "./node_modules/.bin/nodemon ./src/bin/start.js",
     "start": "node ./src/bin/start.js"
   },

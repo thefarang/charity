@@ -10,7 +10,6 @@ const libAcl = require('./lib/acl')
 const libCookies = require('./lib/cookies')
 const libTokens = require('./lib/tokens')
 const libSeo = require('./lib/seo')
-const dataUsers = require('./data/users')
 
 const { 
   handleIdentifyUser,
@@ -42,7 +41,6 @@ module.exports = (servDb, servSearch) => {
   appInstance.set('libSeo',libSeo)
   appInstance.set('libTokens', libTokens)
   appInstance.set('libCookies', libCookies)
-  appInstance.set('dataUsers', dataUsers)
 
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))
@@ -60,6 +58,7 @@ module.exports = (servDb, servSearch) => {
   // Business logic middlewares
   appInstance.use(handleIdentifyUser)
   appInstance.use(handleCheckRouteAuthorisation)
+
   appInstance.use('/', index)
   appInstance.use('/explore', explore)
   appInstance.use('/faq', faq)

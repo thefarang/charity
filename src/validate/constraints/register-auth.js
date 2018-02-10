@@ -1,7 +1,15 @@
 'use strict'
 
-const roleIds = ["2", "3"]
-const roleNames = ["cause", "donator"]
+const roleDataHelper = require('../../data/roles')
+
+// Create the inclusions for validating the correct role
+const roleIds = []
+const roleNames = []
+
+roleDataHelper.getRegisterableRoleSchemas().forEach((registerableRoleSchema) => {
+  roleIds.push(registerableRoleSchema.user_role_id)
+  roleNames.push(registerableRoleSchema.user_role_name)
+})
 
 // @todo
 // Inherit
@@ -59,6 +67,8 @@ const constraints = {
       message: "The passwords do not match"
     }
   },
+  /*
+  // @todo - coerce the strings into integers
   user_role_id: {
     presence: true,
     inclusion: {
@@ -71,6 +81,7 @@ const constraints = {
       within: roleNames
     }
   }
+  */
 }
 
 module.exports = constraints

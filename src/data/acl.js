@@ -1,6 +1,6 @@
 'use strict'
 
-const getAcl = () => {
+const getAclSchema = () => {
   return [
     {
       resource: '/',
@@ -66,5 +66,5 @@ const getAcl = () => {
 }
 
 module.exports = {
-  getAcl
+  getAclSchema
 }

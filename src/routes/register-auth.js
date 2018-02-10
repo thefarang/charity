@@ -3,7 +3,6 @@
 const express = require('express')
 const validate = require('validate.js')
 const servLog = require('../services/log')
-const dataRoles = require('../data/roles')  // @todo -revisit this
 const registerAuthSchema = require('../validate/schema/register-auth')
 const registerAuthConstraints = require('../validate/constraints/register-auth')
 const Charity = require('../models/charity')  // @todo - factory
@@ -42,8 +41,8 @@ router.post('/', async (req, res, next) => {
 
   try {
     // Attempt to find the user in the dbase
-    user = await req.app.get('servDb').getUserActions().find(user)
-    if (user !== null) {
+    const existingUser = await req.app.get('servDb').getUserActions().find(user)
+    if (existingUser) {
       servLog.info({ user: user.toSecureSchema() }, 'Existing user attempting registration')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(404)
@@ -81,7 +80,7 @@ router.post('/', async (req, res, next) => {
   } catch (err) {
     // @todo critical
     // If this fails, the user will not have a charity. What happens?
-    servLog.info({ user: user.toJSON() }, 'Handling error creating a new Charity')
+    servLog.info({ user: user.toSecureSchema() }, 'Handling error creating a new Charity')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new charity.' })
@@ -91,7 +90,7 @@ router.post('/', async (req, res, next) => {
   try {
     // Create json web token from the user object and return
     const token = await req.app.get('libTokens').createToken(user)
-    servLog.info({ user: user.toJSON(), token: token }, 'Created token for new user')
+    servLog.info({ user: user.toSecureSchema(), token: token }, 'Created token for new user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     req.app.get('libCookies').setCookie(res, token)
     res.status(200)
@@ -100,7 +99,7 @@ router.post('/', async (req, res, next) => {
     res.json({ loc: '/dashboard/charity' })
   } catch (err) {
     servLog.info({
-      user: user.toJSON() },
+      user: user.toSecureSchema() },
       'Handling the error that occurred whilst creating a newly registered user token')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')

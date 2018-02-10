@@ -35,12 +35,24 @@ const findOne = (searchSchema) => {
   })
 }
 
-const upsert = (user) => {
-  return new Promise(async (resolve, reject) => {
-    const userSchema = new UserSchema()
+// @todo fucking research this
+const upsert = async (user) => {
+  try {
+    let userSchema = null
     if (user.id) {
-      userSchema._id = new ObjectId(user.id)
+      userSchema = await findOne({ _id: user.id })
     }
+    if (!userSchema) {
+      userSchema = new UserSchema()
+    }
+    return await _upsert(user, userSchema)
+  } catch (err) {
+    throw err
+  }
+}
+
+const _upsert = (user, userSchema) => {
+  return new Promise(async (resolve, reject) => {
     userSchema.user_email = user.email
     userSchema.user_encrypted_password = 
       await user.password.getEncPasswordFromClearPassword(user.password.clearPassword)

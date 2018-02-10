@@ -1,37 +1,40 @@
 'use strict'
 
-const Role = require('../models/role')
+const getRegisterableRoleSchemas = () => {
+  return [
+    {
+      user_role_id: 2,
+      user_role_name: 'cause'
+    },
+    {
+      user_role_id: 3,
+      user_role_name: 'donator'
+    }
+  ]
+}
 
-const guestRole = new Role(1, 'guest')
-const causeRole = new Role(2, 'cause')
-const donatorRole = new Role(3, 'donator')
-const adminRole = new Role(4, 'admin')
-
-const getGuestRole = () => guestRole
-
-const getCauseRole = () => causeRole
-
-const getDonatorRole = () => donatorRole
-
-const getAdminRole = () => adminRole
-
-const getRoles = () => [ guestRole, causeRole, donatorRole, adminRole ]
-
-const getRoleByName = (name) => {
-  switch (name) {
-    case 'guest': return guestRole
-    case 'cause': return causeRole
-    case 'donator': return donatorRole
-    case 'admin': return adminRole
-    default: throw new Error('Unknown role name provided')
-  }
+const getAllRoleSchemas = () => {
+  return [
+    {
+      user_role_id: 1,
+      user_role_name: 'guest'
+    },
+    {
+      user_role_id: 2,
+      user_role_name: 'cause'
+    },
+    {
+      user_role_id: 3,
+      user_role_name: 'donator'
+    },
+    {
+      user_role_id: 4,
+      user_role_name: 'admin'
+    }
+  ]
 }
 
 module.exports = {
-  getGuestRole,
-  getCauseRole,
-  getDonatorRole,
-  getAdminRole,
-  getRoles,
-  getRoleByName
+  getRegisterableRoleSchemas,
+  getAllRoleSchemas
 }

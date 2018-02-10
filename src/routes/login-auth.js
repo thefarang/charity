@@ -43,7 +43,7 @@ router.post('/', async (req, res, next) => {
     // Attempt to find the same user in the dbase
     user = await req.app.get('servDb').getUserActions().find(user)
     if (!user) {
-      servLog.info({ user: user.toSecureSchema() },'User not found in login')
+      servLog.info({ user_email: userSchema.user_email },'User not found in login')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(404)
       res.json()
@@ -51,7 +51,7 @@ router.post('/', async (req, res, next) => {
     }
     servLog.info({ user: user.toSecureSchema() }, 'User found in login')
   } catch (err) {
-    servLog.info({ user: user.toSecureSchema() }, 'Handling error locating the user')
+    servLog.info({ user_email: userSchema.user_email }, 'Handling error locating the user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()

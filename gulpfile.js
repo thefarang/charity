@@ -8,6 +8,7 @@ const rename = require('gulp-rename')
 const path = require('path')
 const source = require('vinyl-source-stream')
 
+/*
 const initUsersTask = (done) => {
   exec('node ./src/scripts/init-users.js', (err, stdout, stderr) => {
     console.log(stdout)
@@ -15,6 +16,7 @@ const initUsersTask = (done) => {
     done(err)
   })
 }
+*/
 
 const buildJSTask = () => {
   const files = [
@@ -53,7 +55,6 @@ const buildCSSTask = () => {
   */
 }
 
-gulp.task('default', [ 'initUsers', 'buildJS', 'buildCSS' ])
-gulp.task('initUsers', initUsersTask)
+gulp.task('default', [ 'buildJS', 'buildCSS' ])
 gulp.task('buildJS', buildJSTask)
 gulp.task('buildCSS', buildCSSTask)

@@ -61,23 +61,23 @@ $(function() {
     if ((!$("#first_name").val()) || 
         (!$("#last_name").val()) ||
         (!$("#user_email").val()) ||
-        (!$("#user_confirm_email").val()) ||
+        (!$("#confirm_user_email").val()) ||
         (!$("#user_password").val()) ||
-        (!$("#user_confirm_password").val())) {
+        (!$("#confirm_user_password").val())) {
       $("#errors").text("Please populate all fields")
       $("#errors").css("display", "block")
       return
     }
 
     // Ensure the email fields match
-    if ($("#email").val() !== $("#confirm_email").val()) {
+    if ($("#user_email").val() !== $("#confirm_user_email").val()) {
       $("#errors").text("The email addresses do not match")
       $("#errors").css("display", "block")
       return
     }
 
     // Ensure the password fields match
-    if ($("#user_password").val() !== $("#user_confirm_password").val()) {
+    if ($("#user_password").val() !== $("#confirm_user_password").val()) {
       $("#errors").text("The passwords do not match")
       $("#errors").css("display", "block")
       return
