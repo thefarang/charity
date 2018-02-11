@@ -3,7 +3,11 @@ node_modules/
 .git/
 .gitignore
 .travis.yml
-Dockerfile
+Dockerfile.development
+Dockerfile.staging
+Dockerfile.production
 docker-compose.yml
 README.md
 npm-debug.log
+README.md
+.env-template

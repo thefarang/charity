@@ -68,6 +68,7 @@ process.on('SIGINT', () => {
 
 // Create an app instance, injecting dependencies accordingly.
 const appInstance = app(servDb, servSearch)
+const appInstance = app(servDb, null)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))

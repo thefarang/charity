@@ -87,6 +87,7 @@ router.post('/', async (req, res, next) => {
     return
   }
 
+  // @todo - this occurs in login-auth too, so share this code
   try {
     // Create json web token from the user object and return
     const token = await req.app.get('libTokens').createToken(user)

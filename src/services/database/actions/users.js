@@ -35,13 +35,16 @@ const findOne = (searchSchema) => {
   })
 }
 
-// @todo fucking research this
+// Search based on
 const upsert = async (user) => {
   try {
     let userSchema = null
     if (user.id) {
       userSchema = await findOne({ _id: user.id })
+    } else if (user.email) {
+      userSchema = await findOne({ user_email: user.email })
     }
+    
     if (!userSchema) {
       userSchema = new UserSchema()
     }

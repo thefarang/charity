@@ -10,7 +10,7 @@
     "build-js": "./node_modules/.bin/gulp buildJS",
     "build-css": "./node_modules/.bin/gulp buildCSS",
     "debug": "./node_modules/.bin/nodemon ./src/bin/start.js",
-    "start": "node ./src/bin/start.js"
+    "start": "node ./deploy/bin/start.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",

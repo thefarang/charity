@@ -1,0 +1,9 @@
+# To build:
+# > docker build --file Dockerfile.production --tag thefarang/charity:production .
+#
+# To run:
+# > docker run --port 80:80 --env-file .env thefarang/charity:production
+
+FROM thefarang/charity:staging
+
+CMD ["npm", "start"]

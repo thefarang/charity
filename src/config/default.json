@@ -2,7 +2,8 @@
   "app": {
     "name": "charity",
     "brand": "MiningForChange",
-    "port": "80"
+    "url": "",
+    "port": ""
   },
   "token": {
     "secret": "",
