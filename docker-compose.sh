@@ -1,3 +1,3 @@
 #!/bin/sh
-npm run build-assets
+npm run setup-app
 npm run debug

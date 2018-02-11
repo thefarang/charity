@@ -1,6 +1,7 @@
 'use strict'
 
 const express = require('express')
+const compression = require('compression')
 const path = require('path')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -44,6 +45,7 @@ module.exports = (servDb, servSearch) => {
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))
   appInstance.set('view engine', 'ejs')
+  appInstance.use(compression())
   appInstance.use(express.static(path.join(__dirname, 'public')))
 
   // Incoming data parsing, sanitizing and validation middleware

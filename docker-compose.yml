@@ -46,7 +46,7 @@ services:
       - ./gulpfile.js:/app/gulpfile.js
       - ./docker-compose.sh:/app/docker-compose.sh
       - ./src:/app/src
-    command: ./docker-compose.sh #npm start
+    command: npm run debug
     ports:
       # Expose port to host machine for debugging
       - 80:80

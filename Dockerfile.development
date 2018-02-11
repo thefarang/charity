@@ -26,6 +26,6 @@ RUN echo 'Using application url:' && echo $APP_URL
 
 # Execute the task runner to setup the app
 COPY gulpfile.js /app/
-RUN npm run build-assets
+RUN npm run setup-app
 
 CMD ["npm", "run", "debug"]
