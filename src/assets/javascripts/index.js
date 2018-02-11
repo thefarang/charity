@@ -1,10 +1,14 @@
 'use strict'
 
 var $ = require('jquery')
-// window.Popper = require('popper.js')  // popper.js provides the Bootstrap tooltips
 var Popper = require('popper.js')
 require('bootstrap')
 var Cookies = require('js-cookie')
+
+const test = () => {
+  console.log('this is a test')
+}
+test()
 
 function handleErrorEvent(message, submitId) {
   $("#errors").text(message)
@@ -44,6 +48,9 @@ $(function() {
       statusCode: {
         200: function(data) {
           window.location.replace(data.loc)
+        },
+        400: function() {
+          handleErrorEvent("The email or password is incorrect.", "#login_submit")
         },
         401: function() {
           handleErrorEvent("The email or password is incorrect.", "#login_submit")

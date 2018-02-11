@@ -1,6 +1,8 @@
 'use strict'
 
+const babelify = require('babelify')
 const browserify = require('browserify')
+const buffer = require('vinyl-buffer')
 const exec = require('child_process').exec
 const fs = require('fs')
 const gulp = require('gulp')
@@ -9,6 +11,9 @@ const rename = require('gulp-rename')
 const path = require('path')
 const sitemapBuilder = require('sitemap')
 const source = require('vinyl-source-stream')
+const sourcemaps = require('gulp-sourcemaps')
+const uglify = require('gulp-uglify')
+const util = require('gulp-util')
 
 /*
 const initUsersTask = (done) => {
@@ -27,8 +32,13 @@ const buildJSTask = () => {
 
   return files.map((fileName) => {
     browserify({ entries: [ fileName ] }) // Initalise browserify
+    .transform('babelify', { presets: ['es2015'] })
     .bundle() // Combine javascripts used by entry
     .pipe(source(fileName)) // Convert the combined javascripts to a text stream
+    .pipe(buffer())
+    .pipe(process.env.NODE_ENV === 'production' ? util.noop() : sourcemaps.init())
+    .pipe(uglify())
+    .pipe(process.env.NODE_ENV === 'production' ? util.noop() : sourcemaps.write())
     .pipe(rename({
       // Rename the text stream postfix
       dirname: '.',
