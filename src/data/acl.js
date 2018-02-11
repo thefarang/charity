@@ -13,11 +13,6 @@ const getAclSchema = () => {
       roles: ['guest', 'cause', 'donator', 'admin']
     },
     {
-      resource: '/faq',
-      permission: 'get',
-      roles: ['guest', 'cause', 'donator', 'admin']
-    },
-    {
       resource: '/terms',
       permission: 'get',
       roles: ['guest', 'cause', 'donator', 'admin']

@@ -19,7 +19,6 @@ const {
 
 const index = require('./routes/index')
 const explore = require('./routes/explore')
-const faq = require('./routes/faq')
 const terms = require('./routes/terms')
 const resetPassword = require('./routes/reset-password')
 const register = require('./routes/register')
@@ -61,7 +60,6 @@ module.exports = (servDb, servSearch) => {
 
   appInstance.use('/', index)
   appInstance.use('/explore', explore)
-  appInstance.use('/faq', faq)
   appInstance.use('/terms', terms)
   appInstance.use('/reset-password', resetPassword)
   appInstance.use('/register', register)
