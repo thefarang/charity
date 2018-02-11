@@ -28,7 +28,7 @@ RUN npm install && \
     npm install --global gulp-cli@2.0.1 && \
     npm run setup-app && \
     npm uninstall gulp-cli && \
-    npm uninstall gulp browserify gulp-less gulp-rename nodemon standard inyl-source-stream && \
+    npm uninstall gulp browserify gulp-less gulp-rename nodemon standard vinyl-source-stream && \
     npm cache clean --force && \
     rm -rf /app/src/assets && \
     rm -f /app/gulpfile.js && \

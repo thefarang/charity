@@ -3,7 +3,6 @@
 const babelify = require('babelify')
 const browserify = require('browserify')
 const buffer = require('vinyl-buffer')
-const exec = require('child_process').exec
 const fs = require('fs')
 const gulp = require('gulp')
 const less = require('gulp-less')
@@ -17,6 +16,7 @@ const util = require('gulp-util')
 
 /*
 const initUsersTask = (done) => {
+  // const exec = require('child_process').exec
   exec('node ./src/scripts/init-users.js', (err, stdout, stderr) => {
     console.log(stdout)
     console.log(stderr)
@@ -84,3 +84,8 @@ gulp.task('buildJS', buildJSTask)
 gulp.task('buildCSS', buildCSSTask)
 gulp.task('buildSitemap', buildSitemapTask)
 gulp.task('buildRobots', buildRobotsTask)
+
+// @todo setup watchify
+// https://www.npmjs.com/package/watchify
+// https://stackoverflow.com/questions/36384103/how-to-use-watchify
+// gulp.task('watchify', watchifyTask)

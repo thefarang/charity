@@ -48,7 +48,8 @@
     "sitemap": "1.13.0",
     "standard": "10.0.3",
     "vinyl-source-stream": "2.0.0",
-    "vinyl-buffer": "1.0.1"
+    "vinyl-buffer": "1.0.1",
+    "watchify": "3.10.0"
   },
   "standard": {
     "ignore": [
