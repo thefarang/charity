@@ -87,7 +87,7 @@ router.post('/', async (req, res, next) => {
     res.status(200)
 
     // @todo HERE redirect to appropriate dashboard. Use the acl.isUserAuthorised to determine.
-    res.json({ loc: '/dashboard/charity' })
+    res.json({ loc: '/dashboard/cause' })
   } catch (err) {
     servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error creating a user token')
     res.set('Cache-Control', 'private, max-age=0, no-cache')

@@ -38,8 +38,8 @@
           <% } else { %>
 
             <% if (user.role === 'cause') { %>
-              <li class="nav-item<% if ((route) && (route == '/dashboard/charity')) { %> active<% } %>">
-                <a class="nav-link" href="/dashboard/charity">Dashboard</a>
+              <li class="nav-item<% if ((route) && (route == '/dashboard/cause')) { %> active<% } %>">
+                <a class="nav-link" href="/dashboard/cause">Dashboard</a>
               </li>
             <% } else if (user.role === 'admin') { %>
               <li class="nav-item<% if ((route) && (route == '/dashboard/admin')) { %> active<% } %>">

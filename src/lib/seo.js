@@ -26,7 +26,7 @@ const getSEO = (title) => {
       pageTitle += ' | Register'
       routeTitle = 'Register'
       break
-    case '/dashboard/charity':
+    case '/dashboard/cause':
     case '/dashboard/admin':
       pageTitle += ' | Dashboard'
       routeTitle = 'Dashboard'

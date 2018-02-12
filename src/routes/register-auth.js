@@ -125,7 +125,7 @@ router.use(async (req, res, next) => {
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     req.app.get('libCookies').setCookie(res, token)
     res.status(200)
-    res.json({ loc: '/dashboard/charity' })
+    res.json({ loc: '/dashboard/cause' })
   } catch (err) {
     servLog.info({
       user: res.locals.user.toJSONWithoutPassword() },

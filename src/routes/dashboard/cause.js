@@ -17,9 +17,9 @@ router.get('/', async (req, res, next) => {
     return next(err)
   }
 
-  res.render('dashboard/charity', {
-    seo: req.app.get('libSeo')('/dashboard/charity'),
-    route: '/dashboard/charity',
+  res.render('dashboard/cause', {
+    seo: req.app.get('libSeo')('/dashboard/cause'),
+    route: '/dashboard/cause',
     user: res.locals.user,
     charity: charity
   })
