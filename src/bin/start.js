@@ -4,8 +4,8 @@ const http = require('http')
 const config = require('config')
 
 const servLog = require('../services/log')
-const servDb = require('../services/database/facade')
-const servSearch = require('../services/search/facade')
+const servDb = require(`../services/database/${config.get('database.use')}/facade`)
+const servSearch = require(`../services/search/${config.get('search.use')}/facade`)
 const app = require('../app')
 
 // Normalize a port into a number, string, or false.

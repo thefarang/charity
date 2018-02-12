@@ -1,8 +1,8 @@
 # To build:
-# > docker build --build-arg APP_URL=${APP_URL} --file Dockerfile.staging --tag thefarang/charity:staging .
+# > docker build --build-arg APP_URL=${APP_URL} --tag thefarang/charity:${NODE_ENV} .
 #
 # To run:
-# > docker run --port 80:80 --env-file .env thefarang/charity:staging
+# > docker run --port 80:80 --env-file .env thefarang/charity:${NODE_ENV}
 
 FROM node:8.5.0-alpine
 

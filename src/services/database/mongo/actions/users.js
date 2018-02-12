@@ -2,10 +2,10 @@
 
 const mongoose = require('mongoose')
 
-const servLog = require('../../log')
+const servLog = require('../../../log')
 const UserSchema = require('../schema/user-schema')
-const UserFactory = require('../../../models/user-factory')
-const PasswordFactory = require('../../../models/password-factory')
+const UserFactory = require('../../../../models/user-factory')
+const PasswordFactory = require('../../../../models/password-factory')
 
 const ObjectId = mongoose.Types.ObjectId
 

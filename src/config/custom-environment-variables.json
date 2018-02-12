@@ -5,11 +5,5 @@
   },
   "token": {
     "secret": "TOKEN_SECRET"
-  },
-  "system_users": {
-    "guest": {
-      "id": "SYSTEM_USERS_GUEST_ID",
-      "email": "SYSTEM_USERS_GUEST_EMAIL"
-    }
   }
 }

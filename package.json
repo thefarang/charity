@@ -14,6 +14,7 @@
     "start": "node ./deploy/bin/start.js"
   },
   "dependencies": {
+    "aws-sdk": "2.192.0",
     "bcryptjs": "2.4.3",
     "body-parser": "1.17.1",
     "bootstrap": "4.0.0",

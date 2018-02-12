@@ -3,15 +3,15 @@
 const config = require('config')
 const elasticsearch = require('elasticsearch')
 
-const servLog = require('../log')
-const Charity = require('../../models/charity')
+const servLog = require('../../log')
+const Charity = require('../../../models/charity')
 
 let client = null
 
 // @todo critical - reconnect if connection drops
 const connect = () => {
   client = new elasticsearch.Client({
-    host: `${config.get('search.search_conn')}`,
+    host: `${config.get('search.elasticsearch.search_conn')}`,
     log: 'info'
   })
 }
@@ -22,7 +22,7 @@ const disconnect = () => {
 
 const findCharityById = (charityId) => {
   const searchParams = {
-    index: config.get('search.index'),
+    index: config.get('search.elasticsearch.index'),
     type: 'charity',
     /* from: (pageNum - 1) * perPage, */
     size: 1,
@@ -76,7 +76,7 @@ const findCharityById = (charityId) => {
 
 const findCharityByUserId = (userId) => {
   const searchParams = {
-    index: config.get('search.index'),
+    index: config.get('search.elasticsearch.index'),
     type: 'charity',
     /* from: (pageNum - 1) * perPage, */
     size: 1,
@@ -131,7 +131,7 @@ const findCharityByUserId = (userId) => {
 const saveNewCharity = (charity) => {
   return new Promise((resolve, reject) => {
     client.index({
-      index: config.get('search.index'),
+      index: config.get('search.elasticsearch.index'),
       type: 'charity',
       body: {
         "userId": charity.userId,
@@ -174,7 +174,7 @@ const saveNewCharity = (charity) => {
 const updateCharity = (charity) => {
   return new Promise((resolve, reject) => {
     client.index({
-      index: config.get('search.index'),
+      index: config.get('search.elasticsearch.index'),
       type: 'charity',
       id: charity.id,
       body: {
@@ -212,7 +212,7 @@ const updateCharity = (charity) => {
 
 const search = async () => {
   const searchParams = {
-    index: config.get('search.index'),
+    index: config.get('search.elasticsearch.index'),
     type: 'charity',
     /* from: (pageNum - 1) * perPage, */
     size: 20,   // @todo parameterise

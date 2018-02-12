@@ -37,8 +37,6 @@ services:
       - APP_URL
       - APP_PORT
       - TOKEN_SECRET
-      - SYSTEM_USERS_GUEST_ID
-      - SYSTEM_USERS_GUEST_EMAIL
     volumes:
       # Make the following directories available to docker so that changes made on the host
       # are immediately available inside the docker container.
@@ -49,7 +47,7 @@ services:
     command: npm run debug
     ports:
       # Expose port to host machine for debugging
-      - 80:80
+      - 80:${APP_PORT}
     links:
       - mongo
       - search

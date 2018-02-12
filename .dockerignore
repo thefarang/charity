@@ -4,8 +4,7 @@ node_modules/
 .gitignore
 .travis.yml
 Dockerfile.development
-Dockerfile.staging
-Dockerfile.production
+Dockerfile
 docker-compose.yml
 README.md
 npm-debug.log

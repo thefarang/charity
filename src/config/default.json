@@ -10,12 +10,32 @@
     "duration": "1h"
   },
   "database": {
-    "db_conn": "mongodb://mongo:27017",
-    "db_name": ""
+    "mongo": {
+      "db_conn": "mongodb://mongo:27017",
+      "db_name": ""
+    },
+    "mysql": {
+      "db_conn": "",
+      "db_name": ""
+    },
+    "use": "mongo"
   },
   "search": {
-    "search_conn": "http://search:9200",
-    "index": ""
+    "elasticsearch": {
+      "search_conn": "http://search:9200",
+      "index": ""
+    },
+    "solr": {
+      "search_conn": "",
+      "index": ""
+    },
+    "use": "elasticsearch"
+  },
+  "email": {
+    "aws": {
+      "api_version": "2010-12-01",
+      "region": "eu-west-1"
+    }
   },
   "password": {
     "salt_work_factor": "10"
@@ -23,16 +43,5 @@
   "cookie": {
     "domain": "",
     "secure": false
-  },
-  "system_users": {
-    "guest": {
-      "id": "",
-      "email": ""
-    },
-    "admin": {
-      "id": "",
-      "email": "",
-      "clrPassword": ""
-    }
   }
 }
