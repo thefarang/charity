@@ -13,6 +13,7 @@ const router = express.Router()
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
 
+  // @todo test the schema in against the login-auth
   const schema = loginAuthSchema.buildSchema(req.body)
   const validationResult = validate(schema, loginAuthConstraints)
 

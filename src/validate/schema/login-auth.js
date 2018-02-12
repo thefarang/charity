@@ -16,3 +16,10 @@ module.exports = {
   buildSchema,
   getProperties
 }
+
+/*
+const LoginAuthSchema = {
+  user_email: 'user_email',
+  user_password: 'user_password'
+}
+*/

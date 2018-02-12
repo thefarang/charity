@@ -2,27 +2,27 @@
 
 const $ = require('jquery')
 const handlers = require('./handlers')
+const validate = require('./validate')
 
 const handleLogin = () => {
   handlers.handleFormSubmit()
 
   $("#login_submit").on('click', () => {
-    if ((!$("#user_email").val()) || (!$("#user_password").val())) {
-      $("#errors").text("Please populate all fields")
-      $("#errors").css("display", "block")
+
+    const schema = validate.handleBuildSchema($( "form[name='login']" ))
+    const errors = validate.handleValidateSchema(schema)
+    if (errors) {
+      console.log(errors)
+      handlers.handleErrorEvent(errors, '#login_submit')
       return
     }
 
-    // Reset error message and prevent multiple form submissions
-    $("#errors").text("")
-    $("#errors").css("display", "none")
-    $("#login_submit").prop("disabled", true)
+    handlers.handleErrorReset()
 
-    // Post the form data to the server
     $.ajax({
       type: "POST",
       url: $("form[name='login']").attr('action'),
-      data: $("form[name='login']").serialize(),
+      data: schema,
       statusCode: {
         200: (data) => {
           window.location.replace(data.loc)

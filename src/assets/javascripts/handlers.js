@@ -9,11 +9,11 @@ const handleErrorEvent = (message, submitId) => {
   $(submitId).prop("disabled", false)
 }
 
-const handleLogout = () => {
-  $("#logout").on("click", () => {
-    Cookies.remove('token', { path: '/' })
-    window.location.replace("/login")
-  })
+const handleErrorReset = () => {
+  // Reset error message and prevent multiple form submissions
+  $("#errors").text("")
+  $("#errors").css("display", "none")
+  $("#login_submit").prop("disabled", true)
 }
 
 const handleFormSubmit = () => {
@@ -22,8 +22,16 @@ const handleFormSubmit = () => {
   })
 }
 
+const handleLogout = () => {
+  $("#logout").on("click", () => {
+    Cookies.remove('token', { path: '/' })
+    window.location.replace("/login")
+  })
+}
+
 module.exports = {
   handleErrorEvent,
-  handleLogout,
-  handleFormSubmit
+  handleErrorReset,
+  handleFormSubmit,
+  handleLogout
 }
