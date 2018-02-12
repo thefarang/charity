@@ -3,6 +3,7 @@
 const babelify = require('babelify')
 const browserify = require('browserify')
 const buffer = require('vinyl-buffer')
+const cleanCSS = require('gulp-clean-css')
 const fs = require('fs')
 const gulp = require('gulp')
 const less = require('gulp-less')
@@ -51,8 +52,9 @@ const buildJSTask = () => {
 const buildCSSTask = () => {
   return gulp.src('./src/assets/stylesheets/index.less')
     .pipe(less({
-      paths: [ path.join(__dirname, 'node_modules', 'bootstrap-less') ]
+      paths: [ path.join(__dirname, 'node_modules') ]
     }))
+    .pipe(cleanCSS({compatibility: 'ie8'}))
     .pipe(gulp.dest('src/public/stylesheets'))
 }
 
