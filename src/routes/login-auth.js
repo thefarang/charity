@@ -24,6 +24,10 @@ router.use((req, res, next) => {
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(400)
+
+    // @todo
+    // Parse the validation result for a more helpful error message for the user
+    res.json({ message: 'Login details failed data validation' })
     res.json()
     return
   }

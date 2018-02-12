@@ -1,9 +1,13 @@
 {
   "database": {
-    "db_name": "production"
+    "mongo": {
+      "db_name": "production"
+    }
   },
   "search": {
-    "index": "production"
+    "elasticsearch": {
+      "index": "production"
+    }
   },
   "cookie": {
     "domain": ".charity.org"

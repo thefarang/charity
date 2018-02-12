@@ -37,7 +37,7 @@ const buildJSTask = () => {
     .pipe(source(fileName)) // Convert the combined javascripts to a text stream
     .pipe(buffer())
     .pipe(process.env.NODE_ENV === 'production' ? util.noop() : sourcemaps.init())
-    .pipe(uglify())
+    .pipe(process.env.NODE_ENV === 'production' ? uglify() : util.noop())
     .pipe(process.env.NODE_ENV === 'production' ? util.noop() : sourcemaps.write())
     .pipe(rename({
       // Rename the text stream postfix

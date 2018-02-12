@@ -1,9 +1,13 @@
 {
   "database": {
-    "db_name": "staging"
+    "mongo": {
+      "db_name": "staging"
+    }
   },
   "search": {
-    "index": "staging"
+    "elasticsearch": {
+      "index": "staging"
+    }
   },
   "cookie": {
     "domain": ".staging.charity.org"
