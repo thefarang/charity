@@ -2,22 +2,22 @@
 
 const $ = require('jquery')
 const handlers = require('./handlers')
-const validate = require('./validate')
+const validate = require('validate.js')
+const constraints = require('../../validate/constraints/login-auth')
 
 const handleLogin = () => {
-  handlers.handleFormSubmit()
+  $("form").submit((e) => e.preventDefault())
 
   $("#login_submit").on('click', () => {
-
-    const schema = validate.handleBuildSchema($( "form[name='login']" ))
-    const errors = validate.handleValidateSchema(schema)
+    const schema = handlers.handleBuildSchema($( "form[name='login']" ))
+    const errors = validate(schema, constraints)
     if (errors) {
       console.log(errors)
       handlers.handleErrorEvent(errors, '#login_submit')
       return
     }
 
-    handlers.handleErrorReset()
+    handlers.handleFormPreSubmit('#login_submit')
 
     $.ajax({
       type: "POST",

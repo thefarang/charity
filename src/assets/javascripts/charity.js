@@ -4,13 +4,10 @@ const $ = require('jquery')
 const handlers = require('./handlers')
 
 const handleCharity = () => {
-  handlers.handleFormSubmit()
+  $("form").submit((e) => e.preventDefault())
 
   $("#charity_submit").on('click', () => {
-    // Reset error message and prevent multiple form submissions
-    $("#errors").text("")
-    $("#errors").css("display", "none")
-    $("#charity_submit").prop("disabled", true)
+    handlers.handleFormPreSubmit('#charity_submit')
 
     // Post the form data to the server
     $.ajax({

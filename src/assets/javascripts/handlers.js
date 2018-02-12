@@ -9,17 +9,19 @@ const handleErrorEvent = (message, submitId) => {
   $(submitId).prop("disabled", false)
 }
 
-const handleErrorReset = () => {
-  // Reset error message and prevent multiple form submissions
+const handleFormPreSubmit = (submitId) => {
   $("#errors").text("")
   $("#errors").css("display", "none")
-  $("#login_submit").prop("disabled", true)
+  $(submitId).prop("disabled", true)
 }
 
-const handleFormSubmit = () => {
-  $("form").submit((e) => {
-    e.preventDefault()
+const handleBuildSchema = (form) => {
+  const schema = {}
+  const schemaProperties = form.serializeArray()
+  $.each( schemaProperties, ( i, schemaProperty ) => {
+    schema[schemaProperty.name] = schemaProperty.value
   })
+  return schema
 }
 
 const handleLogout = () => {
@@ -31,7 +33,7 @@ const handleLogout = () => {
 
 module.exports = {
   handleErrorEvent,
-  handleErrorReset,
-  handleFormSubmit,
+  handleFormPreSubmit,
+  handleBuildSchema,
   handleLogout
 }
