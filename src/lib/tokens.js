@@ -8,7 +8,7 @@ const UserFactory = require('../models/user-factory')
 const createToken = (user) => {
   return new Promise((resolve, reject) => {
     jwt.sign(
-      user.toSecureSchema(),
+      user.toJSONWithoutPassword(),
       config.get('token.secret'),
       {
         expiresIn: config.get('token.duration')
@@ -30,13 +30,13 @@ const getToken = (req) => {
 
 const getUserByToken = async (token) => {
   return new Promise((resolve, reject) => {
-    jwt.verify(token, config.get('token.secret'), (err, decodedUserSchema) => {
+    jwt.verify(token, config.get('token.secret'), (err, userJson) => {
       if (err) {
         servLog.info({ err: err }, 'An error occurred verifying the json web token')
         return resolve(null)
       }
 
-      return resolve(UserFactory.createFromSchema(decodedUserSchema))
+      return resolve(UserFactory.createUserFromJSON(userJson))
     })
   })
 }

@@ -1,6 +1,6 @@
 'use strict'
 
-const UserFromLoginAuth = {
+const UserFromLoginAuthMapping = {
   'id': null,
   'email': 'user_email',
   'password': true,

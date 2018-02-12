@@ -1,6 +1,6 @@
 'use strict'
 
-const UserFromDbUser = {
+const UserFromDbUserMapping = {
   'id': '_id',
   'email': 'user_email',
   'password': true,
@@ -11,4 +11,4 @@ const UserFromDbUser = {
   'role.name': 'user_role_name'
 }
 
-module.exports = UserFromDbUser
+module.exports = UserFromDbUserMapping

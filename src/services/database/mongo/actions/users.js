@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const servLog = require('../../../log')
 const UserSchema = require('../schema/user-schema')
 const UserFactory = require('../../../../models/user-factory')
-const PasswordFactory = require('../../../../models/password-factory')
+const UserFromDbUserMapping = require('../mappings/user-from-db-user')
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -15,11 +15,8 @@ const find = async (user) => {
     return null
   }
 
-  const newUser = UserFactory.createFromSchema(userSchema)
-  newUser.update({
-    user_id: userSchema._id,
-    user_password: user.password.clearPassword
-  })
+  const newUser = UserFactory.createUser(userSchema, UserFromDbUserMapping)
+  newUser.password.clearPassword = user.password.clearPassword
   return newUser
 }
 
@@ -63,17 +60,15 @@ const _upsert = (user, userSchema) => {
     userSchema.user_role_name = user.role.name
     userSchema.save((err) => {
       if (err) {
-        servLog.info({ err: err, user: user.toSecureSchema() }, 'Error saving the UserSchema')
+        servLog.info({ err: err, user: user.toJSONWithoutPassword() }, 'Error saving the UserSchema')
         return reject(err)
       }
 
       // Add the values that would be missing from a new User
       // prior to persistence. Add the (possibly updated)
       // user_encrypted_password.
-      user.update({
-        user_id: userSchema._id.valueOf(),
-        user_encrypted_password: userSchema.user_encrypted_password
-      })
+      user.id = userSchema._id.valueOf()
+      user.password.encryptedPassword = userSchema.user_encrypted_password
       return resolve(user)
     })
   })

@@ -6,6 +6,7 @@ const servLog = require('../services/log')
 const RegisterAuthConstraints = require('../validate/constraints/register-auth')
 const Charity = require('../models/charity')  // @todo - factory
 const UserFactory = require('../models/user-factory')
+const UserFromRegisterAuthMapping = require('../validate/mappings/user-from-register-auth')
 
 const router = express.Router()
 
@@ -32,22 +33,21 @@ router.use((req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-
   // Partially hydrate a User object from the schema
-  let user = UserFactory.createFromSchema(req.body)
+  const user = UserFactory.createUser(req.body, UserFromRegisterAuthMapping)
 
   try {
     // Attempt to find the user in the dbase
     const existingUser = await req.app.get('servDb').getUserActions().find(user)
     if (existingUser) {
-      servLog.info({ user: user.toSecureSchema() }, 'Existing user attempting registration')
+      servLog.info({ user: user.toJSONWithoutPassword() }, 'Existing user attempting registration')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(404)
       res.json({ message: 'Email already exists in the system' })
       return
     }
   } catch (err) {
-    servLog.info({ user: user.toSecureSchema() }, 'Handling error searching for a matching user')
+    servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error searching for a matching user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred. Please try again.' })
@@ -57,9 +57,9 @@ router.post('/', async (req, res, next) => {
   try {
     // Store the new user in the database.
     await req.app.get('servDb').getUserActions().upsert(user)
-    servLog.info({ user: user.toSecureSchema() }, 'New user registered')
+    servLog.info({ user: user.toJSONWithoutPassword() }, 'New user registered')
   } catch (err) {
-    servLog.info({ err: err, user: user.toSecureSchema() }, 'Handling error creating a new User')
+    servLog.info({ err: err, user: user.toJSONWithoutPassword() }, 'Handling error creating a new User')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new user. Please try again.' })
@@ -77,7 +77,7 @@ router.post('/', async (req, res, next) => {
   } catch (err) {
     // @todo critical
     // If this fails, the user will not have a charity. What happens?
-    servLog.info({ user: user.toSecureSchema() }, 'Handling error creating a new Charity')
+    servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error creating a new Charity')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred whilst adding the new charity.' })
@@ -88,7 +88,7 @@ router.post('/', async (req, res, next) => {
   try {
     // Create json web token from the user object and return
     const token = await req.app.get('libTokens').createToken(user)
-    servLog.info({ user: user.toSecureSchema(), token: token }, 'Created token for new user')
+    servLog.info({ user: user.toJSONWithoutPassword(), token: token }, 'Created token for new user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     req.app.get('libCookies').setCookie(res, token)
     res.status(200)
@@ -97,7 +97,7 @@ router.post('/', async (req, res, next) => {
     res.json({ loc: '/dashboard/charity' })
   } catch (err) {
     servLog.info({
-      user: user.toSecureSchema() },
+      user: user.toJSONWithoutPassword() },
       'Handling the error that occurred whilst creating a newly registered user token')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')

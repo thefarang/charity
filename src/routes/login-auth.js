@@ -4,6 +4,7 @@ const express = require('express')
 const validate = require('validate.js')
 const servLog = require('../services/log')
 const LoginAuthConstraints = require('../validate/constraints/login-auth')
+const UserFromLoginAuthMapping = require('../validate/mappings/user-from-login-auth')
 const UserFactory = require('../models/user-factory')
 
 const router = express.Router()
@@ -34,7 +35,7 @@ router.use((req, res, next) => {
 router.post('/', async (req, res, next) => {
 
   // Partially hydrate a user object from the schema
-  let user = UserFactory.createFromSchema(req.body)
+  let user = UserFactory.createUser(req.body, UserFromLoginAuthMapping)
 
   try {
     // Attempt to find the same user in the dbase
@@ -46,7 +47,7 @@ router.post('/', async (req, res, next) => {
       res.json()
       return
     }
-    servLog.info({ user: user.toSecureSchema() }, 'User found in login')
+    servLog.info({ user: user.toJSONWithoutPassword() }, 'User found in login')
   } catch (err) {
     servLog.info({ user_email: req.body.user_email }, 'Handling error locating the user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -63,14 +64,14 @@ router.post('/', async (req, res, next) => {
         user.password.clearPassword, user.password.encryptedPassword)
 
     if (!isPasswordCorrect) {
-      servLog.info({ user: user.toSecureSchema() }, 'User password is incorrect')
+      servLog.info({ user: user.toJSONWithoutPassword() }, 'User password is incorrect')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(401)
       res.json()
       return
     }
   } catch (err) {
-    servLog.info({ user: user.toSecureSchema() }, 'Handling error from the password check')
+    servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error from the password check')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()
@@ -80,7 +81,7 @@ router.post('/', async (req, res, next) => {
   try {
     // Create a json web token from the user object.
     const token = await req.app.get('libTokens').createToken(user)
-    servLog.info({ user: user.toSecureSchema(), token: token }, 'Successfully created token')
+    servLog.info({ user: user.toJSONWithoutPassword(), token: token }, 'Successfully created token')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     req.app.get('libCookies').setCookie(res, token)
     res.status(200)
@@ -88,7 +89,7 @@ router.post('/', async (req, res, next) => {
     // @todo HERE redirect to appropriate dashboard. Use the acl.isUserAuthorised to determine.
     res.json({ loc: '/dashboard/charity' })
   } catch (err) {
-    servLog.info({ user: user.toSecureSchema() }, 'Handling error creating a user token')
+    servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error creating a user token')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()
