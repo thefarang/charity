@@ -13,7 +13,7 @@ roleDataHelper.getRegisterableRoleSchemas().forEach((registerableRoleSchema) => 
 
 // @todo
 // Inherit
-const constraints = {
+const RegisterAuthConstraints = {
   first_name: {
     presence: true,
     format: {
@@ -84,4 +84,4 @@ const constraints = {
   */
 }
 
-module.exports = constraints
+module.exports = RegisterAuthConstraints

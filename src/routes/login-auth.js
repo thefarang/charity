@@ -2,10 +2,8 @@
 
 const express = require('express')
 const validate = require('validate.js')
-
 const servLog = require('../services/log')
-const loginAuthSchema = require('../validate/schema/login-auth')
-const loginAuthConstraints = require('../validate/constraints/login-auth')
+const LoginAuthConstraints = require('../validate/constraints/login-auth')
 const UserFactory = require('../models/user-factory')
 
 const router = express.Router()
@@ -13,42 +11,36 @@ const router = express.Router()
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
 
-  // @todo test the schema in against the login-auth
-  const schema = loginAuthSchema.buildSchema(req.body)
-  const validationResult = validate(schema, loginAuthConstraints)
-
+  const validationResult = validate(req.body, LoginAuthConstraints)
   if (validationResult) {
     servLog.info({ 
-      schema: schema,
+      schema: req.body,
       validationResult: validationResult },
       'Login details failed data validation')
 
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(400)
-
     // @todo
     // Parse the validation result for a more helpful error message for the user
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(400)
     res.json({ message: 'Login details failed data validation' })
     res.json()
     return
   }
 
-  servLog.info({ schema: schema }, 'Login details passed data validation')
-  res.locals.schema = schema
+  servLog.info({ schema: req.body }, 'Login details passed data validation')
   return next()
 })
 
 router.post('/', async (req, res, next) => {
 
   // Partially hydrate a user object from the schema
-  const userSchema = res.locals.schema
-  let user = UserFactory.createFromSchema(userSchema)
+  let user = UserFactory.createFromSchema(req.body)
 
   try {
     // Attempt to find the same user in the dbase
     user = await req.app.get('servDb').getUserActions().find(user)
     if (!user) {
-      servLog.info({ user_email: userSchema.user_email },'User not found in login')
+      servLog.info({ user_email: req.body.user_email },'User not found in login')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(404)
       res.json()
@@ -56,7 +48,7 @@ router.post('/', async (req, res, next) => {
     }
     servLog.info({ user: user.toSecureSchema() }, 'User found in login')
   } catch (err) {
-    servLog.info({ user_email: userSchema.user_email }, 'Handling error locating the user')
+    servLog.info({ user_email: req.body.user_email }, 'Handling error locating the user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()

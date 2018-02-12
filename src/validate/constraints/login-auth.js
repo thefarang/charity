@@ -2,7 +2,7 @@
 
 // @todo
 // Inherit
-const constraints = {
+const LoginAuthConstraints = {
   user_email: {
     presence: true,
     length: {
@@ -22,4 +22,4 @@ const constraints = {
   }
 }
 
-module.exports = constraints
+module.exports = LoginAuthConstraints

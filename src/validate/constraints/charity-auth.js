@@ -4,7 +4,7 @@ const bools = ["true", "false"]
 
 // @todo
 // Inherit
-const constraints = {
+const CharityAuthConstraints = {
   charity_id: {
     presence: true,
     format: {
@@ -122,4 +122,4 @@ const constraints = {
 
 }
 
-module.exports = constraints
+module.exports = CharityAuthConstraints

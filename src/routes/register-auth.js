@@ -3,8 +3,7 @@
 const express = require('express')
 const validate = require('validate.js')
 const servLog = require('../services/log')
-const registerAuthSchema = require('../validate/schema/register-auth')
-const registerAuthConstraints = require('../validate/constraints/register-auth')
+const RegisterAuthConstraints = require('../validate/constraints/register-auth')
 const Charity = require('../models/charity')  // @todo - factory
 const UserFactory = require('../models/user-factory')
 
@@ -13,34 +12,29 @@ const router = express.Router()
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
 
-  const schema = registerAuthSchema.buildSchema(req.body)
-  const validationResult = validate(schema, registerAuthConstraints)
-
+  const validationResult = validate(req.body, RegisterAuthConstraints)
   if (validationResult) {
     servLog.info({ 
-      schema: schema,
+      schema: req.body,
       validationResult: validationResult },
       'Register details failed data validation')
 
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(400)
-
     // @todo
     // Parse the validation result for a more helpful error message for the user
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(400)
     res.json({ message: 'Register details failed data validation' })
     return
   }
 
-  servLog.info({ schema: schema }, 'Register details passed data validation')
-  res.locals.schema = schema
+  servLog.info({ schema: req.body }, 'Register details passed data validation')
   return next()
 })
 
 router.post('/', async (req, res, next) => {
 
   // Partially hydrate a User object from the schema
-  const userSchema = res.locals.schema
-  let user = UserFactory.createFromSchema(userSchema)
+  let user = UserFactory.createFromSchema(req.body)
 
   try {
     // Attempt to find the user in the dbase

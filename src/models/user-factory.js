@@ -1,7 +1,6 @@
 'use strict'
 
 const config = require('config')
-
 const User = require('./user')
 const RoleFactory = require('./role-factory')
 
@@ -9,16 +8,6 @@ const RoleFactory = require('./role-factory')
 // createFromSchema(schemaTranslate, schema)
 //    schemaType.LoginAuthSchema, schemaType.RegisterAuthSchema
 /*
-UserFromLoginAuth {
-  "id": null,
-  "email": "user_email"
-  "password": "user_password"
-}
-UserFromRegisterAuth {
-  "email": "user_email"
-  "password": "user_password"
-  "role.id": "user_role_id"
-}
 UserFromMongoDbUser {
   "id": "_id",
   "email": "user_email"
