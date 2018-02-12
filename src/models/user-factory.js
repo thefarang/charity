@@ -2,31 +2,26 @@
 
 const config = require('config')
 const User = require('./user')
+const UserRoles = require('../data/user-roles')
 const Password = require('./password')
-const Role = require('./role')
 
 const createGuestUser = () => {
   const user = new User()
-  user.role = new Role()
-  user.role.id = 1
-  user.role.name = 'guest'
+  user.role = UserRoles.GUEST
   return user
 }
 
 const createUserFromJSON = (json) => {
   const user = new User()
   user.id = json.id || null
+  user.state = json.state || null
   user.email = json.email || null
   if (json.password) {
     user.password = new Password() 
     user.password.clearPassword = json.password.clearPassword || null
     user.password.encryptedPassword = json.password.encryptedPassword || null
   }
-  if (json.role) {
-    user.role = new Role() 
-    user.role.id = json.role.id || null
-    user.role.name = json.role.name || null
-  }
+  user.role = json.role || null
   return user
 }
 
@@ -34,6 +29,9 @@ const createUser = (schema, schemaToUserMapping) => {
   const user = new User()
   if (schemaToUserMapping['id']) {
     user.id = schema[schemaToUserMapping['id']]
+  }
+  if (schemaToUserMapping['state']) {
+    user.state = schema[schemaToUserMapping['state']]
   }
   if (schemaToUserMapping['email']) {
     user.email = schema[schemaToUserMapping['email']]
@@ -48,13 +46,7 @@ const createUser = (schema, schemaToUserMapping) => {
     }
   }
   if (schemaToUserMapping['role']) {
-    user.role = new Role()
-    if (schemaToUserMapping['role.id']) {
-      user.role.id = schema[schemaToUserMapping['role.id']]
-    }
-    if (schemaToUserMapping['role.name']) {
-      user.role.name = schema[schemaToUserMapping['role.name']]
-    }
+    user.role = schema[schemaToUserMapping['role']]
   }
   return user
 }

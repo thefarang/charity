@@ -5,6 +5,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
+  user_state: {
+    type: String,
+    trim: true
+  },
   user_email: {
     type: String,
     trim: true,
@@ -16,11 +20,7 @@ const UserSchema = new Schema({
     trim: true,
     required: true
   },
-  user_role_id: {
-    type: Number,
-    required: true
-  },
-  user_role_name: {
+  user_role: {
     type: String,
     trim: true,
     required: true

@@ -4,6 +4,7 @@ class User {
   // Use the factory
   constructor () {
     this.id = null
+    this.state = null
     this.email = null
     this.password = null
     this.role = null
@@ -23,15 +24,10 @@ class User {
   toJSONWithoutPassword () {
     const json = {
       id: this.id,
+      state: this.state,
       email: this.email,
       password: null,
-      role: null
-    }
-    if (this.role) {
-      json.role = {
-        id: this.role.id || null,
-        name: this.role.name || null
-      }
+      role: this.role
     }
     return json
   }

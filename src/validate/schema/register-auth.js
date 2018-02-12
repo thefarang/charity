@@ -7,8 +7,7 @@ const RegisterAuthSchema = {
   confirm_user_email: 'confirm_user_email',
   user_password: 'user_password',
   confirm_user_password: 'confirm_user_password',
-  user_role_id: 'user_role_id',
-  user_role_name: 'user_role_name'
+  user_role: 'user_role'
 }
 
 module.exports = RegisterAuthSchema

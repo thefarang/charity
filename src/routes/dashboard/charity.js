@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
     charity = await servSearch.findCharityByUserId(res.locals.user.id)
     servLog.info({ charity: charity.toJSON() }, `Charity found from user id: ${res.locals.user.id}`)
   } catch (err) {
-    servLog.info({ user: req.locals.user.toSecureSchema() }, 'Handling error finding the Users Charity')
+    servLog.info({ user: req.locals.user.toJSONWithoutPassword() }, 'Handling error finding the Users Charity')
     return next(err)
   }
 

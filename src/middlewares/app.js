@@ -1,6 +1,7 @@
 'use strict'
 
 const UserFactory = require('../models/user-factory')
+const UserRoles = require('../data/user-roles')
 
 const handleIdentifyUser = async (req, res, next) => {
   const libTokens = req.app.get('libTokens')
@@ -48,15 +49,15 @@ const handleCheckRouteAuthorisation = async (req, res, next) => {
   }
 
   servLog.info({
-    user: res.locals.user.toSecureSchema(),
+    user: res.locals.user.toJSONWithoutPassword(),
     resource: req.path
   }, 'User attempted to access unauthorised route. Redirecting.')
 
-  if (res.locals.user.role.name === 'guest') {
+  if (res.locals.user.role === UserRoles.GUEST) {
     res.redirect(302, '/login')
   } else {
     // Route to the correct dashboard
-    const route = res.locals.user.role.name === 'admin' ? 'admin' : 'charity'
+    const route = res.locals.user.role === UserRoles.ADMIN ? UserRoles.ADMIN : UserRoles.CAUSE
     res.redirect(302, `/dashboard/${route}`)
   }
 }

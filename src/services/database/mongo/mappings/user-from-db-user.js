@@ -2,13 +2,12 @@
 
 const UserFromDbUserMapping = {
   'id': '_id',
+  'state': 'user_state',
   'email': 'user_email',
   'password': true,
   'password.clearPassword': null,
   'password.encryptedPassword': 'user_encrypted_password',
-  'role': true,
-  'role.id': 'user_role_id',
-  'role.name': 'user_role_name'
+  'role': 'user_role'
 }
 
 module.exports = UserFromDbUserMapping

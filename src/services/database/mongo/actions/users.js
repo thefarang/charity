@@ -56,8 +56,7 @@ const _upsert = (user, userSchema) => {
     userSchema.user_email = user.email
     userSchema.user_encrypted_password = 
       await user.password.getEncPasswordFromClearPassword(user.password.clearPassword)
-    userSchema.user_role_id = user.role.id
-    userSchema.user_role_name = user.role.name
+    userSchema.user_role = user.role
     userSchema.save((err) => {
       if (err) {
         servLog.info({ err: err, user: user.toJSONWithoutPassword() }, 'Error saving the UserSchema')
@@ -74,24 +73,23 @@ const _upsert = (user, userSchema) => {
   })
 }
 
-/*
-const removeUser = (user) => {
+const remove = (user) => {
   return new Promise((resolve, reject) => {
     UserSchema.remove({ _id: user.id }, (err) => {
       if (err) {
         servLog.info({
           err: err,
-          user: user
-        }, 'An error occurred whilst deleting UserSchema')
+          user: user.toJSONWithoutPassword()
+        }, 'Errored whilst deleting user')
         return reject(err)
       }
       return resolve()
     })
   })
 }
-*/
 
 module.exports = {
   find,
-  upsert
+  upsert,
+  remove
 }

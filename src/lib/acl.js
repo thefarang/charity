@@ -22,7 +22,7 @@ const isUserAuthorised = (resource, permission, role) => {
     if ((completeAcl[index].resource === resource) && (completeAcl[index].permission === permission)) {
       // We have found the resource the user wants to access. Now check they are
       // allowed to access it.
-      if (completeAcl[index].roles.indexOf(role.name) >= 0) {
+      if (completeAcl[index].roles.indexOf(role) >= 0) {
         isAuthorised = true
       }
       break

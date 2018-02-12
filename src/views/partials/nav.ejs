@@ -26,7 +26,7 @@
 
       <% if (user) { %>
         <ul class="navbar-nav mt-2 mt-md-0">
-          <% if (user.role.name === 'guest') { %>
+          <% if (user.role === 'guest') { %>
 
             <li class="nav-item<% if ((route) && (route == '/login')) { %> active<% } %>">
               <a class="nav-link" href="/login">Login</a>
@@ -37,11 +37,11 @@
           
           <% } else { %>
 
-            <% if (user.role.name === 'cause') { %>
+            <% if (user.role === 'cause') { %>
               <li class="nav-item<% if ((route) && (route == '/dashboard/charity')) { %> active<% } %>">
                 <a class="nav-link" href="/dashboard/charity">Dashboard</a>
               </li>
-            <% } else if (user.role.name === 'admin') { %>
+            <% } else if (user.role === 'admin') { %>
               <li class="nav-item<% if ((route) && (route == '/dashboard/admin')) { %> active<% } %>">
                   <a class="nav-link" href="/dashboard/admin">Dashboard</a>
                 </li>

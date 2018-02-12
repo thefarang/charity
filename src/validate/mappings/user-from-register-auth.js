@@ -2,13 +2,12 @@
 
 const UserFromRegisterAuth = {
   'id': null,
+  'state': null,
   'email': 'user_email',
   'password': true,
   'password.clearPassword': 'user_password',
   'password.encryptedPassword': null,
-  'role': true,
-  'role.id': 'user_role_id',
-  'role.name': 'user_role_name'
+  'role': 'user_role'
 }
 
 module.exports = UserFromRegisterAuth
