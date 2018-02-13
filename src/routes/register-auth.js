@@ -2,17 +2,17 @@
 
 const express = require('express')
 const validate = require('validate.js')
-const servLog = require('../services/log')
-const RegisterAuthConstraints = require('../validate/constraints/register-auth')
-const Charity = require('../models/charity')  // @todo - factory
-const UserFactory = require('../models/user-factory')
+const CauseFactory = require('../factories/cause-factory')
+const UserFactory = require('../factories/user-factory')
 const UserStates = require('../data/user-states')
+const RegisterAuthConstraints = require('../validate/constraints/register-auth')
 const UserFromRegisterAuthMapping = require('../validate/mappings/user-from-register-auth')
 
 const router = express.Router()
 
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
+  const servLog = req.app.get('servLog')
 
   const validationResult = validate(req.body, RegisterAuthConstraints)
   if (validationResult) {
@@ -20,12 +20,9 @@ router.use((req, res, next) => {
       schema: req.body,
       validationResult: validationResult },
       'Register details failed data validation')
-
-    // @todo
-    // Parse the validation result for a more helpful error message for the user
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(400)
-    res.json({ message: 'Register details failed data validation' })
+    res.json(validationResult)
     return
   }
 
@@ -35,12 +32,13 @@ router.use((req, res, next) => {
 
 // Checks to ensure the user does not already exist
 router.post('/', async (req, res, next) => {
-  // Partially hydrate a User object from the schema
-  res.locals.user = UserFactory.createUser(req.body, UserFromRegisterAuthMapping)
+  const servLog = req.app.get('servLog')
+  const servDb = req.app.get('servDb')
 
   try {
     // Attempt to find the user in the dbase
-    const existingUser = await req.app.get('servDb').getUserActions().find(res.locals.user)
+    res.locals.user = UserFactory.createUser(req.body, UserFromRegisterAuthMapping)
+    const existingUser = await servDb.getUserActions().find(res.locals.user)
     if (existingUser) {
       servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'Existing user attempting registration')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -54,7 +52,6 @@ router.post('/', async (req, res, next) => {
       err: err,
       user: res.locals.user.toJSONWithoutPassword() },
       'Handling error searching for a matching user')
-    
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred. Please try again.' })
@@ -62,12 +59,16 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-// Wraps the User-Charity-Creation saga
+// Wraps the User-Cause-Creation saga
 router.use(async (req, res, next) => {
+  const servLog = req.app.get('servLog')
+  const servDb = req.app.get('servDb')
+  const servSearch = req.app.get('servSearch')
+
   try {
     // Store the new user in the database.
     res.locals.user.state = UserStates.PRE_CONFIRMED
-    res.locals.user = await req.app.get('servDb').getUserActions().upsert(res.locals.user)
+    res.locals.user = await servDb.getUserActions().upsert(res.locals.user)
     servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'New user registered')
   } catch (err) {
     servLog.info({ 
@@ -76,49 +77,48 @@ router.use(async (req, res, next) => {
       'Handling error creating a new User')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
-    res.json({ message: 'An error occurred whilst adding the new user. Please try again.' })
+    res.json({ message: 'Error occurred adding new user. Please try again.' })
     return
   }
 
-  // Create a Charity object for the user and store in the search engine
-  const servSearch = req.app.get('servSearch')
-  let charity = new Charity()
-  charity.userId = res.locals.user.id
   try {
-    charity = await servSearch.saveNewCharity(charity)
-    servLog.info({ charityId: charity.id }, 'New charity added')
+    // Create a Cause object for the user and store in the search engine
+    const cause = await servSearch.saveNewCause(CauseFactory.createCauseByUserId(res.locals.user.id)) 
+    servLog.info({ cause: cause }, 'New cause added')
     return next()
   } catch (err) {
     servLog.info({ 
       err: err,
       user: res.locals.user.toJSONWithoutPassword() },
-      'Handling error creating a new Charity')
+      'Handling error creating a new Cause')
   }
 
-  // We failed to create a Charity object. We need to rollback the saga
+  // We failed to create a Cause object. We need to rollback the saga
   try {
     await req.app.get('servDb').getUserActions().remove(res.locals.user)
   } catch (err) {
     servLog.info({ 
       err: err,
       user: res.locals.user.toJSONWithoutPassword() },
-      'Failed to rollback User-Charity-Creation saga')
-    // We really are in a mess now. The Charity object was not created, and now there
+      'Failed to rollback User-Cause-Creation saga')
+    // We really are in a mess now. The Cause object was not created, and now there
     // was a problem deleting the user. For now, give up. Re-write the saga in future
     // such that failed sagas are logged, for later handling.
   }
 
   res.set('Cache-Control', 'private, max-age=0, no-cache')
   res.status(500)
-  res.json({ message: 'An error occurred whilst adding the new charity. Please wait a moment, then try again' })
+  res.json({ message: 'An error occurred whilst adding the new Cause. Please wait a moment, then try again' })
   return
 })
 
-// @todo here - send registration confirmation email and redirect user
 router.use(async (req, res, next) => {
+  const servLog = req.app.get('servLog')
+  const libTokens = req.app.get('libTokens')
+
   try {
     // Create json web token from the user object and return
-    const token = await req.app.get('libTokens').createToken(res.locals.user)
+    const token = await libTokens.createToken(res.locals.user)
     servLog.info({ 
       user: res.locals.user.toJSONWithoutPassword(), 
       token: token }, 'Created token for new user')
@@ -130,7 +130,6 @@ router.use(async (req, res, next) => {
     servLog.info({
       user: res.locals.user.toJSONWithoutPassword() },
       'Handling the error that occurred whilst creating a newly registered user token')
-
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'Failed to authorise user. Please attempt to login.' })

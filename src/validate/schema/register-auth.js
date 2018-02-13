@@ -1,5 +1,7 @@
 'use strict'
 
+// Describes the shape of the UI schema and it's corresponding
+// constraints
 const RegisterAuthSchema = {
   first_name: 'first_name',
   last_name: 'last_name',

@@ -2,15 +2,15 @@
 
 const express = require('express')
 const validate = require('validate.js')
-const servLog = require('../services/log')
+const UserFactory = require('../factories/user-factory')
 const LoginAuthConstraints = require('../validate/constraints/login-auth')
 const UserFromLoginAuthMapping = require('../validate/mappings/user-from-login-auth')
-const UserFactory = require('../models/user-factory')
 
 const router = express.Router()
 
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
+  const servLog = req.app.get('servLog')
 
   const validationResult = validate(req.body, LoginAuthConstraints)
   if (validationResult) {
@@ -18,12 +18,9 @@ router.use((req, res, next) => {
       schema: req.body,
       validationResult: validationResult },
       'Login details failed data validation')
-
-    // @todo
-    // Parse the validation result for a more helpful error message for the user
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(400)
-    res.json({ message: 'Login details failed data validation' })
+    res.json(validationResult)
     res.json()
     return
   }
@@ -33,21 +30,22 @@ router.use((req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
+  const servLog = req.app.get('servLog')
+  const servDb = req.app.get('servDb')
 
-  // Partially hydrate a user object from the schema
-  let user = UserFactory.createUser(req.body, UserFromLoginAuthMapping)
+  res.locals.user = UserFactory.createUser(req.body, UserFromLoginAuthMapping)
 
   try {
     // Attempt to find the same user in the dbase
-    user = await req.app.get('servDb').getUserActions().find(user)
-    if (!user) {
-      servLog.info({ user_email: req.body.user_email },'User not found in login')
+    res.locals.user = await servDb.getUserActions().find(res.locals.user)
+    if (!res.locals.user) {
+      servLog.info({ user_email: req.body.user_email }, 'User not found in login')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(404)
       res.json()
       return
     }
-    servLog.info({ user: user.toJSONWithoutPassword() }, 'User found in login')
+    servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'User found in login')
   } catch (err) {
     servLog.info({ user_email: req.body.user_email }, 'Handling error locating the user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -57,39 +55,41 @@ router.post('/', async (req, res, next) => {
   }
 
   try {
-    // @todo - can we move this to the database code?
     // Test the password is correct
     const isPasswordCorrect =
-      await user.password.isClearPasswordCorrect(
-        user.password.clearPassword, user.password.encryptedPassword)
+      await res.locals.user.password.isClearPasswordCorrect(
+        res.locals.user.password.clearPassword, res.locals.user.password.encryptedPassword)
 
     if (!isPasswordCorrect) {
-      servLog.info({ user: user.toJSONWithoutPassword() }, 'User password is incorrect')
+      servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'User password is incorrect')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
       res.status(401)
-      res.json()
+      res.json({ message: 'User password incorrect' })
       return
     }
+    return next()
   } catch (err) {
-    servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error from the password check')
+    servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'Handling error from the password check')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()
-    return
   }
+})
+
+router.use(async (req, res, next) => {
+  const servLog = req.app.get('servLog')
+  const libTokens = req.app.get('libTokens')
 
   try {
     // Create a json web token from the user object.
-    const token = await req.app.get('libTokens').createToken(user)
-    servLog.info({ user: user.toJSONWithoutPassword(), token: token }, 'Successfully created token')
+    const token = await libTokens.createToken(res.locals.user)
+    servLog.info({ user: res.locals.user.toJSONWithoutPassword(), token: token }, 'Successfully created token')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     req.app.get('libCookies').setCookie(res, token)
     res.status(200)
-
-    // @todo HERE redirect to appropriate dashboard. Use the acl.isUserAuthorised to determine.
     res.json({ loc: '/dashboard/cause' })
   } catch (err) {
-    servLog.info({ user: user.toJSONWithoutPassword() }, 'Handling error creating a user token')
+    servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'Handling error creating a user token')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json()

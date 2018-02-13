@@ -9,40 +9,38 @@
 
   <form name="register" action="/register-auth">
 
-    <input type="hidden" id="user_role" name="user_role" value="cause" />
-
     <fieldset>
-      <label for="first_name">First name</label>
-      <input type="text" id="first_name" name="first_name" maxlength="20">
+      <label for="<%= RegisterAuthSchema.first_name %>">First name</label>
+      <input type="text" id="<%= RegisterAuthSchema.first_name %>" name="<%= RegisterAuthSchema.first_name %>" maxlength="20">
     </fieldset>
 
     <fieldset>
-      <label for="last_name">Last name</label>
-      <input type="text" id="last_name" name="last_name" maxlength="25">
+      <label for="<%= RegisterAuthSchema.last_name %>">Last name</label>
+      <input type="text" id="<%= RegisterAuthSchema.last_name %>" name="<%= RegisterAuthSchema.last_name %>" maxlength="25">
     </fieldset>
 
     <fieldset>
-      <label for="user_email">Email</label>
-      <input type="text" id="user_email" name="user_email" maxlength="50">
+      <label for="<%= RegisterAuthSchema.user_email %>">Email</label>
+      <input type="text" id="<%= RegisterAuthSchema.user_email %>" name="<%= RegisterAuthSchema.user_email %>" maxlength="50">
     </fieldset>
 
     <fieldset>
-      <label for="confirm_user_email">Confirm email</label>
-      <input type="text" id="confirm_user_email" name="confirm_user_email" maxlength="50">
+      <label for="<%= RegisterAuthSchema.confirm_user_email %>">Confirm email</label>
+      <input type="text" id="<%= RegisterAuthSchema.confirm_user_email %>" name="<%= RegisterAuthSchema.confirm_user_email %>" maxlength="50">
     </fieldset>
 
     <fieldset>
-      <label for="user_password">Password</label>
-      <input type="password" id="user_password" name="user_password" maxlength="30">
+      <label for="<%= RegisterAuthSchema.user_password %>">Password</label>
+      <input type="password" id="<%= RegisterAuthSchema.user_password %>" name="<%= RegisterAuthSchema.user_password %>" maxlength="30">
     </fieldset>
 
     <fieldset>
-      <label for="confirm_user_password">Confirm password</label>
-      <input type="password" id="confirm_user_password" name="confirm_user_password" maxlength="30">
+      <label for="<%= RegisterAuthSchema.confirm_user_password %>">Confirm password</label>
+      <input type="password" id="<%= RegisterAuthSchema.confirm_user_password %>" name="<%= RegisterAuthSchema.confirm_user_password %>" maxlength="30">
     </fieldset>
 
+    <input type="hidden" id="<%= RegisterAuthSchema.user_role %>" name="<%= RegisterAuthSchema.user_role %>" value="cause" />
     <p>Add miner check here</p>
-
     <input type="submit"  id="register_submit" value="Register">
   </form>
 </main>

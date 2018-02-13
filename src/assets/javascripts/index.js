@@ -7,11 +7,11 @@ require('bootstrap')
 const handlers = require('./handlers')
 const login = require('./login')
 const register = require('./register')
-const charity = require('./charity')
+const cause = require('./cause')
 
 $(() => {
   handlers.handleLogout()
   login.handleLogin()
   register.handleRegister()
-  charity.handleCharity()
+  cause.handleCause()
 })

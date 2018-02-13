@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const servLog = require('../services/log')
-const UserFactory = require('../models/user-factory')
+const UserFactory = require('../factories/user-factory')
 
 const createToken = (user) => {
   return new Promise((resolve, reject) => {

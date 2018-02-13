@@ -2,9 +2,9 @@
 
 const config = require('config')
 const elasticsearch = require('elasticsearch')
-
 const servLog = require('../../log')
-const Charity = require('../../../models/charity')
+const CauseFactory = require('../../../factories/cause-factory')
+const CauseFromSearchTypeMapping = require('./mappings/cause-from-search-type')
 
 let client = null
 
@@ -16,68 +16,32 @@ const connect = () => {
   })
 }
 
+// @todo here
 const disconnect = () => {
-  // @todo here
 }
 
-const findCharityById = (charityId) => {
+/*
+const findCauseById = (causeId) => {
   const searchParams = {
     index: config.get('search.elasticsearch.index'),
-    type: 'charity',
-    /* from: (pageNum - 1) * perPage, */
+    type: 'cause',
+    // from: (pageNum - 1) * perPage,
     size: 1,
     body: {
       query: {
         term: {
-          _id: charityId
+          _id: causeId
         }
       }
     }
   }
-
-  return new Promise((resolve, reject) => {
-    client.search(searchParams, (err, response, status) => {
-      if (err) {
-        servLog.info({ 
-          err: err,
-          status: status,
-          charityId: charityId }, 
-          'An error occurred locating the Charity by Charity.id')
-        return reject(err)
-      }
-
-      if (response.hits.total !== 1) {
-        servLog.info({ 
-          charityId: charityId },
-          'Could not locate the Charity by id')
-        return resolve(null)
-      }
-
-      const charity = new Charity()
-      charity.id =  response.hits.hits[0]._id
-      charity.userId = response.hits.hits[0]._source.userId
-      charity.isVisible = response.hits.hits[0]._source.isVisible
-      charity.name = response.hits.hits[0]._source.name
-      charity.country = response.hits.hits[0]._source.country
-      charity.isRegistered = response.hits.hits[0]._source.isRegistered
-      charity.website = response.hits.hits[0]._source.website
-      charity.email = response.hits.hits[0]._source.email
-      charity.phone = response.hits.hits[0]._source.phone
-      charity.shortDesc = response.hits.hits[0]._source.shortDesc
-      charity.longDesc = response.hits.hits[0]._source.longDesc
-      charity.imageThumb = response.hits.hits[0]._source.imageThumb
-      charity.imageFull = response.hits.hits[0]._source.imageFull
-      charity.coinhiveKey = response.hits.hits[0]._source.coinhiveKey
-      charity.keywords = response.hits.hits[0]._source.keywords
-      return resolve(charity)
-    })
-  })
 }
+*/
 
-const findCharityByUserId = (userId) => {
+const findCauseByUserId = (userId) => {
   const searchParams = {
     index: config.get('search.elasticsearch.index'),
-    type: 'charity',
+    type: 'cause',
     /* from: (pageNum - 1) * perPage, */
     size: 1,
     body: {
@@ -92,120 +56,61 @@ const findCharityByUserId = (userId) => {
   return new Promise((resolve, reject) => {
     client.search(searchParams, (err, response, status) => {
       if (err) {
-        servLog.info({ 
-          err: err,
-          status: status,
-          userId: userId }, 
-          'An error occurred locating the Charity by User.id')
+        servLog.info({ err: err, status: status, userId: userId }, 'Error locating Cause by User.id')
         return reject(err)
       }
 
       if (response.hits.total !== 1) {
-        servLog.info({ 
-          userId: userId },
-          'Could not locate the Charity by User id')
+        servLog.info({ userId: userId }, 'Could not locate the Cause by User id')
         return resolve(null)
       }
-
-      const charity = new Charity()
-      charity.id =  response.hits.hits[0]._id
-      charity.userId = response.hits.hits[0]._source.userId
-      charity.isVisible = response.hits.hits[0]._source.isVisible
-      charity.name = response.hits.hits[0]._source.name
-      charity.country = response.hits.hits[0]._source.country
-      charity.isRegistered = response.hits.hits[0]._source.isRegistered
-      charity.website = response.hits.hits[0]._source.website
-      charity.email = response.hits.hits[0]._source.email
-      charity.phone = response.hits.hits[0]._source.phone
-      charity.shortDesc = response.hits.hits[0]._source.shortDesc
-      charity.longDesc = response.hits.hits[0]._source.longDesc
-      charity.imageThumb = response.hits.hits[0]._source.imageThumb
-      charity.imageFull = response.hits.hits[0]._source.imageFull
-      charity.coinhiveKey = response.hits.hits[0]._source.coinhiveKey
-      charity.keywords = response.hits.hits[0]._source.keywords
-      return resolve(charity)
+      return resolve(CauseFactory.createCause(response.hits.hits[0], CauseFromSearchTypeMapping))
     })
   })
 }
 
-const saveNewCharity = (charity) => {
+const saveNewCause = (cause) => {
   return new Promise((resolve, reject) => {
     client.index({
       index: config.get('search.elasticsearch.index'),
-      type: 'charity',
+      type: 'cause',
       body: {
-        "userId": charity.userId,
-        "isVisible": charity.isVisible,
-        "name": charity.name,
-        "country": charity.country,
-        "isRegistered": charity.isRegistered,
-        "website": charity.website,
-        "email": charity.email,
-        "phone": charity.phone,
-        "shortDesc": charity.shortDesc,
-        "longDesc": charity.longDesc,
-        "imageThumb": charity.imageThumb,
-        "imageFull": charity.imageFull,
-        "coinhiveKey": charity.coinhiveKey,
-        "keywords": charity.keywords
+        "userId": cause.userId,
+        "name": cause.name,
+        "country": cause.country
       }
     }, (err, response, status) => {
 
       if (err) {
-        servLog.info({ 
-          err: err, 
-          status: status,
-          userId: charity.userId }, 
-          'An error occurred saving a new Charity')
+        servLog.info({ err: err, status: status, userId: cause.userId }, 'Error saving a new Cause')
         return reject(err)
       }
 
-      servLog.info({
-        charityId: response._id,
-        userId: charity.userId },
-        'Successfully saved a new Charity')
-
-      charity.id = response._id
-      return resolve(charity)
+      servLog.info({ causeId: response._id, userId: cause.userId }, 'Successfully saved new Cause')
+      return resolve(CauseFactory.createCause(response, CauseFromSearchTypeMapping))
     })
   })
 }
 
-const updateCharity = (charity) => {
+const updateCause = (cause) => {
   return new Promise((resolve, reject) => {
     client.index({
       index: config.get('search.elasticsearch.index'),
-      type: 'charity',
-      id: charity.id,
+      type: 'cause',
+      id: cause.id,
       body: {
-        "userId": charity.userId,
-        "isVisible": charity.isVisible,
-        "name": charity.name,
-        "country": charity.country,
-        "isRegistered": charity.isRegistered,
-        "website": charity.website,
-        "email": charity.email,
-        "phone": charity.phone,
-        "shortDesc": charity.shortDesc,
-        "longDesc": charity.longDesc,
-        "imageThumb": charity.imageThumb,
-        "imageFull": charity.imageFull,
-        "coinhiveKey": charity.coinhiveKey,
-        "keywords": charity.keywords
+        "userId": cause.userId,
+        "name": cause.name,
+        "country": cause.country
       }
     }, (err, response, status) => {
 
       if (err) {
-        servLog.info({ 
-          err: err, 
-          status: status,
-          userId: charity.userId }, 
-          'Error occurred updating a Charity')
+        servLog.info({ err: err, status: status, userId: cause.userId }, 'Error updating Cause')
         return reject(err)
       }
-
-      servLog.info({ charity: charity }, 'Successfully updated a Charity')
-      return resolve(charity)
+      servLog.info({ cause: cause }, 'Successfully updated Cause')
+      return resolve(cause)
     })
   })
 }
@@ -213,7 +118,7 @@ const updateCharity = (charity) => {
 const search = async () => {
   const searchParams = {
     index: config.get('search.elasticsearch.index'),
-    type: 'charity',
+    type: 'cause',
     /* from: (pageNum - 1) * perPage, */
     size: 20,   // @todo parameterise
     body: {
@@ -226,41 +131,21 @@ const search = async () => {
   return new Promise((resolve, reject) => {
     client.search(searchParams, (err, response, status) => {
       if (err) {
-        servLog.info({ 
-          err: err,
-          status: status }, 
-          'Error locating Charity documents')
+        servLog.info({ err: err, status: status }, 'Error locating Cause documents')
         return reject(err)
       }
 
-      const charities = []
-      let charity = null
+      const causes = []
       response.hits.hits.forEach((hit) => {
-        charity = new Charity()
-        charity.id =  hit._id
-        charity.userId = hit._source.userId
-        charity.isVisible = hit._source.isVisible
-        charity.name = hit._source.name
-        charity.country = hit._source.country
-        charity.isRegistered = hit._source.isRegistered
-        charity.website = hit._source.website
-        charity.email = hit._source.email
-        charity.phone = hit._source.phone
-        charity.shortDesc = hit._source.shortDesc
-        charity.longDesc = hit._source.longDesc
-        charity.imageThumb = hit._source.imageThumb
-        charity.imageFull = hit._source.imageFull
-        charity.coinhiveKey = hit._source.coinhiveKey
-        charity.keywords = hit._source.keywords
-        charities.push(charity)
+        causes.push(CauseFactory.createCause(hit, CauseFromSearchTypeMapping))
       })
-      return resolve(charities)
+      return resolve(causes)
     })
   })
 }
 
+/*
 const searchKeyword = async (keyword) => {
-  /*
   const index = 'keyword'
   const body = {
     from: 0,
@@ -281,20 +166,15 @@ const searchKeyword = async (keyword) => {
     )
   } catch (err) {
   }
-  */
 }
-
-const searchCharityName = (name) => {
-}
+*/
 
 module.exports = {
   connect,
   disconnect,
-  findCharityById,
-  findCharityByUserId,
-  saveNewCharity,
-  updateCharity,
-  search,
-  searchKeyword,
-  searchCharityName
+  /*findCauseById,*/
+  findCauseByUserId,
+  saveNewCause,
+  updateCause,
+  search
 }

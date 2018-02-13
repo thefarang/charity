@@ -7,83 +7,17 @@
   
   <div id="errors"></div>
 
-  <p>Details status: Complete | Incomplete (affects is_visible)</p>
-  <p>Registration status (For UK registered charities): Found | Not found</p>
-
-  <form name="charity" action="/dashboard/charity-auth">
-    <input type="hidden" id="charity_id" name="charity_id" value="<%= charity.id %>" />
+  <form name="cause" action="/dashboard/cause-auth">
     <fieldset>
-      <label for="is_visible">*Visible in search:</label>
-      <input type="radio" id="is_visible" name="is_visible" value="true"
-        <% if (charity.isVisible) { %>
-          checked
-        <% } %>> Visible
-      <input type="radio" id="is_visible" name="is_visible" value="false"
-        <% if (!charity.isVisible) { %>
-          checked
-        <% } %>> Not visible
+      <label for="<%= CauseAuthSchema.cause_name %>">*Cause name:</label>
+      <input type="text" id="<%= CauseAuthSchema.cause_name %>" name="<%= CauseAuthSchema.cause_name %>" maxlength="60" value="<%= cause.name %>">
     </fieldset>
 
     <fieldset>
-      <label for="name">*Charity name:</label>
-      <input type="text" id="name" name="name" maxlength="60" value="<%= charity.name %>">
+      <label for="<%= CauseAuthSchema.cause_country %>">*Country:</label>
+      <input type="text" id="<%= CauseAuthSchema.cause_country %>" name="<%= CauseAuthSchema.cause_country %>" maxlength="60" value="United Kingdom">
     </fieldset>
-
-    <fieldset>
-      <label for="country">*Country:</label>
-      <input type="text" id="country" name="country" maxlength="60" value="United Kingdom" disabled>
-    </fieldset>
-
-    <fieldset>
-      <label for="is_registered">*Is charity UK registered?</label>
-      <input type="radio" id="is_registered" name="is_registered" value="true"
-        <% if (charity.isRegistered) { %>
-          checked
-        <% } %>> Registered
-      <input type="radio" id="is_registered" name="is_registered" value="false"
-        <% if (!charity.isRegistered) { %>
-          checked
-        <% } %>> Not registered
-    </fieldset>
-
-    <fieldset>
-      <label for="website">Charity website:</label>
-      <input type="text" id="website" name="website" maxlength="60" value="<%= charity.website %>">
-    </fieldset>
-
-    <fieldset>
-      <label for="email">Charity email:</label>
-      <input type="text" id="email" name="email" maxlength="60" value="<%= charity.email %>">
-    </fieldset>
-
-    <fieldset>
-      <label for="phone">Charity phone:</label>
-      <input type="text" id="phone" name="phone" maxlength="20" value="<%= charity.phone %>">
-    </fieldset>
-
-    <fieldset>
-      <label for="short_desc">*Short description:</label>
-      <textarea id="short_desc" name="short_desc" rows="4" cols="50"><%= charity.shortDesc %></textarea> 
-    </fieldset>
-
-    <fieldset>
-      <label for="long_desc">*Long description:</label>
-      <textarea id="long_desc" name="long_desc" rows="4" cols="50"><%= charity.longDesc %></textarea> 
-    </fieldset>
-
-    <fieldset>
-      <label>Keywords:</label>
-      <input type="text" id="keyword_1" name="keyword_1" maxlength="50"
-        <% if (charity.keywords.length >= 1) { %>
-          value="<%= charity.keywords[0] %>"
-        <% } %>>
-      <input type="text" id="keyword_2" name="keyword_2" maxlength="50"
-        <% if (charity.keywords.length == 2) { %>
-          value="<%= charity.keywords[1] %>"
-        <% } %>>
-    </fieldset>
-
-    <input type="submit" id="charity_submit" value="Update">
+    <input type="submit" id="cause_submit" value="Update">
   </form>
 </main>
 

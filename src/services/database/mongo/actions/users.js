@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 
 const servLog = require('../../../log')
 const UserSchema = require('../schema/user-schema')
-const UserFactory = require('../../../../models/user-factory')
+const UserFactory = require('../../../../factories/user-factory')
 const UserFromDbUserMapping = require('../mappings/user-from-db-user')
 
 const ObjectId = mongoose.Types.ObjectId
@@ -15,9 +15,8 @@ const find = async (user) => {
     return null
   }
 
-  const newUser = UserFactory.createUser(userSchema, UserFromDbUserMapping)
-  newUser.password.clearPassword = user.password.clearPassword
-  return newUser
+  user.update(UserFactory.createUser(userSchema, UserFromDbUserMapping))
+  return user
 }
 
 const findOne = (searchSchema) => {
@@ -64,10 +63,9 @@ const _upsert = (user, userSchema) => {
       }
 
       // Add the values that would be missing from a new User
-      // prior to persistence. Add the (possibly updated)
+      // prior to persistence, and the (possibly updated)
       // user_encrypted_password.
-      user.id = userSchema._id.valueOf()
-      user.password.encryptedPassword = userSchema.user_encrypted_password
+      user.update(UserFactory.createUser(userSchema, UserFromDbUserMapping))
       return resolve(user)
     })
   })
@@ -77,10 +75,7 @@ const remove = (user) => {
   return new Promise((resolve, reject) => {
     UserSchema.remove({ _id: user.id }, (err) => {
       if (err) {
-        servLog.info({
-          err: err,
-          user: user.toJSONWithoutPassword()
-        }, 'Errored whilst deleting user')
+        servLog.info({ err: err, user: user.toJSONWithoutPassword() }, 'Error whilst deleting user')
         return reject(err)
       }
       return resolve()

@@ -1,19 +1,26 @@
 'use strict'
 
 const express = require('express')
-
-const servLog = require('../../services/log')
+const CauseFactory = require('../../factories/cause-factory')
+const CauseAuthSchema = require('../../validate/schema/cause-auth')
 
 const router = express.Router()
 
 router.get('/', async (req, res, next) => {
   const servSearch = req.app.get('servSearch')
-  let charity = null
+  const servLog = req.app.get('servLog')
+
+  let cause = null
   try {
-    charity = await servSearch.findCharityByUserId(res.locals.user.id)
-    servLog.info({ charity: charity.toJSON() }, `Charity found from user id: ${res.locals.user.id}`)
+    cause = await servSearch.findCauseByUserId(res.locals.user.id)
+    if (cause) {
+      servLog.info({ cause: cause.toJSON() }, `Cause found from user id: ${res.locals.user.id}`)
+    } else {
+      servLog.info({}, 'Using empty cause')
+      cause = CauseFactory.createEmptyCause()
+    }
   } catch (err) {
-    servLog.info({ user: req.locals.user.toJSONWithoutPassword() }, 'Handling error finding the Users Charity')
+    servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'Handling error finding the Users Cause')
     return next(err)
   }
 
@@ -21,7 +28,8 @@ router.get('/', async (req, res, next) => {
     seo: req.app.get('libSeo')('/dashboard/cause'),
     route: '/dashboard/cause',
     user: res.locals.user,
-    charity: charity
+    cause: cause,
+    CauseAuthSchema: CauseAuthSchema
   })
 })
 

@@ -1,9 +1,9 @@
 'use strict'
 
 const config = require('config')
-const User = require('./user')
+const User = require('../models/user')
 const UserRoles = require('../data/user-roles')
-const Password = require('./password')
+const Password = require('../models/password')
 
 const createGuestUser = () => {
   const user = new User()

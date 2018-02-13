@@ -3,15 +3,17 @@
 const $ = require('jquery')
 const Cookies = require('js-cookie')
 
-const handleErrorEvent = (message, submitId) => {
-  $("#errors").text(message)
-  $("#errors").css("display", "block")
+const logoutId = '#logout'
+
+const handleErrorEvent = (message, errorDivId, submitId) => {
+  $(errorDivId).text(message)
+  $(errorDivId).css("display", "block")
   $(submitId).prop("disabled", false)
 }
 
-const handleFormPreSubmit = (submitId) => {
-  $("#errors").text("")
-  $("#errors").css("display", "none")
+const handleFormPreSubmit = (errorDivId, submitId) => {
+  $(errorDivId).text("")
+  $(errorDivId).css("display", "none")
   $(submitId).prop("disabled", true)
 }
 
@@ -25,9 +27,9 @@ const handleBuildSchema = (form) => {
 }
 
 const handleLogout = () => {
-  $("#logout").on("click", () => {
+  $(logoutId).on("click", () => {
     Cookies.remove('token', { path: '/' })
-    window.location.replace("/login")
+    window.location.replace("/")
   })
 }
 

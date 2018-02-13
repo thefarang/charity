@@ -1,6 +1,6 @@
 'use strict'
 
-const UserFactory = require('../models/user-factory')
+const UserFactory = require('../factories/user-factory')
 const UserRoles = require('../data/user-roles')
 
 const handleIdentifyUser = async (req, res, next) => {

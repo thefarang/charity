@@ -10,6 +10,21 @@ class User {
     this.role = null
   }
 
+  update(user) {
+    this.id = user.id || this.id
+    this.state = user.state || this.state
+    this.email = user.email || this.email
+    if (user.password) {
+      if (!this.password) {
+        this.password = user.password
+      } else {
+        this.password.clearPassword = user.password.clearPassword || this.password.clearPassword
+        this.password.encryptedPassword = user.password.encryptedPassword || this.password.encryptedPassword
+      }
+    }
+    this.role = user.role || this.role
+  }
+
   toJSONWithPassword () {
     const json = this.toJSONWithoutPassword()
     if (this.password) {

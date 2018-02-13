@@ -9,19 +9,17 @@
 
   <form name="login" action="/login-auth">
     <fieldset>
-      <label for="user_email">Email</label>
-      <input type="text" id="user_email" name="user_email" maxlength="50">
+      <label for="<%= LoginAuthSchema.user_email %>">Email</label>
+      <input type="text" id="<%= LoginAuthSchema.user_email %>" name="<%= LoginAuthSchema.user_email %>" maxlength="50">
     </fieldset>
 
     <fieldset>
-      <label for="user_password">Password</label>
-      <input type="password" id="user_password" name="user_password" maxlength="30">
+      <label for="<%= LoginAuthSchema.user_password %>">Password</label>
+      <input type="password" id="<%= LoginAuthSchema.user_password %>" name="<%= LoginAuthSchema.user_password %>" maxlength="30">
     </fieldset>
 
     <a href="/reset-password">Forgot password?</a>
-    
     <p>Add miner check here</p>
-
     <input type="submit" id="login_submit" value="Login">
   </form>
 </main>
