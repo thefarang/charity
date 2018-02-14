@@ -169,12 +169,15 @@ const searchKeyword = async (keyword) => {
 }
 */
 
-module.exports = {
-  connect,
-  disconnect,
-  /*findCauseById,*/
-  findCauseByUserId,
-  saveNewCause,
-  updateCause,
-  search
+module.exports = () => {
+  connect()
+  return {
+    connect,
+    disconnect,
+    /*findCauseById,*/
+    findCauseByUserId,
+    saveNewCause,
+    updateCause,
+    search
+  }
 }

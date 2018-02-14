@@ -2,10 +2,9 @@
 
 const http = require('http')
 const config = require('config')
-
 const servLog = require('../services/log')
-const servDb = require(`../services/database/${config.get('database.use')}/facade`)
-const servSearch = require(`../services/search/${config.get('search.use')}/facade`)
+const dbFactory = require('../services/database/factory')
+const seFactory = require('../services/search/factory')
 const app = require('../app')
 
 // Normalize a port into a number, string, or false.
@@ -58,16 +57,15 @@ const onListening = () => {
 }
 
 // Connect to the persistance layers
-servDb.connect()
-servSearch.connect()
-
+const db = dbFactory(config.get('database.use'))
+const se = seFactory(config.get('search.use'))
 process.on('SIGINT', () => {
-  servDb.disconnect()
-  servSearch.disconnect()
+  db.disconnect()
+  se.disconnect()
 })
 
-// Create an app instance, injecting dependencies accordingly.
-const appInstance = app(servDb, servSearch)
+// Create an app instance, inject dependencies
+const appInstance = app(db, se)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))
