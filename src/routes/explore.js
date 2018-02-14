@@ -1,11 +1,12 @@
 'use strict'
 
 const express = require('express')
+const libSeo = require('../lib/seo')
+const servLog = require('../services/log')
 
 const router = express.Router()
 
 router.get('/', async (req, res, next) => {
-  const servLog = req.app.get('servLog')
   const servSearch = req.app.get('servSearch')
 
   let causes = null
@@ -18,7 +19,7 @@ router.get('/', async (req, res, next) => {
   }
 
   res.render('explore', {
-    seo: req.app.get('libSeo')('/explore'),
+    seo: libSeo('/explore'),
     route: '/explore',
     user: res.locals.user,
     causes: causes

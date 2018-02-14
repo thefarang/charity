@@ -2,6 +2,8 @@
 
 const express = require('express')
 const validate = require('validate.js')
+const libTokens = require('../lib/tokens')
+const servLog = require('../services/log')
 const CauseFactory = require('../factories/cause-factory')
 const UserFactory = require('../factories/user-factory')
 const UserStates = require('../data/user-states')
@@ -12,8 +14,6 @@ const router = express.Router()
 
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
-  const servLog = req.app.get('servLog')
-
   const validationResult = validate(req.body, RegisterAuthConstraints)
   if (validationResult) {
     servLog.info({ 
@@ -25,14 +25,12 @@ router.use((req, res, next) => {
     res.json(validationResult)
     return
   }
-
   servLog.info({ schema: req.body }, 'Register details passed data validation')
   return next()
 })
 
 // Checks to ensure the user does not already exist
 router.post('/', async (req, res, next) => {
-  const servLog = req.app.get('servLog')
   const servDb = req.app.get('servDb')
 
   try {
@@ -61,7 +59,6 @@ router.post('/', async (req, res, next) => {
 
 // Wraps the User-Cause-Creation saga
 router.use(async (req, res, next) => {
-  const servLog = req.app.get('servLog')
   const servDb = req.app.get('servDb')
   const servSearch = req.app.get('servSearch')
 
@@ -113,9 +110,6 @@ router.use(async (req, res, next) => {
 })
 
 router.use(async (req, res, next) => {
-  const servLog = req.app.get('servLog')
-  const libTokens = req.app.get('libTokens')
-
   try {
     // Create json web token from the user object and return
     const token = await libTokens.createToken(res.locals.user)

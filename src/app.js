@@ -6,12 +6,6 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 
-const servLog = require('./services/log')
-const libAcl = require('./lib/acl')
-const libCookies = require('./lib/cookies')
-const libTokens = require('./lib/tokens')
-const libSeo = require('./lib/seo')
-
 const { 
   handleIdentifyUser,
   handleCheckRouteAuthorisation,
@@ -32,15 +26,8 @@ const admin = require('./routes/dashboard/admin')
 
 module.exports = (servDb, servSearch) => {
   const appInstance = express()
-
-  // Add services, library helpers and data helpers to the app, for later use elsewhere
   appInstance.set('servDb', servDb)
   appInstance.set('servSearch', servSearch)
-  appInstance.set('servLog', servLog)
-  appInstance.set('libAcl', libAcl)
-  appInstance.set('libSeo',libSeo)
-  appInstance.set('libTokens', libTokens)
-  appInstance.set('libCookies', libCookies)
 
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))

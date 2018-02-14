@@ -4,7 +4,6 @@ const ACL = require('../data/acl')
 
 const isResourceExistant = (resource) => {
   let isExistant = false
-
   for (let accessControl in ACL) {
     if (ACL[accessControl].resource === resource) {
       isExistant = true
@@ -17,7 +16,6 @@ const isResourceExistant = (resource) => {
 
 const isUserAuthorised = (resource, permission, role) => {
   let isAuthorised = false
-
   for (let accessControl in ACL) {
     if ((ACL[accessControl].resource === resource) && (ACL[accessControl].permission === permission)) {
       // We have found the resource the user wants to access. Now check they are

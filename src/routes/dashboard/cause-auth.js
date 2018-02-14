@@ -2,6 +2,7 @@
 
 const express = require('express')
 const validate = require('validate.js')
+const servLog = require('../../services/log')
 const CauseFactory = require('../../factories/cause-factory')
 const CauseAuthConstraints = require('../../validate/constraints/cause-auth')
 const CauseFromCauseAuthMapping = require('../../validate/mappings/cause-from-cause-auth')
@@ -10,8 +11,6 @@ const router = express.Router()
 
 // This middleware is executed for every request to the router.
 router.use((req, res, next) => {
-  const servLog = req.app.get('servLog')
-
   const validationResult = validate(req.body, CauseAuthConstraints)
   if (validationResult) {
     servLog.info({ 
@@ -23,13 +22,11 @@ router.use((req, res, next) => {
     res.json(validationResult)
     return
   }
-
   servLog.info({ schema: req.body }, 'Cause details passed data validation')
   return next()
 })
 
 router.post('/', async (req, res, next) => {
-  const servLog = req.app.get('servLog')
   const servSearch = req.app.get('servSearch')
   
   let cause = null

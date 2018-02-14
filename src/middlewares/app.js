@@ -2,12 +2,11 @@
 
 const UserFactory = require('../factories/user-factory')
 const UserRoles = require('../data/user-roles')
+const libTokens = require('../lib/tokens')
+const libCookies = require('../lib/cookies')
+const servLog = require('../services/log')
 
 const handleIdentifyUser = async (req, res, next) => {
-  const libTokens = req.app.get('libTokens')
-  const libCookies = req.app.get('libCookies')
-  const servLog = req.app.get('servLog')
-
   // Set the user as guest by default
   res.locals.user = UserFactory.createGuestUser()
   let token = null
@@ -33,9 +32,6 @@ const handleIdentifyUser = async (req, res, next) => {
 }
 
 const handleCheckRouteAuthorisation = async (req, res, next) => {
-  const libAcl = req.app.get('libAcl')
-  const servLog = req.app.get('servLog')
-
   // Prevent authorisation check on a non-existant resource
   if (!libAcl.isResourceExistant(req.path)) {
     return next()
@@ -63,9 +59,6 @@ const handleCheckRouteAuthorisation = async (req, res, next) => {
 }
 
 const handleResourceNotFound = (req, res, next) => {
-  const servLog = req.app.get('servLog')
-  const libSeo = req.app.get('libSeo')
-
   servLog.info({ path: req.path }, 'An unknown route has been requested')
   res.render('404', {
     seo: libSeo('/404'),
@@ -76,9 +69,6 @@ const handleResourceNotFound = (req, res, next) => {
 }
 
 const handleApplicationError = (err, req, res, next) => {
-  const servLog = req.app.get('servLog')
-  const libSeo = req.app.get('libSeo')
-  
   servLog.info({ err: err }, 'Error handled finally by the error display middleware')
   res.status(500)
   res.render('500', {

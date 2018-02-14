@@ -1,6 +1,8 @@
 'use strict'
 
 const express = require('express')
+const libSeo = require('../../lib/seo')
+const servLog = require('../../services/log')
 const CauseFactory = require('../../factories/cause-factory')
 const CauseAuthSchema = require('../../validate/schema/cause-auth')
 
@@ -8,7 +10,6 @@ const router = express.Router()
 
 router.get('/', async (req, res, next) => {
   const servSearch = req.app.get('servSearch')
-  const servLog = req.app.get('servLog')
 
   let cause = null
   try {
@@ -25,7 +26,7 @@ router.get('/', async (req, res, next) => {
   }
 
   res.render('dashboard/cause', {
-    seo: req.app.get('libSeo')('/dashboard/cause'),
+    seo: libSeo('/dashboard/cause'),
     route: '/dashboard/cause',
     user: res.locals.user,
     cause: cause,
