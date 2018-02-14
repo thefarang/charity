@@ -2,7 +2,6 @@
 
 const express = require('express')
 const validate = require('validate.js')
-const libTokens = require('../lib/tokens')
 const servLog = require('../services/log')
 const CauseFactory = require('../factories/cause-factory')
 const UserFactory = require('../factories/user-factory')
@@ -36,7 +35,7 @@ router.post('/', async (req, res, next) => {
   try {
     // Attempt to find the user in the dbase
     res.locals.user = UserFactory.createUser(req.body, UserFromRegisterAuthMapping)
-    const existingUser = await servDb.getUserActions().find(res.locals.user)
+    const existingUser = await servDb.getUserActions().findUser(res.locals.user)
     if (existingUser) {
       servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'Existing user attempting registration')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -65,7 +64,7 @@ router.use(async (req, res, next) => {
   try {
     // Store the new user in the database.
     res.locals.user.state = UserStates.PRE_CONFIRMED
-    res.locals.user = await servDb.getUserActions().upsert(res.locals.user)
+    res.locals.user = await servDb.getUserActions().upsertUser(res.locals.user)
     servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'New user registered')
   } catch (err) {
     servLog.info({ 
@@ -92,7 +91,7 @@ router.use(async (req, res, next) => {
 
   // We failed to create a Cause object. We need to rollback the saga
   try {
-    await req.app.get('servDb').getUserActions().remove(res.locals.user)
+    await req.app.get('servDb').getUserActions().removeUser(res.locals.user)
   } catch (err) {
     servLog.info({ 
       err: err,
@@ -109,25 +108,19 @@ router.use(async (req, res, next) => {
   return
 })
 
+// @todo 
+// Send the email
 router.use(async (req, res, next) => {
-  try {
-    // Create json web token from the user object and return
-    const token = await libTokens.createToken(res.locals.user)
-    servLog.info({ 
-      user: res.locals.user.toJSONWithoutPassword(), 
-      token: token }, 'Created token for new user')
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    req.app.get('libCookies').setCookie(res, token)
-    res.status(200)
-    res.json({ loc: '/dashboard/cause' })
-  } catch (err) {
-    servLog.info({
-      user: res.locals.user.toJSONWithoutPassword() },
-      'Handling the error that occurred whilst creating a newly registered user token')
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(500)
-    res.json({ message: 'Failed to authorise user. Please attempt to login.' })
-  }
+  // We want to build a register token
+  const TokenFactory = require('../factories/token-factory')
+  const preAuthToken = TokenFactory.createTokenFromUserId(res.locals.user.id)
+  servLog.info({ preAuthToken: preAuthToken }, 'The token created')
+  await req.app.get('servDb').getTokenActions().createToken(preAuthToken)
+
+  res.set('Cache-Control', 'private, max-age=0, no-cache')
+  res.status(200)
+  res.json({ message: 'A registration confirmation email has been sent' })
+  return
 })
 
 module.exports = router

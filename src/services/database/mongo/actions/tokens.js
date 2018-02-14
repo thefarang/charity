@@ -7,20 +7,18 @@ const TokenSchema = require('../schema/token-schema')
 const TokenFactory = require('../../../../factories/token-factory')
 const TokenFromDbTokenMapping = require('../mappings/token-from-db-token')
 
-const findToken = (token) => {
+const findToken = (tokenString) => {
   return new Promise((resolve, reject) => {
-    TokenSchema.findOne({ token: token.token }, (err, tokenSchema) => {
+    TokenSchema.findOne({ token: tokenString }, (err, tokenSchema) => {
       if (err) {
-        servLog.info({ err: err, token: token }, 'Error locating existing Token')
+        servLog.info({ err: err, token: tokenString }, 'Error locating existing Token')
         return reject(err)
       }
 
       if (!tokenSchema) {
         return resolve(null)
       }
-    
-      token.update(TokenFactory.createToken(tokenSchema, TokenFromDbTokenMapping))
-      return resolve(token)
+      return resolve(TokenFactory.createToken(tokenSchema, TokenFromDbTokenMapping))
     })
   })
 }
@@ -30,7 +28,6 @@ const createToken = (token) => {
     const tokenSchema = new TokenSchema()
     tokenSchema.user_id = token.userId
     tokenSchema.token = token.token
-
     tokenSchema.save((err) => {
       if (err) {
         servLog.info({ err: err, token: token }, 'Error saving the TokenSchema')

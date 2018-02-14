@@ -16,6 +16,10 @@ const uglify = require('gulp-uglify')
 const util = require('gulp-util')
 
 /*
+@todo
+Repurpose this script to read in the package.json and extract the list of
+dev dependencies. This can then be uninstalled from the Dockerfile at the
+end of the installation process.
 const initUsersTask = (done) => {
   // const exec = require('child_process').exec
   exec('node ./src/scripts/init-users.js', (err, stdout, stderr) => {
@@ -58,6 +62,8 @@ const buildCSSTask = () => {
     .pipe(gulp.dest('src/public/stylesheets'))
 }
 
+// @todo
+// Build the list dynamically using the ./src/lib/acl
 const buildSitemapTask = (done) => {
   const sitemap = sitemapBuilder.createSitemap({
     hostname: process.env.APP_URL,
@@ -76,6 +82,15 @@ const buildSitemapTask = (done) => {
 }
 
 const buildRobotsTask = (done) => {
+
+  // @todo
+  // Add to the robots.txt:
+  // APP_URL/register-confirm
+  // APP_URL/javascripts/
+  // APP_URL/stylesheets
+  // Maybe build this list dynamically using the ./src/lib/acl, and including 'exlusions'
+  // in the ACL objects there.
+
   let siteMapContent = `User-agent: *\n`
   siteMapContent += `Sitemap: ${process.env.APP_URL}/sitemap.xml`
   fs.writeFile("./src/public/robots.txt", siteMapContent, (err) => done())

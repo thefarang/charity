@@ -3,8 +3,8 @@
 const config = require('config')
 const mongoose = require('mongoose')
 const servLog = require('../../log')
-const getUserActions = require('./actions/users')
-const getTokenActions = require('./actions/tokens')
+const userActions = require('./actions/users')
+const tokenActions = require('./actions/tokens')
 
 let isConnected = false
 
@@ -31,7 +31,7 @@ module.exports = () => {
   connect()
   return {
     disconnect,
-    getUserActions,
-    getTokenActions
+    getUserActions: () => userActions,
+    getTokenActions: () => tokenActions
   }
 }

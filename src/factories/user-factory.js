@@ -11,6 +11,12 @@ const createGuestUser = () => {
   return user
 }
 
+const createUserById = (userId) => {
+  const user = new User()
+  user.id = userId
+  return user
+}
+
 const createUserFromJSON = (json) => {
   const user = new User()
   user.id = json.id || null
@@ -54,5 +60,6 @@ const createUser = (schema, schemaToUserMapping) => {
 module.exports = {
   createUser,
   createUserFromJSON,
-  createGuestUser
+  createGuestUser,
+  createUserById
 }

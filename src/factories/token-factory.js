@@ -1,6 +1,7 @@
 'use strict'
 
-const config = require('crypto')
+const crypto = require('crypto')
+const _ = require('lodash')
 const Token = require('../models/token')
 
 const createTokenFromUserId = (userId) => {

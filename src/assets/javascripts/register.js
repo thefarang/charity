@@ -9,9 +9,16 @@ let registerForm = null
 const registerFormName = `form[name='register']`
 const registerSubmitId = '#register_submit'
 const errorDivId = '#errors'
+const successDivId = '#success'
 
 const handleSubmitFailure = (jqXHR, textStatus, errorThrown) => {
   handlers.handleErrorEvent(jqXHR.responseJSON, errorDivId, registerSubmitId)
+}
+
+const handleSubmitSuccess = (data, textStatus, jqXHR) => {
+  registerForm.trigger('reset')
+  registerForm.css('display', 'none')
+  $(successDivId).text(data.message)
 }
 
 const handleRegister = () => {
@@ -32,9 +39,7 @@ const handleRegister = () => {
       url: registerForm.attr('action'),
       data: schema,
       statusCode: {
-        200: (data, textStatus, jqXHR) => {
-          window.location.replace(data.loc)
-        },
+        200: handleSubmitSuccess,
         400: handleSubmitFailure,
         404: handleSubmitFailure,
         500: handleSubmitFailure

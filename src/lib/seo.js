@@ -26,6 +26,10 @@ const getSEO = (title) => {
       pageTitle += ' | Register'
       routeTitle = 'Register'
       break
+    case '/register-confirm':
+      pageTitle += ' | Confirm Registration'
+      routeTitle = 'Registration Status'
+      break
     case '/dashboard/cause':
     case '/dashboard/admin':
       pageTitle += ' | Dashboard'

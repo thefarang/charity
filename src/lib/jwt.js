@@ -5,7 +5,7 @@ const config = require('config')
 const servLog = require('../services/log')
 const UserFactory = require('../factories/user-factory')
 
-const createToken = (user) => {
+const createJWToken = (user) => {
   return new Promise((resolve, reject) => {
     jwt.sign(
       user.toJSONWithoutPassword(),
@@ -24,11 +24,9 @@ const createToken = (user) => {
   })
 }
 
-const getToken = (req) => {
-  return req.cookies.token || null
-}
+const getJWToken = (req) => req.cookies.token || null
 
-const getUserByToken = async (token) => {
+const getUserByJWToken = async (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.get('token.secret'), (err, userJson) => {
       if (err) {
@@ -42,7 +40,7 @@ const getUserByToken = async (token) => {
 }
 
 module.exports = {
-  createToken,
-  getToken,
-  getUserByToken
+  createJWToken,
+  getJWToken,
+  getUserByJWToken
 }

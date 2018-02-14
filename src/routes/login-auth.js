@@ -2,9 +2,11 @@
 
 const express = require('express')
 const validate = require('validate.js')
-const libTokens = require('../lib/tokens')
+const libJWTokens = require('../lib/jwt')
+const libCookies = require('../lib/cookies')
 const servLog = require('../services/log')
 const UserFactory = require('../factories/user-factory')
+const UserStates = require('../data/user-states')
 const LoginAuthConstraints = require('../validate/constraints/login-auth')
 const UserFromLoginAuthMapping = require('../validate/mappings/user-from-login-auth')
 
@@ -24,7 +26,6 @@ router.use((req, res, next) => {
     res.json()
     return
   }
-
   servLog.info({ schema: req.body }, 'Login details passed data validation')
   return next()
 })
@@ -34,7 +35,7 @@ router.post('/', async (req, res, next) => {
   res.locals.user = UserFactory.createUser(req.body, UserFromLoginAuthMapping)
   try {
     // Attempt to find the same user in the dbase
-    res.locals.user = await servDb.getUserActions().find(res.locals.user)
+    res.locals.user = await servDb.getUserActions().findUser(res.locals.user)
     if (!res.locals.user) {
       servLog.info({ user_email: req.body.user_email }, 'User not found in login')
       res.set('Cache-Control', 'private, max-age=0, no-cache')
@@ -50,6 +51,18 @@ router.post('/', async (req, res, next) => {
     res.json()
     return
   }
+
+  // Ensure the user has a UserStates.CONFIRMED status
+  if (res.locals.user.state !== UserStates.CONFIRMED) {
+    servLog.info({ 
+      user: res.locals.user.toJSONWithoutPassword() }, 
+      'User does not have a CONFIRMED status')
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(401)
+    res.json({ message: 'You need to confirm your email address' })
+    return
+  }
+  servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'User has correct status')
 
   try {
     // Test the password is correct
@@ -76,10 +89,10 @@ router.post('/', async (req, res, next) => {
 router.use(async (req, res, next) => {
   try {
     // Create a json web token from the user object.
-    const token = await libTokens.createToken(res.locals.user)
+    const token = await libJWTokens.createJWToken(res.locals.user)
     servLog.info({ user: res.locals.user.toJSONWithoutPassword(), token: token }, 'Successfully created token')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
-    req.app.get('libCookies').setCookie(res, token)
+    libCookies.setCookie(res, token)
     res.status(200)
     res.json({ loc: '/dashboard/cause' })
   } catch (err) {

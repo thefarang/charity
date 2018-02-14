@@ -2,7 +2,9 @@
 
 const UserFactory = require('../factories/user-factory')
 const UserRoles = require('../data/user-roles')
-const libTokens = require('../lib/tokens')
+const libAcl = require('../lib/acl')
+const libJWTokens = require('../lib/jwt')
+const libSeo = require('../lib/seo')
 const libCookies = require('../lib/cookies')
 const servLog = require('../services/log')
 
@@ -11,10 +13,10 @@ const handleIdentifyUser = async (req, res, next) => {
   res.locals.user = UserFactory.createGuestUser()
   let token = null
   try {
-    token = libTokens.getToken(req)
+    token = libJWTokens.getJWToken(req)
     if (token) {
       servLog.info({ token: token }, 'Token found')
-      const userFromToken = await libTokens.getUserByToken(token)
+      const userFromToken = await libJWTokens.getUserByJWToken(token)
       if (userFromToken) {
         res.locals.user = userFromToken
       } else {
