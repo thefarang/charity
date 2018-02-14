@@ -7,7 +7,7 @@ const Token = require('../models/token')
 const createTokenFromUserId = (userId) => {
   const token = new Token()
   token.userId = userId
-  token.token = crypto.randomBytes(32).toString('hex')
+  token.token = crypto.randomBytes(64).toString('hex')
   return token
 }
 

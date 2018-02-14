@@ -23,7 +23,7 @@ const findToken = (tokenString) => {
   })
 }
 
-const createToken = (token) => {
+const saveToken = (token) => {
   return new Promise(async (resolve, reject) => {
     const tokenSchema = new TokenSchema()
     tokenSchema.user_id = token.userId
@@ -52,6 +52,6 @@ const removeToken = (token) => {
 
 module.exports = {
   findToken,
-  createToken,
+  saveToken,
   removeToken
 }

@@ -108,19 +108,29 @@ router.use(async (req, res, next) => {
   return
 })
 
-// @todo 
-// Send the email
 router.use(async (req, res, next) => {
-  // We want to build a register token
-  const TokenFactory = require('../factories/token-factory')
-  const preAuthToken = TokenFactory.createTokenFromUserId(res.locals.user.id)
-  servLog.info({ preAuthToken: preAuthToken }, 'The token created')
-  await req.app.get('servDb').getTokenActions().createToken(preAuthToken)
+  try {
+    // Send an account confirmation email. First build a token which will be
+    // appended to the confirmation link.
+    const TokenFactory = require('../factories/token-factory')
+    const preAuthToken = TokenFactory.createTokenFromUserId(res.locals.user.id)
+    servLog.info({ preAuthToken: preAuthToken }, 'Register email token created')
+    
+    // Next save the token in the database and then send the email.
+    await req.app.get('servDb').getTokenActions().saveToken(preAuthToken)
+    req.app.get('servEmail').sendRegisterConfirm(preAuthToken.token)
+    servLog.info({ preAuthToken: preAuthToken }, 'Saved register token and sent email')
 
-  res.set('Cache-Control', 'private, max-age=0, no-cache')
-  res.status(200)
-  res.json({ message: 'A registration confirmation email has been sent' })
-  return
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(200)
+    res.json({ message: 'A registration confirmation email has been sent' })
+    return
+  } catch (err) {
+    servLog.info({ err: err, preAuthToken: preAuthToken }, 'Error sending register email')
+    res.set('Cache-Control', 'private, max-age=0, no-cache')
+    res.status(500)
+    res.json({ message: 'Failed to send account confirmation email.' })
+  }
 })
 
 module.exports = router

@@ -33,9 +33,10 @@
   },
   "email": {
     "aws": {
-      "api_version": "2010-12-01",
+      "api_version": "latest",
       "region": "eu-west-1"
-    }
+    },
+    "use": "aws"
   },
   "password": {
     "salt_work_factor": "10"

@@ -37,6 +37,8 @@ services:
       - APP_URL
       - APP_PORT
       - TOKEN_SECRET
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
     volumes:
       # Make the following directories available to docker so that changes made on the host
       # are immediately available inside the docker container.

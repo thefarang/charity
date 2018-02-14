@@ -25,10 +25,11 @@ const charity = require('./routes/dashboard/cause')
 const charityAuth = require('./routes/dashboard/cause-auth')
 const admin = require('./routes/dashboard/admin')
 
-module.exports = (servDb, servSearch) => {
+module.exports = (dbService, searchService, emailService) => {
   const appInstance = express()
-  appInstance.set('servDb', servDb)
-  appInstance.set('servSearch', servSearch)
+  appInstance.set('servDb', dbService)
+  appInstance.set('servSearch', searchService)
+  appInstance.set('servEmail', emailService)
 
   // View engine setup and middleware
   appInstance.set('views', path.join(__dirname, 'views'))

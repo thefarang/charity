@@ -5,6 +5,7 @@ const config = require('config')
 const servLog = require('../services/log')
 const dbFactory = require('../services/database/factory')
 const seFactory = require('../services/search/factory')
+const emailFactory = require('../services/email/factory')
 const app = require('../app')
 
 // Normalize a port into a number, string, or false.
@@ -65,7 +66,8 @@ process.on('SIGINT', () => {
 })
 
 // Create an app instance, inject dependencies
-const appInstance = app(db, se)
+const mp = emailFactory(config.get('email.use'))
+const appInstance = app(db, se, mp)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))
