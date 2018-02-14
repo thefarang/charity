@@ -27,8 +27,8 @@ const getSEO = (title) => {
       routeTitle = 'Register'
       break
     case '/register-confirm':
-      pageTitle += ' | Confirm Registration'
-      routeTitle = 'Registration Status'
+      pageTitle += ' | Register Confirmation'
+      routeTitle = 'Register Confirmation'
       break
     case '/dashboard/cause':
     case '/dashboard/admin':
@@ -42,6 +42,10 @@ const getSEO = (title) => {
     case '/reset-password':
       pageTitle += ' | Reset Password'
       routeTitle = 'Reset Password'
+      break
+    case '/reset-password-confirm':
+      pageTitle += ' | Reset Password Confirmation'
+      routeTitle = 'Reset Password Confirmation'
       break
     case '/error':
       pageTitle += ' | System Failure'

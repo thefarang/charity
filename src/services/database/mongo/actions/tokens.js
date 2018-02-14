@@ -1,7 +1,6 @@
 'use strict'
 
 const mongoose = require('mongoose')
-
 const servLog = require('../../../log')
 const TokenSchema = require('../schema/token-schema')
 const TokenFactory = require('../../../../factories/token-factory')

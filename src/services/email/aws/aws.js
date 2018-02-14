@@ -1,7 +1,6 @@
 'use strict'
 
-// @todo
-// Move out of sandbox
+// @todo Move out of sandbox
 // https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html
 
 // Note that AWS credentials are automatically retrieved from the environment
@@ -12,10 +11,10 @@ const init = () => {
   AWS.config.update({ region: config.get('email.aws.region') })
 }
 
+// @todo use templates/register-confirm
 const sendRegisterConfirm = (token) => {
   const params = {
     Destination: {
-      CcAddresses: [],
       ToAddresses: [
         'success@simulator.amazonses.com'
       ],
@@ -24,17 +23,37 @@ const sendRegisterConfirm = (token) => {
     Message: {
       Subject: {
         Charset: 'UTF-8',
-        Data: 'Registration Email Test'
+        Data: 'Registration Email'
       },
       Body: {
         Html: {
           Charset: "UTF-8",
           Data: `<html><body><p>This is a test email:${token}</p></body></html>`
-        }/*,
-        Text: {
-        Charset: "UTF-8",
-        Data: "TEXT_FORMAT_BODY"
-        }*/
+        }
+      }
+    }
+  }
+  return sendMail(params)
+}
+
+const sendResetPassword = (token) => {
+  const params = {
+    Destination: {
+      ToAddresses: [
+        'success@simulator.amazonses.com'
+      ],
+    },
+    Source: 'thefarang@protonmail.com',
+    Message: {
+      Subject: {
+        Charset: 'UTF-8',
+        Data: 'Password Reset Email'
+      },
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          Data: `<html><body><p>This is a RESET email:${token}</p></body></html>`
+        }
       }
     }
   }
@@ -52,7 +71,7 @@ const sendMail = async (params) => {
       console.log(data.MessageId)
     })
     .catch((err) => {
-      console.error(err, err.stack);
+      console.error(err, err.stack)
     })
   } catch (err) {
     console.log('BIG ERR')
@@ -64,6 +83,7 @@ const sendMail = async (params) => {
 module.exports = () => {
   init()
   return {
-    sendRegisterConfirm: sendRegisterConfirm
+    sendRegisterConfirm: sendRegisterConfirm,
+    sendResetPassword: sendResetPassword
   }
 }

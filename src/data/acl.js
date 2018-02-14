@@ -29,6 +29,20 @@ const ACL = {
     inSitemap: true,
     inRobots: false
   },
+  ResetPasswordAuthPOST: {
+    resource: '/reset-password-auth',
+    permission: 'post',
+    roles: ['guest'],
+    inSitemap: false,
+    inRobots: true
+  },
+  ResetPasswordConfirm: {
+    resource: '/reset-password-confirm',
+    permission: 'get',
+    roles: ['guest'],
+    inSitemap: false,
+    inRobots: true
+  },
   RegisterGET: {
     resource: '/register',
     permission: 'get',

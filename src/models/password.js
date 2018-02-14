@@ -8,6 +8,7 @@ const SALT_WORK_FACTOR = Number(config.get('password.salt_work_factor'))
 
 class Password {
   constructor () {
+    this.isReset = false
     this.clearPassword = null
     this.encryptedPassword = null
   }

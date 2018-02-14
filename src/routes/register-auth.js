@@ -3,6 +3,7 @@
 const express = require('express')
 const validate = require('validate.js')
 const servLog = require('../services/log')
+const TokenFactory = require('../factories/token-factory')
 const CauseFactory = require('../factories/cause-factory')
 const UserFactory = require('../factories/user-factory')
 const UserStates = require('../data/user-states')
@@ -112,7 +113,6 @@ router.use(async (req, res, next) => {
   try {
     // Send an account confirmation email. First build a token which will be
     // appended to the confirmation link.
-    const TokenFactory = require('../factories/token-factory')
     const preAuthToken = TokenFactory.createTokenFromUserId(res.locals.user.id)
     servLog.info({ preAuthToken: preAuthToken }, 'Register email token created')
     
