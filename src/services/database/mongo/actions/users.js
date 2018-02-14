@@ -31,7 +31,6 @@ const findOne = (searchSchema) => {
   })
 }
 
-// Search based on
 const upsert = async (user) => {
   try {
     let userSchema = null
