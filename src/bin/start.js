@@ -68,10 +68,10 @@ process.on('SIGINT', () => {
 })
 
 
+// LOGIN-AUTH DI
 const LoginAuthConstraints = require('../validate/constraints/login-auth')
 const UserFromLoginAuthMapping = require('../validate/mappings/user-from-login-auth')
 const loginAuthUseCaseFactory = require('../use-cases/login-auth')
-
 
 const validateUIPolicyFactory = require('../policies/validate-ui')
 const ValidateUIPolicy = validateUIPolicyFactory(servLog)
@@ -93,9 +93,27 @@ const loginAuthFactory = require('../routes/login-auth')
 const loginAuthRoute = loginAuthFactory(servLog, LoginAuthConstraints, UserFromLoginAuthMapping, LoginAuthUseCase, UseCaseContext)
 
 
+// LOGIN DI
+const indexRouteFactory = require('../routes/index')
+const seoLibrary = require('../lib/seo')
+const enforceACLUseCaseFactory = require('../use-cases/enforce-acl')
+
+const identifyUserPolicyFactory = require('../policies/identify-user')
+const IdentifyUserPolicy = identifyUserPolicyFactory(servLog, jwtLibrary, cookiesLibrary, UserFactory)
+const checkRouteAuthorisationPolicyFactory = require('../policies/check-route-auth')
+const aclLibrary = require('../lib/acl')
+const CheckRouteAuthorisationPolicy = checkRouteAuthorisationPolicyFactory(servLog, aclLibrary)
+const redirectToAuthRoutePolicyFactory = require('../policies/redirect-to-auth-route')
+const UserRoles = require('../data/user-roles')
+const RedirectToAuthRoutePolicy = redirectToAuthRoutePolicyFactory(UserRoles)
+const EnforceACLUseCase = enforceACLUseCaseFactory(IdentifyUserPolicy, CheckRouteAuthorisationPolicy, RedirectToAuthRoutePolicy)
+const ACLUseCaseContext = require('../context/acl-use-case')
+const indexRoute = indexRouteFactory(servLog, seoLibrary, EnforceACLUseCase, ACLUseCaseContext)
+
+
 // Create an app instance, inject dependencies
 const mp = emailFactory(config.get('email.use'))
-const appInstance = app(db, se, mp, loginAuthRoute)
+const appInstance = app(db, se, mp, loginAuthRoute, indexRoute)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))

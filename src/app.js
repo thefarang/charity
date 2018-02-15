@@ -12,7 +12,7 @@ const {
   handleResourceNotFound,
   handleApplicationError } = require('./middlewares/app')
 
-const index = require('./routes/index')
+// const index = require('./routes/index')
 const explore = require('./routes/explore')
 const terms = require('./routes/terms')
 const resetPassword = require('./routes/reset-password')
@@ -27,7 +27,7 @@ const charity = require('./routes/dashboard/cause')
 const charityAuth = require('./routes/dashboard/cause-auth')
 const admin = require('./routes/dashboard/admin')
 
-module.exports = (dbService, searchService, emailService, loginAuthRoute) => {
+module.exports = (dbService, searchService, emailService, loginAuthRoute, indexRoute) => {
   const appInstance = express()
   appInstance.set('servDb', dbService)
   appInstance.set('servSearch', searchService)
@@ -48,10 +48,10 @@ module.exports = (dbService, searchService, emailService, loginAuthRoute) => {
   appInstance.use(cookieParser())
 
   // Business logic middlewares
-  appInstance.use(handleIdentifyUser)
-  appInstance.use(handleCheckRouteAuthorisation)
+//appInstance.use(handleIdentifyUser)
+//appInstance.use(handleCheckRouteAuthorisation)
 
-  appInstance.use('/', index)
+  appInstance.use('/', indexRoute)
   appInstance.use('/explore', explore)
   appInstance.use('/terms', terms)
   appInstance.use('/reset-password', resetPassword)
