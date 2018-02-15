@@ -2,10 +2,9 @@
 
 const http = require('http')
 const config = require('config')
-const servLog = require('../services/log')
-const dbFactory = require('../services/database/factory')
-const seFactory = require('../services/search/factory')
-const emailFactory = require('../services/email/factory')
+const compose = require('./compose')
+
+const deps = compose()
 const app = require('../app')
 
 // Normalize a port into a number, string, or false.
@@ -38,7 +37,7 @@ const onError = (error) => {
   // Handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      servLog.info({}, bind + ' requires elevated privileges')
+      deps.logService.info({}, bind + ' requires elevated privileges')
       process.exit(1)
     case 'EADDRINUSE':
       servLog.info({}, bind + ' is already in use')
@@ -54,66 +53,21 @@ const onListening = () => {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port
-  servLog.info({}, `Listening on ${bind}`)
+  deps.logService.info({}, `Listening on ${bind}`)
 }
 
-
-// @todo - This is the composition route. Extract to own file.
-// Connect to the persistance layers
-const db = dbFactory(config.get('database.use'))
-const se = seFactory(config.get('search.use'))
 process.on('SIGINT', () => {
-  db.disconnect()
-  se.disconnect()
+  deps.dbService.disconnect()
+  deps.searchService.disconnect()
 })
 
-
-// LOGIN-AUTH DI
-const LoginAuthConstraints = require('../validate/constraints/login-auth')
-const UserFromLoginAuthMapping = require('../validate/mappings/user-from-login-auth')
-const loginAuthUseCaseFactory = require('../use-cases/login-auth')
-
-const validateUIPolicyFactory = require('../policies/validate-ui')
-const ValidateUIPolicy = validateUIPolicyFactory(servLog)
-
-const loginPolicyFactory = require('../policies/login')
-const UserFactory = require('../factories/user-factory')
-const UserStates = require('../data/user-states')
-const LoginPolicy = loginPolicyFactory(db, servLog, UserFactory, UserStates)
-
-const createJWTPolicyFactory = require('../policies/create-jwt')
-const jwtLibrary = require('../lib/jwt')
-const cookiesLibrary = require('../lib/cookies')
-const CreateJWTPolicy = createJWTPolicyFactory(servLog, jwtLibrary, cookiesLibrary)
-
-const LoginAuthUseCase = loginAuthUseCaseFactory(ValidateUIPolicy, LoginPolicy, CreateJWTPolicy)
-const UseCaseContext = require('../context/use-case')
-
-const loginAuthFactory = require('../routes/login-auth')
-const loginAuthRoute = loginAuthFactory(servLog, LoginAuthConstraints, UserFromLoginAuthMapping, LoginAuthUseCase, UseCaseContext)
-
-
-// LOGIN DI
-const indexRouteFactory = require('../routes/index')
-const seoLibrary = require('../lib/seo')
-const enforceACLUseCaseFactory = require('../use-cases/enforce-acl')
-
-const identifyUserPolicyFactory = require('../policies/identify-user')
-const IdentifyUserPolicy = identifyUserPolicyFactory(servLog, jwtLibrary, cookiesLibrary, UserFactory)
-const checkRouteAuthorisationPolicyFactory = require('../policies/check-route-auth')
-const aclLibrary = require('../lib/acl')
-const CheckRouteAuthorisationPolicy = checkRouteAuthorisationPolicyFactory(servLog, aclLibrary)
-const redirectToAuthRoutePolicyFactory = require('../policies/redirect-to-auth-route')
-const UserRoles = require('../data/user-roles')
-const RedirectToAuthRoutePolicy = redirectToAuthRoutePolicyFactory(UserRoles)
-const EnforceACLUseCase = enforceACLUseCaseFactory(IdentifyUserPolicy, CheckRouteAuthorisationPolicy, RedirectToAuthRoutePolicy)
-const ACLUseCaseContext = require('../context/acl-use-case')
-const indexRoute = indexRouteFactory(servLog, seoLibrary, EnforceACLUseCase, ACLUseCaseContext)
-
-
 // Create an app instance, inject dependencies
-const mp = emailFactory(config.get('email.use'))
-const appInstance = app(db, se, mp, loginAuthRoute, indexRoute)
+const appInstance = app(
+  deps.dbService,
+  deps.searchService,
+  deps.emailService,
+  deps.loginAuthRoute, 
+  deps.indexRoute)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))

@@ -11,10 +11,7 @@ const deps = {
 }
 
 const handleSubscriptionError = (err, res) => {
-  // @todo UGLY, refactor the UseCaseContext class
-  const context = new UseCaseContext(null, null, null, null)
-  context.status = 500
-  context.message = "Something went wrong, sorry. Please refresh the page and try again."
+  const context = { status: 500, message: 'Something went wrong, sorry. Please refresh the page and try again.' }
   handleSubscription(res, context, 'ERROR')
 }
 

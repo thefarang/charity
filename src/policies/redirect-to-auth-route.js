@@ -3,7 +3,8 @@
 const Action = require('oja').Action
 
 const deps = {
-  UserRoles: null
+  UserRoles: null,
+  logService: null
 }
 
 class RedirectToAuthRoutePolicy extends Action {
@@ -29,7 +30,8 @@ class RedirectToAuthRoutePolicy extends Action {
   }
 }
 
-module.exports = (UserRoles) => {
+module.exports = (UserRoles, logService) => {
   deps.UserRoles = UserRoles
+  deps.logService = logService
   return RedirectToAuthRoutePolicy
 }
