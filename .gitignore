@@ -5,3 +5,4 @@ src/public/javascripts/*.js
 src/public/stylesheets/*.css
 src/public/sitemap.xml
 src/public/robots.xml
+*.DS_Store

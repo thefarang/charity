@@ -57,6 +57,8 @@ const onListening = () => {
   servLog.info({}, `Listening on ${bind}`)
 }
 
+
+// @todo - This is the composition route. Extract to own file.
 // Connect to the persistance layers
 const db = dbFactory(config.get('database.use'))
 const se = seFactory(config.get('search.use'))
@@ -65,9 +67,35 @@ process.on('SIGINT', () => {
   se.disconnect()
 })
 
+
+const LoginAuthConstraints = require('../validate/constraints/login-auth')
+const UserFromLoginAuthMapping = require('../validate/mappings/user-from-login-auth')
+const loginAuthUseCaseFactory = require('../use-cases/login-auth')
+
+
+const validateUIPolicyFactory = require('../policies/validate-ui')
+const ValidateUIPolicy = validateUIPolicyFactory(servLog)
+
+const loginPolicyFactory = require('../policies/login')
+const UserFactory = require('../factories/user-factory')
+const UserStates = require('../data/user-states')
+const LoginPolicy = loginPolicyFactory(db, servLog, UserFactory, UserStates)
+
+const createJWTPolicyFactory = require('../policies/create-jwt')
+const jwtLibrary = require('../lib/jwt')
+const cookiesLibrary = require('../lib/cookies')
+const CreateJWTPolicy = createJWTPolicyFactory(servLog, jwtLibrary, cookiesLibrary)
+
+const LoginAuthUseCase = loginAuthUseCaseFactory(ValidateUIPolicy, LoginPolicy, CreateJWTPolicy)
+const UseCaseContext = require('../context/use-case')
+
+const loginAuthFactory = require('../routes/login-auth')
+const loginAuthRoute = loginAuthFactory(servLog, LoginAuthConstraints, UserFromLoginAuthMapping, LoginAuthUseCase, UseCaseContext)
+
+
 // Create an app instance, inject dependencies
 const mp = emailFactory(config.get('email.use'))
-const appInstance = app(db, se, mp)
+const appInstance = app(db, se, mp, loginAuthRoute)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))

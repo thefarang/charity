@@ -22,12 +22,12 @@ const register = require('./routes/register')
 const registerAuth = require('./routes/register-auth')
 const registerConfirm = require('./routes/register-confirm')
 const login = require('./routes/login')
-const loginAuth = require('./routes/login-auth')
+// const loginAuth = require('./routes/login-auth')
 const charity = require('./routes/dashboard/cause')
 const charityAuth = require('./routes/dashboard/cause-auth')
 const admin = require('./routes/dashboard/admin')
 
-module.exports = (dbService, searchService, emailService) => {
+module.exports = (dbService, searchService, emailService, loginAuthRoute) => {
   const appInstance = express()
   appInstance.set('servDb', dbService)
   appInstance.set('servSearch', searchService)
@@ -61,7 +61,7 @@ module.exports = (dbService, searchService, emailService) => {
   appInstance.use('/register-auth', registerAuth)
   appInstance.use('/register-confirm', registerConfirm)
   appInstance.use('/login', login)
-  appInstance.use('/login-auth', loginAuth)
+  appInstance.use('/login-auth', loginAuthRoute)  // HERE changed
   appInstance.use('/dashboard/cause', charity)
   appInstance.use('/dashboard/cause-auth', charityAuth)
   appInstance.use('/dashboard/admin', admin)

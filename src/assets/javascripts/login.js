@@ -33,7 +33,7 @@ const handleLogin = () => {
       data: schema,
       statusCode: {
         200: (data, textStatus, jqXHR) => {
-          window.location.replace(data.loc)
+          window.location.replace(data.data)
         },
         400: handleSubmitFailure,
         401: handleSubmitFailure,
