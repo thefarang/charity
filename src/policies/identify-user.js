@@ -10,6 +10,13 @@ const deps = {
 }
 
 class IdentifyUserPolicy extends Action {
+  constructor(consumeTopic, publishTopicSuccess, publicTopicFail) {
+    // consumeTopic === 'context'
+    // publishTopicSuccess = 'user-identified'
+    // publicTopicFail = null
+    super()
+  }
+
   async execute () {
     const context = await this.consume('context')
 

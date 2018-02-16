@@ -67,7 +67,8 @@ const appInstance = app(
   deps.searchService,
   deps.emailService,
   deps.loginAuthRoute, 
-  deps.indexRoute)
+  deps.indexRoute,
+  deps.exploreRoute)
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.get('app.port'))

@@ -1,3 +1,4 @@
+/*
 'use strict'
 
 const express = require('express')
@@ -27,3 +28,50 @@ router.get('/', async (req, res, next) => {
 })
 
 module.exports = router
+*/
+
+
+
+'use strict'
+
+const express = require('express')
+
+const deps = {
+  logService: null,
+  seoLibrary: null,
+  ExploreCausesUseCase: null,
+  ExploreCausesUseCaseContext: null
+}
+
+const handleSubscriptionSuccess = (res, context) => {
+  console.log('hererererer')
+  res.render('explore', {
+    seo: deps.seoLibrary('/explore'),
+    route: '/explore',
+    user: context.user,
+    causes: context.causes
+  })
+}
+
+const handleExploreCausesUseCase = (req, res, next) => {
+  console.log('HERE1')
+  const useCase = new deps.ExploreCausesUseCase()
+  useCase
+    .consume('cause-search-complete', (context) => handleSubscriptionSuccess(res, context))
+    .catch((err) => next(err))
+    .define('context', new deps.ExploreCausesUseCaseContext(req, res))
+    .activate()
+    
+}
+
+module.exports = (logService, seoLibrary, ExploreCausesUseCase, ExploreCausesUseCaseContext) => {
+  deps.logService = logService
+  deps.seoLibrary = seoLibrary
+  deps.ExploreCausesUseCase = ExploreCausesUseCase
+  deps.ExploreCausesUseCaseContext = ExploreCausesUseCaseContext
+
+  const router = express.Router()
+  router.use((req, res, next) => handleExploreCausesUseCase(req, res, next))
+  return router
+}
+

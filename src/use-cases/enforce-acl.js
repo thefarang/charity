@@ -13,7 +13,7 @@ class EnforceACLUseCase extends Action  {
     super()
     this.add(
       new deps.IdentifyUserPolicy(),
-      new deps.CheckRouteAuthorisationPolicy(),
+      new deps.CheckRouteAuthorisationPolicy(), // Need to set the success end point
       new deps.RedirectToAuthRoutePolicy())
   }
 }

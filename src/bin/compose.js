@@ -53,9 +53,19 @@ const compose = () => {
   const UserRoles = require('../data/user-roles')
   const RedirectToAuthRoutePolicy = redirectToAuthRoutePolicyFactory(UserRoles, logService)
   const EnforceACLUseCase = enforceACLUseCaseFactory(IdentifyUserPolicy, CheckRouteAuthorisationPolicy, RedirectToAuthRoutePolicy)
-  const ACLUseCaseContext = require('../context/acl-use-case')
-  const indexRoute = indexRouteFactory(logService, seoLibrary, EnforceACLUseCase, ACLUseCaseContext)
+  const EnforceACLUseCaseContext = require('../context/enforce-acl-use-case')
+  const indexRoute = indexRouteFactory(logService, seoLibrary, EnforceACLUseCase, EnforceACLUseCaseContext)
 
+  const exploreCausesPolicyFactory = require('../policies/search-all-causes')
+  const ExploreCausesPolicy = exploreCausesPolicyFactory()
+  const exploreCausesUseCaseFactory = require('../use-cases/explore-causes')
+  const ExploreCausesUseCase = exploreCausesUseCaseFactory(ExploreCausesPolicy, EnforceACLUseCase)
+
+  const exploreCausesUseCaseContextFactory = require('../context/explore-causes-use-case')
+  const ExploreCausesUseCaseContext = exploreCausesUseCaseContextFactory(EnforceACLUseCaseContext)
+
+  const exploreRouteFactory = require('../routes/explore')
+  const exploreRoute = exploreRouteFactory(logService, seoLibrary, ExploreCausesUseCase, ExploreCausesUseCaseContext)
 
   return {
     logService,
@@ -63,7 +73,8 @@ const compose = () => {
     searchService,
     emailService,
     loginAuthRoute,
-    indexRoute
+    indexRoute,
+    exploreRoute
   }
 }
 

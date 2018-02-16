@@ -1,6 +1,6 @@
 'use strict'
 
-class IndexUseCaseContext  {
+class EnforceACLUseCaseContext  {
   constructor(req, res) {
     // Express request/response objects
     this.req = req
@@ -12,4 +12,4 @@ class IndexUseCaseContext  {
   }
 }
 
-module.exports = IndexUseCaseContext
+module.exports = EnforceACLUseCaseContext

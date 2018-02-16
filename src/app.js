@@ -13,7 +13,7 @@ const {
   handleApplicationError } = require('./middlewares/app')
 
 // const index = require('./routes/index')
-const explore = require('./routes/explore')
+// const explore = require('./routes/explore')
 const terms = require('./routes/terms')
 const resetPassword = require('./routes/reset-password')
 const resetPasswordAuth = require('./routes/reset-password-auth')
@@ -27,7 +27,7 @@ const charity = require('./routes/dashboard/cause')
 const charityAuth = require('./routes/dashboard/cause-auth')
 const admin = require('./routes/dashboard/admin')
 
-module.exports = (dbService, searchService, emailService, loginAuthRoute, indexRoute) => {
+module.exports = (dbService, searchService, emailService, loginAuthRoute, indexRoute, exploreRoute) => {
   const appInstance = express()
   appInstance.set('servDb', dbService)
   appInstance.set('servSearch', searchService)
@@ -52,7 +52,8 @@ module.exports = (dbService, searchService, emailService, loginAuthRoute, indexR
 //appInstance.use(handleCheckRouteAuthorisation)
 
   appInstance.use('/', indexRoute)
-  appInstance.use('/explore', explore)
+  appInstance.use('/explore', exploreRoute)
+
   appInstance.use('/terms', terms)
   appInstance.use('/reset-password', resetPassword)
   appInstance.use('/reset-password-auth', resetPasswordAuth)
