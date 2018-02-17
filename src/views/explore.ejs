@@ -8,130 +8,45 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-4-col-portfolio/blob/master/LICENSE)
  */
 
-body {
-  padding-top: 54px;
-}
-
-@media (min-width: 992px) {
-  body {
-    padding-top: 56px;
-  }
-}
-
-.portfolio-item {
-  margin-bottom: 30px;
-}
-
-.pagination {
-  margin-bottom: 30px;
-}
--->
-
-<!--
-<main role="main" class="container">
-  <h1 class="mt-5"><%= seo.routeTitle %></h1>
-
-  <% causes.forEach((cause) => { %>
-    <%= JSON.stringify(cause) %>
-    <br>
-  <% }) %>
-</main>
--->
-
 <!-- Page Heading -->
 <main role="main" class="container">
   <h1 class="mt-5"><%= seo.routeTitle %></h1>
 
-  <div class="row">
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project One</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur eum quasi sapiente nesciunt? Voluptatibus sit, repellat sequi itaque deserunt, dolores in, nesciunt, illum tempora ex quae? Nihil, dolorem!</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Two</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Three</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos quisquam, error quod sed cumque, odio distinctio velit nostrum temporibus necessitatibus et facere atque iure perspiciatis mollitia recusandae vero vel quam!</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Four</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Five</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Six</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque earum nostrum suscipit ducimus nihil provident, perferendis rem illo, voluptate atque, sit eius in voluptates, nemo repellat fugiat excepturi! Nemo, esse.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Seven</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-      <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="#">Project Eight</a>
-          </h4>
-          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius adipisci dicta dignissimos neque animi ea, veritatis, provident hic consequatur ut esse! Commodi ea consequatur accusantium, beatae qui deserunt tenetur ipsa.</p>
-        </div>
-      </div>
-    </div>
+  <div>
+    <label for="cause-location">Location</label>
+    <input id="cause-location" name="cause-location" value="United Kingdom" disabled />
+
+    <label for="cause-search">Keyword</label>
+    <input id="cause-search" name="cause-search" placeholder="E.g: depression" value="<%= keyword %>" />
+    <ul id="cause-list">
+    </ul>
+
+    <select id="cause-sort" name"cause-sort">
+      <option value="newest">Newest first</option>
+      <option value="name-asc">Name ascending</option>
+      <option value="name-desc">Name descending</option>
+    </select>
   </div>
+
+  <div class="row">
+    <% causes.forEach((cause) => { %>
+      <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+        <div class="card h-100">
+          <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+          <div class="card-body">
+            <h4 class="card-title">
+              <a href="/causes/<%= cause.path %>"><%= cause.name %></a>
+            </h4>
+            <div class="card-text">
+              <div><%= cause.name %></div>
+              <div><%= cause.country %></div>
+              <div>Short description goes here</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </row>
 </main>
 
 

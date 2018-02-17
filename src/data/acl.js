@@ -15,6 +15,13 @@ const ACL = {
     inSitemap: true,
     inRobots: false
   },
+  SearchPOST: {
+    resource: '/search',
+    permission: 'post',
+    roles: ['guest', 'cause', 'donator', 'admin'],
+    inSitemap: false,
+    inRobots: true
+  },
   TermsGET: {
     resource: '/terms',
     permission: 'get',

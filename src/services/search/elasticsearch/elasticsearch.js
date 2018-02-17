@@ -1,6 +1,7 @@
 'use strict'
 
 const config = require('config')
+const _ = require('lodash')
 const elasticsearch = require('elasticsearch')
 const servLog = require('../../log')
 const CauseFactory = require('../../../factories/cause-factory')
@@ -131,7 +132,7 @@ const search = async () => {
   return new Promise((resolve, reject) => {
     client.search(searchParams, (err, response, status) => {
       if (err) {
-        servLog.info({ err: err, status: status }, 'Error locating Cause documents')
+        servLog.info({ err: err, status: status }, 'Error locating keywords')
         return reject(err)
       }
 
@@ -144,30 +145,80 @@ const search = async () => {
   })
 }
 
-/*
-const searchKeyword = async (keyword) => {
-  const index = 'keyword'
-  const body = {
-    from: 0,
-    size: 20,
-    query: {
-      match_all: {}
+const searchFilteredCauses = async (keyword) => {
+  keyword = keyword.toLowerCase()
+  const searchParams = {
+    index: config.get('search.elasticsearch.index'),
+    type: 'cause',
+    size: 15,
+    body: {
+      query: {
+        match_phrase_prefix: {
+          keywords: {
+            query: keyword,
+            slop:  10,
+            max_expansions: 15
+          }
+        }
+      }
     }
   }
 
-  try {
-    const results = await esClient.search({ index: index, body: body })
-    console.log(`found ${results.hits.total} items in ${results.took}ms`);
-    console.log(`returned keywords:`);
-    results.hits.hits.forEach(
-      (hit, index) => console.log(
-        `\t${body.from + ++index} - ${hit._source.title}`
-      )
-    )
-  } catch (err) {
-  }
+  return new Promise((resolve, reject) => {
+    client.search(searchParams, (err, response, status) => {
+      if (err) {
+        servLog.info({ err: err, status: status }, 'Error locating causes')
+        return reject(err)
+      }
+
+      const causes = []
+      response.hits.hits.forEach((hit) => {
+        causes.push(CauseFactory.createCause(hit, CauseFromSearchTypeMapping))
+      })
+      return resolve(causes)
+    })
+  })
 }
-*/
+
+const searchKeywords = async (keyword) => {
+  keyword = keyword.toLowerCase()
+  const searchParams = {
+    index: config.get('search.elasticsearch.index'),
+    type: 'cause',
+    size: 15,
+    _source: "keywords",
+    body: {
+      query: {
+        match_phrase_prefix: {
+          keywords: {
+            query: keyword,
+            slop:  10,
+            max_expansions: 15
+          }
+        }
+      }
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    client.search(searchParams, (err, response, status) => {
+      if (err) {
+        servLog.info({ err: err, status: status }, 'Error locating keyword suggestions')
+        return reject(err)
+      }
+
+      const keywordSuggestions = []
+      response.hits.hits.forEach((hit) => {
+          hit._source.keywords.forEach((currentKeyword) => {
+            if (currentKeyword.indexOf(keyword) !== -1) {
+              keywordSuggestions.push(currentKeyword)
+            }
+          })
+        })
+      return resolve(_.uniq(keywordSuggestions))
+    })
+  })
+}
 
 module.exports = () => {
   connect()
@@ -178,6 +229,8 @@ module.exports = () => {
     findCauseByUserId,
     saveNewCause,
     updateCause,
-    search
+    search,
+    searchFilteredCauses,
+    searchKeywords
   }
 }

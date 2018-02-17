@@ -12,6 +12,7 @@ const {
   handleResourceNotFound,
   handleApplicationError } = require('./middlewares/app')
 
+const search = require('./routes/search')
 const index = require('./routes/index')
 const explore = require('./routes/explore')
 const terms = require('./routes/terms')
@@ -47,12 +48,17 @@ module.exports = (dbService, searchService, emailService) => {
   // be stored in the cookie.
   appInstance.use(cookieParser())
 
+  // Search occurs without needing to identify the user and check
+  // they are authorised to access the route. This speeds things up.
+  appInstance.use('/search', search)
+
   // Business logic middlewares
   appInstance.use(handleIdentifyUser)
   appInstance.use(handleCheckRouteAuthorisation)
 
   appInstance.use('/', index)
   appInstance.use('/explore', explore)
+  appInstance.use('/search', search)
   appInstance.use('/terms', terms)
   appInstance.use('/reset-password', resetPassword)
   appInstance.use('/reset-password-auth', resetPasswordAuth)

@@ -28,6 +28,9 @@ const createCause = (schema, schemaToCauseMapping) => {
   if (schemaToCauseMapping['country']) {
     cause.country = _.get(schema, schemaToCauseMapping.country)
   }
+  if (schemaToCauseMapping['keywords']) {
+    cause.keywords = _.get(schema, schemaToCauseMapping.keywords)
+  }
   return cause
 }
 

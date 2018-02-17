@@ -11,7 +11,8 @@ const CauseFromSearchTypeMapping = {
   'id': '_id',
   'userId': '_source.userId',
   'name': '_source.name',
-  'country': '_source.country'
+  'country': '_source.country',
+  'keywords': '_source.keywords'
 }
 
 module.exports = CauseFromSearchTypeMapping
