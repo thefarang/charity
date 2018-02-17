@@ -9,6 +9,7 @@ const router = express.Router()
 router.post('/', async (req, res, next) => {
   try {
     const keywordSuggestions = await req.app.get('servSearch').searchKeywords(req.body.keyword)
+    // @todo critical - MODIFY THE CACHE CONTROL!!!
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(200)
     res.json(keywordSuggestions)

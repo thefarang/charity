@@ -12,21 +12,27 @@
 <main role="main" class="container">
   <h1 class="mt-5"><%= seo.routeTitle %></h1>
 
-  <div>
-    <label for="cause-location">Location</label>
-    <input id="cause-location" name="cause-location" value="United Kingdom" disabled />
+  <form class="form-group">
+    <div class="form-row">
+        <div class="col">
+          <input class="form-control" id="cause-location" name="cause-location" value="United Kingdom" disabled />
+        </div>
 
-    <label for="cause-search">Keyword</label>
-    <input id="cause-search" name="cause-search" placeholder="E.g: depression" value="<%= keyword %>" />
-    <ul id="cause-list">
-    </ul>
+        <div class="col">
+          <input class="form-control" id="cause-search" name="cause-search" placeholder="E.g: depression" value="<%= keyword %>" />
+          <ul id="cause-list">
+          </ul>
+        </div>
 
-    <select id="cause-sort" name"cause-sort">
-      <option value="newest">Newest first</option>
-      <option value="name-asc">Name ascending</option>
-      <option value="name-desc">Name descending</option>
-    </select>
-  </div>
+        <div class="col">
+          <select class="form-control" id="cause-sort" name"cause-sort">
+            <option value="newest" <% if ((sort) && (sort === 'newest')) { %>selected="selected"<% } %>>Newest first</option>
+            <option value="name-asc" <% if ((sort) && (sort === 'name-asc')) { %>selected="selected"<% } %>>Name ascending</option>
+            <option value="name-desc" <% if ((sort) && (sort === 'name-desc')) { %>selected="selected"<% } %>>Name descending</option>
+          </select>
+        </div>
+    </div>
+  </form>
 
   <div class="row">
     <% causes.forEach((cause) => { %>

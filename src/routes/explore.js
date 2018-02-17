@@ -11,12 +11,14 @@ const router = express.Router()
 router.get('/', async (req, res, next) => {
   const servSearch = req.app.get('servSearch')
 
+  // @todo Use the sort query
   let causes = null
   try {
     if (req.query.keyword) {
-      causes = await servSearch.searchFilteredCauses(req.query.keyword)
+      causes = await servSearch.searchFilteredCauses(req.query.keyword, req.query.sort)
       servLog.info({ noOfCausesFound: causes.length }, `Causes found in filtered search`)
     } else {
+      // @todo implement sort here too
       causes = await servSearch.search()
       servLog.info({ noOfCausesFound: causes.length }, `Causes found in default search`)
     }
@@ -30,7 +32,8 @@ router.get('/', async (req, res, next) => {
     route: '/explore',
     user: res.locals.user,
     causes: causes,
-    keyword: req.query.keyword || ''
+    keyword: req.query.keyword || '',
+    sort: req.query.sort || null
   })
 })
 

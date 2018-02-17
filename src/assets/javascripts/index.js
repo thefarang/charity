@@ -27,8 +27,9 @@ $(() => {
   
   // Check page and bypass if not necessary
   // @todo
-  // Sort: Ensure value is correctly selected on page refresh
-  // Keyword: Ensure that the selected sort value is also sent to the server
+  // 1/ Ensure that the selected sort value is also sent to the server
+  // 2/ Clean up the code
+  // 3/ Implement pagination
   const autocomplete = new Awesomplete(
     document.getElementById("cause-search"),
     {
@@ -39,7 +40,10 @@ $(() => {
   // Called onclick
   Awesomplete.$('#cause-search').addEventListener('awesomplete-selectcomplete', (event) => {
     event.preventDefault()
-    window.location.replace('/explore?keyword=' + keywordToUrlPath(event.text.value))
+    const keyword = 'keyword=' + keywordToUrlPath(event.text.value)
+    const sort = 'sort=' + $('#cause-sort').val()
+    const path = keyword + '&' + sort
+    window.location.replace('/explore?' + path)
   })
 
   $('#cause-sort').on('change', () => {
@@ -57,9 +61,13 @@ $(() => {
     if (event.which === 13) {
       if ($('#cause-search').val().length === 0) {
         // Reset the page
-        window.location.replace('/explore')
+        const sort = 'sort=' + $('#cause-sort').val()
+        window.location.replace('/explore?' + sort)
       } else if ($('#cause-search').val().length >= 3) {
-        window.location.replace('/explore?keyword=' + keywordToUrlPath($('#cause-search').val()))
+        const keyword = 'keyword=' + keywordToUrlPath($('#cause-search').val())
+        const sort = 'sort=' + $('#cause-sort').val()
+        const path = keyword + '&' + sort
+        window.location.replace('/explore?' + path)
       }
       return
     }

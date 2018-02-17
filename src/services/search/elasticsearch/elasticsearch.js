@@ -145,7 +145,9 @@ const search = async () => {
   })
 }
 
-const searchFilteredCauses = async (keyword) => {
+// @todo implment sort
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html
+const searchFilteredCauses = async (keyword, sort) => {
   keyword = keyword.toLowerCase()
   const searchParams = {
     index: config.get('search.elasticsearch.index'),
