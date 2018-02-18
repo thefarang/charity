@@ -1,16 +1,9 @@
 {
+  "app": {
+    "url": "APP_URL",
+    "port": "APP_PORT"
+  },
   "token": {
     "secret": "TOKEN_SECRET"
-  },
-  "system_users": {
-    "guest": {
-      "id": "SYSTEM_USERS_GUEST_ID",
-      "email": "SYSTEM_USERS_GUEST_EMAIL"
-    },
-    "admin": {
-      "id": "SYSTEM_USERS_ADMIN_ID",
-      "email": "SYSTEM_USERS_ADMIN_EMAIL",
-      "clrPassword": "SYSTEM_USERS_ADMIN_CLRPASS"
-    }
   }
 }

@@ -1,0 +1,59 @@
+<%- include partials/top.ejs %>
+<%- include partials/nav.ejs %>
+
+<!--
+/*!
+ * Start Bootstrap - 4 Col Portfolio (https://startbootstrap.com/template-overviews/4-col-portfolio)
+ * Copyright 2013-2017 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-4-col-portfolio/blob/master/LICENSE)
+ */
+
+<!-- Page Heading -->
+<main role="main" class="container">
+  <h1 class="mt-5"><%= seo.routeTitle %></h1>
+
+  <form class="form-group">
+    <div class="form-row">
+        <div class="col">
+          <input class="form-control" id="cause-location" name="cause-location" value="United Kingdom" disabled />
+        </div>
+
+        <div class="col">
+          <input class="form-control" id="cause-search" name="cause-search" placeholder="E.g: depression" value="<%= keyword %>" />
+          <ul id="cause-list">
+          </ul>
+        </div>
+
+        <div class="col">
+          <select class="form-control" id="cause-sort" name"cause-sort">
+            <option value="newest" <% if ((sort) && (sort === 'newest')) { %>selected="selected"<% } %>>Newest first</option>
+            <option value="name-asc" <% if ((sort) && (sort === 'name-asc')) { %>selected="selected"<% } %>>Name ascending</option>
+            <option value="name-desc" <% if ((sort) && (sort === 'name-desc')) { %>selected="selected"<% } %>>Name descending</option>
+          </select>
+        </div>
+    </div>
+  </form>
+
+  <div class="row">
+    <% causes.forEach((cause) => { %>
+      <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+        <div class="card h-100">
+          <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+          <div class="card-body">
+            <h4 class="card-title">
+              <a href="/causes/<%= cause.path %>"><%= cause.name %></a>
+            </h4>
+            <div class="card-text">
+              <div><%= cause.name %></div>
+              <div><%= cause.country %></div>
+              <div>Short description goes here</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </row>
+</main>
+
+
+<%- include partials/footer.ejs %>

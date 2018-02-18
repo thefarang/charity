@@ -1,39 +1,26 @@
-<!DOCTYPE html>
+<%- include partials/top.ejs %>
+<%- include partials/nav.ejs %>
 
-<!--
-  We need to hide error message on interaction with form elements
-  We need to organise views into pages/ and partials/ and reuse items accordingly
-  We need to add the miner check
--->
+<!-- Begin page content -->
+<main role="main" class="container">
+  <h1 class="mt-5"><%= seo.routeTitle %></h1>
+  <div id="errors"></div>
 
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/index.css' />
-  </head>
-  <body>
-    <h1>Login</h1>
+  <form name="login" action="/login-auth">
+    <fieldset>
+      <label for="<%= LoginAuthSchema.user_email %>">Email</label>
+      <input type="text" id="<%= LoginAuthSchema.user_email %>" name="<%= LoginAuthSchema.user_email %>" maxlength="50">
+    </fieldset>
 
-    <div id="errors"></div>
+    <fieldset>
+      <label for="<%= LoginAuthSchema.user_password %>">Password</label>
+      <input type="password" id="<%= LoginAuthSchema.user_password %>" name="<%= LoginAuthSchema.user_password %>" maxlength="30">
+    </fieldset>
 
-    <form action="/login-auth">
-      <fieldset>
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" maxlength="50">
-      </fieldset>
+    <a href="/reset-password">Forgot password?</a>
+    <p>Add miner check here</p>
+    <input type="submit" id="login_submit" value="Login">
+  </form>
+</main>
 
-      <fieldset>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" maxlength="30">
-      </fieldset>
-
-      <a href="/forgot-password" target="_blank">Forgot password?</a>
-      
-      <p>Add miner check here</p>
-
-      <input id="submit" type="submit" value="Login">
-    </form>
-
-    <script src="/javascripts/login.bundle.js"></script>
-  </body>
-</html>
+<%- include partials/footer.ejs %>

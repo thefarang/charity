@@ -1,64 +1,53 @@
 'use strict'
 
-var $ = require('jquery')
+const $ = require('jquery')
+const handlers = require('./handlers')
+const validate = require('validate.js')
+const constraints = require('../../validate/constraints/register-auth')
 
-$(function() {
-  $("form").submit(function(e) {
-    e.preventDefault()
-  })
+let registerForm = null
+const registerFormName = `form[name='register']`
+const registerSubmitId = '#register_submit'
+const errorDivId = '#errors'
+const successDivId = '#success'
 
-  $("#submit").on('click', function() {
-    // Ensure all fields are populated.
-    if ((!$("#first_name").val()) || 
-        (!$("#last_name").val()) ||
-        (!$("#email").val()) ||
-        (!$("#confirm_email").val()) ||
-        (!$("#password").val()) ||
-        (!$("#confirm_password").val())) {
-      $("#errors").text("Please populate all fields")
-      $("#errors").css("display", "block")
+const handleSubmitFailure = (jqXHR, textStatus, errorThrown) => {
+  handlers.handleErrorEvent(jqXHR.responseJSON, errorDivId, registerSubmitId)
+}
+
+const handleSubmitSuccess = (data, textStatus, jqXHR) => {
+  registerForm.trigger('reset')
+  registerForm.css('display', 'none')
+  $(successDivId).text(data.message)
+}
+
+const handleRegister = () => {
+  registerForm = $(registerFormName)
+  registerForm.submit((e) => e.preventDefault())
+
+  $(registerSubmitId).on('click', () => {
+    const schema = handlers.handleBuildSchema(registerForm)
+    const errors = validate(schema, constraints)
+    if (errors) {
+      handlers.handleErrorEvent(errors, errorDivId, registerSubmitId)
       return
     }
 
-    // Ensure the email fields match
-    if ($("#email").val() !== $("#confirm_email").val()) {
-      $("#errors").text("The email addresses do not match")
-      $("#errors").css("display", "block")
-      return
-    }
-
-    // Ensure the password fields match
-    if ($("#password").val() !== $("#confirm_password").val()) {
-      $("#errors").text("The passwords do not match")
-      $("#errors").css("display", "block")
-      return
-    }
-
-    // Reset error message and prevent multiple form submissions
-    $("#errors").text("")
-    $("#errors").css("display", "none")
-    $("#submit").prop("disabled", true)
-
-    // Post the form data to the server
+    handlers.handleFormPreSubmit(errorDivId, registerSubmitId)
     $.ajax({
       type: "POST",
-      url: $("form").attr('action'),
-      data: $("form").serialize(),
+      url: registerForm.attr('action'),
+      data: schema,
       statusCode: {
-        200: function(data) {
-          window.location.replace("/dashboard")
-        },
-        404: function(jqXHR, textStatus, errorThrown) {
-          $("#errors").text(jqXHR.responseJSON.message)
-          $("#errors").css("display", "block")
-          $("#submit").prop("disabled", false)
-        },
-        500: function(jqXHR, textStatus, errorThrown) {
-          $("#errors").text(jqXHR.responseJSON.message)
-          $("#errors").css("display", "block")
-          $("#submit").prop("disabled", false)
-        }
+        200: handleSubmitSuccess,
+        400: handleSubmitFailure,
+        404: handleSubmitFailure,
+        500: handleSubmitFailure
       }
     })
   })
-})
+}
+
+module.exports = {
+  handleRegister
+}

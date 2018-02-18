@@ -2,7 +2,7 @@ version: "3"
 
 volumes:
   database:
-  #search:
+  search:
 
 services:
 
@@ -15,37 +15,41 @@ services:
     volumes:
       - database:/data/db
 
-  #search:
-    #container_name: search
-    #image: blacktop/elasticsearch:6.1
-    #ports:
+  search:
+    container_name: search
+    image: blacktop/elasticsearch:6.1
+    ports:
       # Expose port to host machine for debugging
-      #- 9200
-    #volumes:
-      #- search:/data
+      - 9200:9200
+    volumes:
+      - search:/data
 
   charity:
     container_name: charity
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+      args:
+        APP_URL: ${APP_URL}
     environment:
-      - NODE_ENV=${NODE_ENV}
-      - NODE_CONFIG_DIR=${NODE_CONFIG_DIR}
-      - TOKEN_SECRET=${TOKEN_SECRET}
-      - SYSTEM_USERS_GUEST_ID=${SYSTEM_USERS_GUEST_ID}
-      - SYSTEM_USERS_GUEST_EMAIL=${SYSTEM_USERS_GUEST_EMAIL}
-      - SYSTEM_USERS_ADMIN_ID=${SYSTEM_USERS_ADMIN_ID}
-      - SYSTEM_USERS_ADMIN_EMAIL=${SYSTEM_USERS_ADMIN_EMAIL}
-      - SYSTEM_USERS_ADMIN_CLRPASS=${SYSTEM_USERS_ADMIN_CLRPASS}
+      - NODE_ENV
+      - NODE_CONFIG_DIR
+      - APP_URL
+      - APP_PORT
+      - TOKEN_SECRET
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
     volumes:
       # Make the following directories available to docker so that changes made on the host
       # are immediately available inside the docker container.
       - ./package.json:/app/package.json
-      - ./src:/app/src
       - ./gulpfile.js:/app/gulpfile.js
+      - ./docker-compose.sh:/app/docker-compose.sh
+      - ./src:/app/src
     command: npm run debug
     ports:
       # Expose port to host machine for debugging
-      - 80:80
+      - 80:${APP_PORT}
     links:
       - mongo
-      #- search
+      - search

@@ -1,0 +1,31 @@
+# To build:
+# > docker build --build-arg APP_URL=${APP_URL} --file Dockerfile.development --tag thefarang/charity:development .
+#
+# To run:
+# > docker run --publish 80:80 --env-file .env thefarang/charity:development
+
+FROM node:8.5.0-alpine
+
+# Build app directory
+RUN mkdir -p /app/src
+WORKDIR /app
+
+# Install the app dependencies
+COPY package.json /app/
+RUN npm install
+
+# Install global task runner
+RUN npm install --global gulp-cli@2.0.1
+
+# Copy the app files, configuration and build tool to the app directory
+COPY ./src /app/src
+
+# Make the APP_URL build arg available for use by gulp (for building sitemaps)
+ARG APP_URL
+RUN echo 'Using application url:' && echo $APP_URL
+
+# Execute the task runner to setup the app
+COPY gulpfile.js /app/
+RUN npm run setup-app
+
+CMD ["npm", "run", "debug"]

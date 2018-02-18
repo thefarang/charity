@@ -1,5 +1,8 @@
+.DS_Store
 node_modules
 .vscode/settings.json
 .env
 src/public/javascripts/*.js
 src/public/stylesheets/*.css
+src/public/sitemap.xml
+src/public/robots.xml

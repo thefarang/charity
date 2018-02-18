@@ -1,46 +1,48 @@
 'use strict'
 
-var $ = require('jquery')
+const $ = require('jquery')
+const handlers = require('./handlers')
+const validate = require('validate.js')
+const constraints = require('../../validate/constraints/login-auth')
 
-function handleErrorEvent(message) {
-  $("#errors").text(message)
-  $("#errors").css("display", "block")
-  $("#submit").prop("disabled", false)
+let loginForm = null
+const loginFormName = `form[name='login']`
+const loginSubmitId = '#login_submit'
+const errorDivId = '#errors'
+
+const handleSubmitFailure = (jqXHR, textStatus, errorThrown) => {
+  handlers.handleErrorEvent(jqXHR.responseJSON, errorDivId,loginSubmitId)
 }
 
-$(function() {
-  $("form").submit(function(e) {
-    e.preventDefault()
-  })
+const handleLogin = () => {
+  loginForm = $(loginFormName)
+  loginForm.submit((e) => e.preventDefault())
 
-  $("#submit").on('click', function() {
-    if ((!$("#email").val()) || (!$("#password").val())) {
-      $("#errors").text("Please populate all fields")
-      $("#errors").css("display", "block")
+  $(loginSubmitId).on('click', () => {
+    const schema = handlers.handleBuildSchema(loginForm)
+    const errors = validate(schema, constraints)
+    if (errors) {
+      handlers.handleErrorEvent(errors, errorDivId, loginSubmitId)
       return
     }
 
-    // Reset error message and prevent multiple form submissions
-    $("#errors").text("")
-    $("#errors").css("display", "none")
-    $("#submit").prop("disabled", true)
-
-    // Post the form data to the server
+    handlers.handleFormPreSubmit(errorDivId, loginSubmitId)
     $.ajax({
       type: "POST",
-      url: $("form").attr('action'),
-      data: $("form").serialize(),
+      url: loginForm.attr('action'),
+      data: schema,
       statusCode: {
-        200: function(data) {
-          window.location.replace("/dashboard")
+        200: (data, textStatus, jqXHR) => {
+          window.location.replace(data.loc)
         },
-        401: function() {
-          handleErrorEvent("The email or password is incorrect.")
-        },
-        404: function() {
-          handleErrorEvent("The email or password is incorrect.")
-        }
+        400: handleSubmitFailure,
+        401: handleSubmitFailure,
+        404: handleSubmitFailure
       }
     })
   })
-})
+}
+
+module.exports = {
+  handleLogin
+}

@@ -1,18 +1,42 @@
 {
   "app": {
     "name": "charity",
-    "port": "80"
+    "brand": "MiningForChange",
+    "url": "",
+    "port": ""
   },
   "token": {
     "secret": "",
     "duration": "1h"
   },
   "database": {
-    "db_conn": "mongodb://mongo:27017",
-    "db_name": ""
+    "mongo": {
+      "db_conn": "mongodb://mongo:27017",
+      "db_name": ""
+    },
+    "mysql": {
+      "db_conn": "",
+      "db_name": ""
+    },
+    "use": "mongo"
   },
   "search": {
-    "search_conn": "http://search:9200"
+    "elasticsearch": {
+      "search_conn": "http://search:9200",
+      "index": ""
+    },
+    "solr": {
+      "search_conn": "",
+      "index": ""
+    },
+    "use": "elasticsearch"
+  },
+  "email": {
+    "aws": {
+      "api_version": "latest",
+      "region": "eu-west-1"
+    },
+    "use": "aws"
   },
   "password": {
     "salt_work_factor": "10"
@@ -20,16 +44,5 @@
   "cookie": {
     "domain": "",
     "secure": false
-  },
-  "system_users": {
-    "guest": {
-      "id": "",
-      "email": ""
-    },
-    "admin": {
-      "id": "",
-      "email": "",
-      "clrPassword": ""
-    }
   }
 }

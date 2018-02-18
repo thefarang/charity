@@ -1,13 +1,17 @@
 'use strict'
 
 const express = require('express')
+const libSeo = require('../lib/seo')
+const LoginAuthSchema = require('../validate/schema/login-auth')
 
 const router = express.Router()
 
-// GET login page
 router.get('/', (req, res, next) => {
   res.render('login', {
-    title: 'Login'
+    seo: libSeo('/login'),
+    route: '/login',
+    user: res.locals.user,
+    LoginAuthSchema: LoginAuthSchema
   })
 })
 

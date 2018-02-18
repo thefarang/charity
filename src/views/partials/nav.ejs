@@ -1,0 +1,59 @@
+<header>
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="#"><%= seo.brandTitle %></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+
+      <ul class="navbar-nav mr-auto">
+
+        <li class="nav-item<% if ((route) && (route == '/')) { %> active<% } %>">
+          <a class="nav-link" href="/">Home<% if ((route) && (route == '/')) { %> <span class="sr-only">(current)</span><% } %></a>
+        </li>
+        <li class="nav-item<% if ((route) && (route == '/explore')) { %> active<% } %>">
+          <a class="nav-link" href="/explore">Explore</a>
+        </li>
+        <li class="nav-item<% if ((route) && (route == '/faq')) { %> active<% } %>">
+          <a class="nav-link" href="/faq">Faq</a>
+        </li>
+        <li class="nav-item<% if ((route) && (route == '/blog')) { %> active<% } %>">
+          <a class="nav-link" href="/blog">Blog</a>
+        </li>
+
+      </ul>
+
+      <% if (user) { %>
+        <ul class="navbar-nav mt-2 mt-md-0">
+          <% if (user.role === 'guest') { %>
+
+            <li class="nav-item<% if ((route) && (route == '/login')) { %> active<% } %>">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item<% if ((route) && (route == '/register')) { %> active<% } %>">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+          
+          <% } else { %>
+
+            <% if (user.role === 'cause') { %>
+              <li class="nav-item<% if ((route) && (route == '/dashboard/cause')) { %> active<% } %>">
+                <a class="nav-link" href="/dashboard/cause">Dashboard</a>
+              </li>
+            <% } else if (user.role === 'admin') { %>
+              <li class="nav-item<% if ((route) && (route == '/dashboard/admin')) { %> active<% } %>">
+                  <a class="nav-link" href="/dashboard/admin">Dashboard</a>
+                </li>
+            <% } %>
+
+            <li class="nav-item">
+              <a class="nav-link" id="logout" href="#">Logout</a>
+            </li>
+
+          <% } %>
+        </ul>
+      <% } %>
+    </div>
+  </nav>
+</header>

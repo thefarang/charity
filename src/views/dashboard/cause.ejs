@@ -1,0 +1,24 @@
+<%- include ../partials/top.ejs %>
+<%- include ../partials/nav.ejs %>
+
+<!-- Begin page content -->
+<main role="main" class="container">
+  <h1 class="mt-5"><%= seo.routeTitle %></h1>
+  
+  <div id="errors"></div>
+
+  <form name="cause" action="/dashboard/cause-auth">
+    <fieldset>
+      <label for="<%= CauseAuthSchema.cause_name %>">*Cause name:</label>
+      <input type="text" id="<%= CauseAuthSchema.cause_name %>" name="<%= CauseAuthSchema.cause_name %>" maxlength="60" value="<%= cause.name %>">
+    </fieldset>
+
+    <fieldset>
+      <label for="<%= CauseAuthSchema.cause_country %>">*Country:</label>
+      <input type="text" id="<%= CauseAuthSchema.cause_country %>" name="<%= CauseAuthSchema.cause_country %>" maxlength="60" value="United Kingdom">
+    </fieldset>
+    <input type="submit" id="cause_submit" value="Update">
+  </form>
+</main>
+
+<%- include ../partials/footer.ejs %>

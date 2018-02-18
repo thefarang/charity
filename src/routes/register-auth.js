@@ -1,151 +1,135 @@
 'use strict'
 
 const express = require('express')
-const { check, validationResult } = require('express-validator/check')
-
+const validate = require('validate.js')
 const servLog = require('../services/log')
-const libTokens = require('../lib/tokens')
-const libCookies = require('../lib/cookies')
-const dataRoles = require('../data/roles')
-
-const User = require('../models/user')
-const Password = require('../models/password')
+const TokenFactory = require('../factories/token-factory')
+const CauseFactory = require('../factories/cause-factory')
+const UserFactory = require('../factories/user-factory')
+const UserStates = require('../data/user-states')
+const RegisterAuthConstraints = require('../validate/constraints/register-auth')
+const UserFromRegisterAuthMapping = require('../validate/mappings/user-from-register-auth')
 
 const router = express.Router()
 
-router.post('/', async (req, res, next) => {
-  // Sanitize against XSS
-  req.body.first_name = req.sanitize(req.body.first_name)
-  req.body.last_name = req.sanitize(req.body.last_name)
-  req.body.email = req.sanitize(req.body.email)
-  req.body.confirm_email = req.sanitize(req.body.confirm_email)
-  req.body.password = req.sanitize(req.body.password)
-  req.body.confirm_password = req.sanitize(req.body.confirm_password)
-  servLog.info({
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    clear_password: req.body.password },
-    'Sanitized XSS pre-registration')
-
-  // Validate and clean form
-  check('first_name')
-    .exists().withMessage('First name is required')
-    .isAlpha().withMessage('First name should contain only characters a-zA-Z')
-    .isLength({ max: 20 }).withMessage('First name should be a maximum of 20 characters')
-    .trim()
-
-  check('last_name')
-    .exists().withMessage('Last name is required')
-    .isAlpha().withMessage('Last name should contain only characters a-zA-Z')
-    .isLength({ max: 25 }).withMessage('Last name should be a maximum of 25 characters')
-    .trim()
-
-  check('email')
-    .exists().withMessage('Email is required')
-    .isEmail().withMessage('Email address is not valid')
-    .matches(req.body.confirm_email).withMessage('Email addresses do not match')
-    .trim()
-    .normalizeEmail()
-
-  // @todo
-  // Add additional checks for inclusion of numbers etc
-  check('password')
-    .exists().withMessage('Password is required')
-    .isLength({ min: 6 }).withMessage('Password must be minimum 6 characters long')
-    .matches(req.body.confirm_password).withMessage('Passwords do not match')
-
-  // @todo critical
-  // check().trim() is not working
-  servLog.info({
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    clear_password: req.body.password },
-    'Validated and cleaned form data pre-registration')
-
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    servLog.info({ errors: errors.mapped() }, 'Registration attempt failed form validation')
+// This middleware is executed for every request to the router.
+router.use((req, res, next) => {
+  const validationResult = validate(req.body, RegisterAuthConstraints)
+  if (validationResult) {
+    servLog.info({ 
+      schema: req.body,
+      validationResult: validationResult },
+      'Register details failed data validation')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(422)
-    res.json({ errors: errors.mapped() })
+    res.status(400)
+    res.json(validationResult)
     return
   }
-  servLog.info({}, 'Registration attempt passed form validation')
+  servLog.info({ schema: req.body }, 'Register details passed data validation')
+  return next()
+})
 
-  // Attempt to find the user in the dbase
+// Checks to ensure the user does not already exist
+router.post('/', async (req, res, next) => {
   const servDb = req.app.get('servDb')
-  let user = null
-  try {
-    user = await servDb.getUserActions().findUserByEmail(req.body.email)
-  } catch (err) {
-    servLog.info({
-      email: req.body.email },
-      'Handling the error that occurred whilst searching for a matching user')
 
+  try {
+    // Attempt to find the user in the dbase
+    res.locals.user = UserFactory.createUser(req.body, UserFromRegisterAuthMapping)
+    const existingUser = await servDb.getUserActions().findUser(res.locals.user)
+    if (existingUser) {
+      servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'Existing user attempting registration')
+      res.set('Cache-Control', 'private, max-age=0, no-cache')
+      res.status(404)
+      res.json({ message: 'Email already exists in the system' })
+      return
+    }
+    return next()
+  } catch (err) {
+    servLog.info({ 
+      err: err,
+      user: res.locals.user.toJSONWithoutPassword() },
+      'Handling error searching for a matching user')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
     res.json({ message: 'An error occurred. Please try again.' })
     return
   }
+})
 
-  if (user !== null) {
-    servLog.info({
-      email: req.body.email },
-      'User already exists in the dbase. Registration attempt denied.')
+// Wraps the User-Cause-Creation saga
+router.use(async (req, res, next) => {
+  const servDb = req.app.get('servDb')
+  const servSearch = req.app.get('servSearch')
 
+  try {
+    // Store the new user in the database.
+    res.locals.user.state = UserStates.PRE_CONFIRMED
+    res.locals.user = await servDb.getUserActions().upsertUser(res.locals.user)
+    servLog.info({ user: res.locals.user.toJSONWithoutPassword() }, 'New user registered')
+  } catch (err) {
+    servLog.info({ 
+      err: err, 
+      user: res.locals.user.toJSONWithoutPassword() }, 
+      'Handling error creating a new User')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(404)
-    res.json({ message: 'Email already exists in the system' })
+    res.status(500)
+    res.json({ message: 'Error occurred adding new user. Please try again.' })
     return
   }
 
-  // Store the new user in the database.
   try {
-    user = new User()
-    user.email = req.body.email
-
-    const password = new Password()
-    password.clrPassword = req.body.password
-    password.encPassword = await password.getEncPasswordFromClearPassword(req.body.password)
-    user.password = password
-    user.role = dataRoles.getCauseRole()
-
-    user = await servDb.getUserActions().saveNewUser(user)
-    servLog.info({ user: user.toJSON() }, 'New user registered')
+    // Create a Cause object for the user and store in the search engine
+    const cause = await servSearch.saveNewCause(CauseFactory.createCauseByUserId(res.locals.user.id)) 
+    servLog.info({ cause: cause }, 'New cause added')
+    return next()
   } catch (err) {
-    servLog.info({
+    servLog.info({ 
       err: err,
-      email: req.body.email },
-      'Handling the error that occurred whilst creating a new User')
-
-    res.set('Cache-Control', 'private, max-age=0, no-cache')
-    res.status(500)
-    res.json({ message: 'An error occurred whilst adding the new user. Please try again.' })
-    return
+      user: res.locals.user.toJSONWithoutPassword() },
+      'Handling error creating a new Cause')
   }
 
-  // Create json web token from the user object and return
+  // We failed to create a Cause object. We need to rollback the saga
   try {
-    const token = await libTokens.createToken(user)
-    servLog.info({
-      user: user.toJSON(),
-      token: token },
-      'Successfully created token for newly registered user')
+    await req.app.get('servDb').getUserActions().removeUser(res.locals.user)
+  } catch (err) {
+    servLog.info({ 
+      err: err,
+      user: res.locals.user.toJSONWithoutPassword() },
+      'Failed to rollback User-Cause-Creation saga')
+    // We really are in a mess now. The Cause object was not created, and now there
+    // was a problem deleting the user. For now, give up. Re-write the saga in future
+    // such that failed sagas are logged, for later handling.
+  }
+
+  res.set('Cache-Control', 'private, max-age=0, no-cache')
+  res.status(500)
+  res.json({ message: 'An error occurred whilst adding the new Cause. Please wait a moment, then try again' })
+  return
+})
+
+router.use(async (req, res, next) => {
+  try {
+    // Send an account confirmation email. First build a token which will be
+    // appended to the confirmation link.
+    const preAuthToken = TokenFactory.createTokenFromUserId(res.locals.user.id)
+    servLog.info({ preAuthToken: preAuthToken }, 'Register email token created')
+    
+    // Next save the token in the database and then send the email.
+    await req.app.get('servDb').getTokenActions().saveToken(preAuthToken)
+    req.app.get('servEmail').sendRegisterConfirm(preAuthToken.token)
+    servLog.info({ preAuthToken: preAuthToken }, 'Saved register token and sent email')
 
     res.set('Cache-Control', 'private, max-age=0, no-cache')
-    libCookies.setCookie(res, token)
     res.status(200)
-    res.json({ token: token })
+    res.json({ message: 'A registration confirmation email has been sent' })
+    return
   } catch (err) {
-    servLog.info({
-      user: user.toJSON() },
-      'Handling the error that occurred whilst creating a newly registered user token')
-
+    servLog.info({ err: err, preAuthToken: preAuthToken }, 'Error sending register email')
     res.set('Cache-Control', 'private, max-age=0, no-cache')
     res.status(500)
-    res.json({ message: 'Failed to authorise user. Please attempt to login.' })
+    res.json({ message: 'Failed to send account confirmation email.' })
   }
 })
 

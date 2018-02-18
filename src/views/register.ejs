@@ -1,57 +1,48 @@
-<!DOCTYPE html>
+<%- include partials/top.ejs %>
+<%- include partials/nav.ejs %>
 
-<!--
-  We need to hide error message on interaction with form elements
-  We need to organise views into pages/ and partials/ and reuse items accordingly
-  We need to add the miner check
--->
+<!-- Begin page content -->
+<main role="main" class="container">
+  <h1 class="mt-5"><%= seo.routeTitle %></h1>
+  <div id="success"></div>
+  <div id="errors"></div>
 
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/index.css' />
-  </head>
-  <body>
-    <h1>Register</h1>
-    
-    <div id="errors"></div>
+  <form name="register" action="/register-auth">
 
-    <form action="/register-auth">
-      <fieldset>
-        <label for="first_name">First name</label>
-        <input type="text" id="first_name" name="first_name" maxlength="20">
-      </fieldset>
+    <fieldset>
+      <label for="<%= RegisterAuthSchema.first_name %>">First name</label>
+      <input type="text" id="<%= RegisterAuthSchema.first_name %>" name="<%= RegisterAuthSchema.first_name %>" maxlength="20">
+    </fieldset>
 
-      <fieldset>
-        <label for="last_name">Last name</label>
-        <input type="text" id="last_name" name="last_name" maxlength="25">
-      </fieldset>
+    <fieldset>
+      <label for="<%= RegisterAuthSchema.last_name %>">Last name</label>
+      <input type="text" id="<%= RegisterAuthSchema.last_name %>" name="<%= RegisterAuthSchema.last_name %>" maxlength="25">
+    </fieldset>
 
-      <fieldset>
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" maxlength="50">
-      </fieldset>
+    <fieldset>
+      <label for="<%= RegisterAuthSchema.user_email %>">Email</label>
+      <input type="text" id="<%= RegisterAuthSchema.user_email %>" name="<%= RegisterAuthSchema.user_email %>" maxlength="50">
+    </fieldset>
 
-      <fieldset>
-        <label for="confirm_email">Confirm email</label>
-        <input type="text" id="confirm_email" name="confirm_email" maxlength="50">
-      </fieldset>
+    <fieldset>
+      <label for="<%= RegisterAuthSchema.confirm_user_email %>">Confirm email</label>
+      <input type="text" id="<%= RegisterAuthSchema.confirm_user_email %>" name="<%= RegisterAuthSchema.confirm_user_email %>" maxlength="50">
+    </fieldset>
 
-      <fieldset>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" maxlength="30">
-      </fieldset>
+    <fieldset>
+      <label for="<%= RegisterAuthSchema.user_password %>">Password</label>
+      <input type="password" id="<%= RegisterAuthSchema.user_password %>" name="<%= RegisterAuthSchema.user_password %>" maxlength="30">
+    </fieldset>
 
-      <fieldset>
-        <label for="confirm_password">Confirm password</label>
-        <input type="password" id="confirm_password" name="confirm_password" maxlength="30">
-      </fieldset>
+    <fieldset>
+      <label for="<%= RegisterAuthSchema.confirm_user_password %>">Confirm password</label>
+      <input type="password" id="<%= RegisterAuthSchema.confirm_user_password %>" name="<%= RegisterAuthSchema.confirm_user_password %>" maxlength="30">
+    </fieldset>
 
-      <p>Add miner check here</p>
+    <input type="hidden" id="<%= RegisterAuthSchema.user_role %>" name="<%= RegisterAuthSchema.user_role %>" value="cause" />
+    <p>Add miner check here</p>
+    <input type="submit"  id="register_submit" value="Register">
+  </form>
+</main>
 
-      <input id="submit" type="submit" value="Register">
-    </form>
-
-    <script src="/javascripts/register.bundle.js"></script>
-  </body>
-</html>
+<%- include partials/footer.ejs %>

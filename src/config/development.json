@@ -1,6 +1,13 @@
 {
   "database": {
-    "db_name": "development"
+    "mongo": {
+      "db_name": "development"
+    }
+  },
+  "search": {
+    "elasticsearch": {
+      "index": "development"
+    }
   },
   "cookie": {
     "domain": "localhost"
