@@ -2,7 +2,7 @@
 # > docker build --build-arg APP_URL=${APP_URL} --file Dockerfile.development --tag thefarang/charity:development .
 #
 # To run:
-# > docker run --publish 80:80 --env-file .env thefarang/charity:development run debug
+# > docker run --publish 80:80 --env-file .env thefarang/charity:development
 
 FROM node:8.5.0-alpine
 

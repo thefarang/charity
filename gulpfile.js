@@ -64,6 +64,10 @@ const buildCSSTask = () => {
 
 // @todo
 // Build the list dynamically using the ./src/lib/acl
+// Include the charity research pages: /charities/charity-name-goes-here
+// @How to include the charity links in all running instances of this app?
+// sitemap.xml could be an endpoing which runs a query against the database.
+// We will need to cache this for up to an hour, to reduce server load
 const buildSitemapTask = (done) => {
   const sitemap = sitemapBuilder.createSitemap({
     hostname: process.env.APP_URL,
